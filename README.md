@@ -2,9 +2,9 @@
 <h4 align="center">Another mathematical library software similar to Matlab and Octave.</h4>
 
 ## Table of Contents
-- [Features](##Features)
-- [Installation](##Installation)
-- [Additional](##Additional)
+- [Features](#features)
+- [Installation](#installation)
+- [Additional](#additional)
 
 ## Features
 * [x] Reading scripts support.
