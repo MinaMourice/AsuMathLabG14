@@ -50,8 +50,8 @@ void defSpecialMat(string s, string varNames[100], string varContent[100], int& 
 	  }
 	  if(x==0)
 	  {
-		  cout<<varNames[variablesNo]<<"="<<varContent[variablesNo]<<"\n";
-		 // print(s,varNames,varContent,variablesNo);
+		 // cout<<varNames[variablesNo]<<"="<<varContent[variablesNo]<<"\n";
+		  print(s,varNames,varContent,variablesNo);
 	  }
 	
 	variablesNo++;
