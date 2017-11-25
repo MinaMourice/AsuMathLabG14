@@ -5,6 +5,7 @@
 #include <string> 
 #include <stdlib.h>
 using namespace std;
+
 double solveDouble(string s, string varNames[100], string varContent[100] , int& variablesNo) //  Marina /* Takes a string as input and returns a double output, Input may contain previous predefined variables and/or normal numbers */
 {
 	
