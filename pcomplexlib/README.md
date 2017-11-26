@@ -27,5 +27,4 @@
   * Run ./pcomplexlib-0.1b command to run the library in the terminal: `./pcomplexlib-0.1b`
 
 ## LICENSE
-  PCOMPLEXLIB is released under the MIT license:
-    * opensource.org/licenses/MIT
+  PCOMPLEXLIB is released under the [MIT license](https://opensource.org/licenses/MIT)
