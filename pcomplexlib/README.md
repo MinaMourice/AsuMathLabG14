@@ -24,7 +24,8 @@
   * Open your terminal and navigate to the repo's directory.
   * Make sure you have any 'MAKE' varient installed on your system.
   * Run make command to compile the library: `make`
-  * Run ./pcomplexlib-0.1b command to run the library in the terminal: `./pcomplexlib-0.1b`
+  * You can use any profiler and/or debugger.
+  * Run ./pcomplexlib-0.1b command to run the library in the terminal without any additional debugging tools: `./pcomplexlib-0.1b`
 
 ## LICENSE
   PCOMPLEXLIB is released under the [MIT license](https://opensource.org/licenses/MIT)
