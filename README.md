@@ -9,7 +9,7 @@ Asu MathLab Project
 - [Additional](#additional)
 
 ## Intro
-------
+
 <h4 align="center">Another mathematical library software similar to Matlab and Octave.</h4>
 Asu MathLab Project is written in C++ using Object Oriented Programming (OOP) Concepts
 
@@ -22,7 +22,7 @@ Asu Mathlab will try to extract the following information:
 -  Operation Lines on Given Matrices
 
 ## Setup
----------
+
 Clone this repository on your linux machine.
 
     git clone https://github.com/MinaMourice/AsuMathLabG14.git
@@ -39,7 +39,7 @@ Run ./matrix command to run the library in your terminal:
     
     
 ## Take it for a spin
-------------------
+
     >A = [2.2 7.3 4.8 2.4; 2.3 6.5 8.9 1.2; 4.9 3.8 7.2 7.5; 9.8 3.4 7.5 8.9]
     >B = [3.4 5.7 4.2 1.4; 6.3 2.5 8.1 3.1; 6.4 2.8 7.1 8.1; 3.2 5.1 7.2 6.2]
     >C = A + B
