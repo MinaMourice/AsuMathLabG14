@@ -47,7 +47,7 @@ Run ./matrix command to run the library in your terminal:
     >E = A * B
     >H = C'
     >G = 1 ./ A
-    >F = A / B install build-essential
+    >F = A / B 
 
 
 
