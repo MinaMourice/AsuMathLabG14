@@ -584,3 +584,103 @@ CMatrix CMatrix::operator/(CMatrix& m)
 	r /= m;
 	return r;
 }
+void CMatrix::dotMul(Const CMatrix& m) {
+    if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] *= this.values[iR][iC];
+	
+} // Mina Magdy /* (*this) .* m is multiple element by element as general result(i,j)=(*this)(i,j)*m(i,j) */
+void CMatrix::dotDiv(CMatrix& m) {
+    if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] /= this.values[iR][iC];
+	
+} // Mina Magdy /* is a dot divide operation as divide element by element */
+void CMatrix::dotPow(double d) {
+    if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] =  pow(M.values[iR][iC], this.values[iR][iC]);
+	
+} // Mina Magdy /* is a pow of each element to power of d */
+void CMatrix::lDiv(const CMatrix& m) {
+    double Determinant = m.getDeterminant();
+	if (Determinant == 0) throw("No unique solution");
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	m.copy(m.getInverse());
+	this.mul(m);
+    
+} // Mina Magdy /* multiply of inverse(A)*B and is called left div */
+void CMatrix::dotLDiv(const CMatrix& m) {} // Mina Magdy /* Element by element multiply of inverse of *this and m */
+CMatrix sin(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.sin(values[iR][iC]);
+	return M;
+} // Mina Magdy /* Get sin for each element */
+CMatrix cos(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.cos(values[iR][iC]);
+	return M;
+} // Mina Magdy /* Get cos for each element */
+CMatrix tan(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.tan(values[iR][iC]);
+	return M;
+} // Mina Magdy /* Get tan for each element */
+CMatrix asin(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.asin(values[iR][iC]);
+	return M;
+} // Mina Magdy /* Get sin-1 for each element */
+CMatrix acos(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.acos(values[iR][iC]);
+	return M;
+} // Mina Magdy /* Get cos-1 for each element*/
+CMatrix atan(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.atan(values[iR][iC]);
+	return M;
+} // Mina Magdy /* Get tan-1 for each element */
+CMatrix exp(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.exp(values[iR][iC]);
+	return M;
+
+} // Mina Magdy /* Get expontial of each element */
+CMatrix log(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.log(values[iR][iC]);
+	return M;
+
+} // Mina Magdy /* Get the ln of each element */
+CMatrix log10(const CMatrix& m) {
+    CMatrix M(nR, nC);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			M.values[iR][iC] = this.log10(values[iR][iC]);
+	return M;
+
+} // Mina Magdy /* Get the log to base 10 of each element */
+
