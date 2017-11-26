@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <cstdlib>
+
 CMatrix::CMatrix()
 {
 	nR = nC = 0; values = NULL;
@@ -19,10 +20,10 @@ CMatrix::CMatrix(int nR, int nC, int initialization, double initializationValue)
 		values = NULL; return;
 	}
 	values = new double*[nR];
-	for (int iR = 0; iR<nR; iR++)
+	for (int iR = 0; iR < nR; iR++)
 	{
 		values[iR] = new double[nC];
-		for (int iC = 0; iC<nC; iC++)
+		for (int iC = 0; iC < nC; iC++)
 		{
 			switch (initialization)
 			{
@@ -51,10 +52,10 @@ CMatrix::CMatrix(int nR, int nC, double first, ...) // Beshoy
 	values = new double*[nR];
 	va_list va;
 	va_start(va, first);
-	for (int iR = 0; iR<nR; iR++)
+	for (int iR = 0; iR < nR; iR++)
 	{
 		values[iR] = new double[nC];
-		for (int iC = 0; iC<nC; iC++)
+		for (int iC = 0; iC < nC; iC++)
 		{
 			values[iR][iC] = (iC == 0 && iR == 0) ? first : va_arg(va, double);
 		}
@@ -73,7 +74,6 @@ CMatrix::CMatrix(string s) // Beshoy
 	values = NULL;
 	copy(s);
 }
-
 CMatrix::CMatrix(double d) // Beshoy
 {
 	nR = nC = 0;
@@ -81,10 +81,9 @@ CMatrix::CMatrix(double d) // Beshoy
 	copy(d);
 }
 
-
 void CMatrix::reset() { // Boula
 	if (values) {
-		for (int i = 0; i<nR; i++)
+		for (int i = 0; i < nR; i++)
 			delete[] values[i];
 		delete[] values;
 	}
@@ -97,9 +96,9 @@ void CMatrix::copy(const CMatrix& m) { // Boula
 	this->nC = m.nC;
 	if ((nR*nC) == 0) { values = NULL; return; }
 	values = new double*[nR];
-	for (int iR = 0; iR<nR; iR++) {
+	for (int iR = 0; iR < nR; iR++) {
 		values[iR] = new double[nC];
-		for (int iC = 0; iC<nC; iC++) values[iR][iC] = m.values[iR][iC];
+		for (int iC = 0; iC < nC; iC++) values[iR][iC] = m.values[iR][iC];
 	}
 }
 void CMatrix::copy(double d) { // Boula
@@ -139,12 +138,12 @@ void CMatrix::copy(string s) { // Boula
 	if (!trueColoum) nc--;
 	nR = nr + 1; nC = nc + 1;
 	values = new double*[nR];
-	for (int iR = 0; iR<nR; iR++)
+	for (int iR = 0; iR < nR; iR++)
 	{
 		values[iR] = new double[nC];
-		for (int iC = 0; iC<nC; iC++)
+		for (int iC = 0; iC < nC; iC++)
 		{
-			values[iR][iC] = atof(temp_matrix[iR][iC].c_str()); 
+			values[iR][iC] = atof(temp_matrix[iR][iC].c_str());
 		}
 	}
 }
@@ -188,11 +187,11 @@ return sValue;
 //#include <time.h>
 string CMatrix::getOriginalString() { // Boula
 	string s = "[";
-	for (int iR = 0; iR<nR; iR++) {
-		for (int iC = 0; iC<nC; iC++) {
+	for (int iR = 0; iR < nR; iR++) {
+		for (int iC = 0; iC < nC; iC++) {
 			s += " ";
 			//s += to_string_with_precision(values[iR][iC], 2);
-			s += std::to_string(values[iR][iC]);
+			s += to_string(values[iR][iC]);
 		}
 		s += ";";
 	}
@@ -200,47 +199,42 @@ string CMatrix::getOriginalString() { // Boula
 	return s;
 }
 string CMatrix::getString(const int columnsToPrintEachTime) { // Boula
-															  //int t1 = clock();
-															  /*string ss = "[";
-															  for (int iR = 0; iR<nR; iR++) {
-															  for (int iC = 0; iC<nC; iC++) {
-															  ss += " ";
-															  ss += to_string_with_precision(values[iR][iC], 2);
-															  }
-															  ss += ";";
-															  }
-															  ss = "[" + ss.substr(2, ss.length() - 3) + "]";
-															  cout << clock() - t1 << endl;
-															  return s;*/
-															  //int t2 = clock();
+	// support up to 99*99 matrix
+	if (nR == 0 || nC == 0) return "\n\t[empty]\n";
 
+	int columnSize = 20 - 2 * columnsToPrintEachTime;
 	int printedColumns = 0;
 	string s = "\n";
 	bool biggerThanSix = nC > columnsToPrintEachTime;
 	while (printedColumns < nC) {
-		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "\tColumns " + std::to_string(printedColumns + 1) + " through " + std::to_string(printedColumns + columnsToPrintEachTime) + ":\n";
-		else if (nC > columnsToPrintEachTime) s += "\tColumns " + std::to_string(printedColumns + 1) + " through " + std::to_string(nC) + ":\n";
-		int columnsToPrint = ((nC - printedColumns) >= columnsToPrintEachTime) ? columnsToPrintEachTime : nC - printedColumns;
-		for (int iR = 0; iR<nR; iR++)
+		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "\tColumns " + to_string(printedColumns + 1) + " through " + to_string(printedColumns + columnsToPrintEachTime) + ":\n";
+		else
 		{
-			if (biggerThanSix) s += "\t\t"; else s += "\t";
-			for (int iC = 0; iC<columnsToPrint; iC++)
+			if (printedColumns + 1 != nC) s += "\tColumns " + to_string(printedColumns + 1) + " through " + to_string(nC) + ":\n";
+			else s += "\tColumn " + to_string(printedColumns + 1) + ":\n";
+		}
+		int columnsToPrint = ((nC - printedColumns) >= columnsToPrintEachTime) ? columnsToPrintEachTime : nC - printedColumns;
+		for (int iR = 0; iR < nR; iR++)
+		{
+			if (biggerThanSix) s += "\tRow " + to_string(iR + 1) + ": "; else s += "\tRow " + to_string(iR + 1) + ": ";
+			if (iR < 9 && nR >= 9) s += " "; // 9 is row number 10
+			s += "\t";
+			for (int iC = 0; iC < columnsToPrint; iC++)
 			{
 				/*char buffer[70];
 				snprintf(buffer, 70, "%g\t", values[iR][printedColumns + iC]);
 				s += buffer;*/
 				string k;
-				if (values[iR][printedColumns + iC] >= 0.00000001) k = " ";
-				k += std::to_string(values[iR][printedColumns + iC]);
+				if (values[iR][printedColumns + iC] >= 0.00) k = " ";
+				k += to_string(values[iR][printedColumns + iC]);
 				int sLength = k.length();
 				s += k;
-				for (int i = sLength; i<13; i++) s += " ";
+				for (int i = sLength; i < columnSize && iC != columnsToPrint - 1; i++) s += " ";
 			}
 			s += "\n";
 		}
 		printedColumns += columnsToPrintEachTime; s += "\n";
 	}
-	//cout << clock() - t2 << endl;
 	return s;
 }
 CMatrix CMatrix::denominatorOfDiv(float f) { // Boula
@@ -254,42 +248,36 @@ CMatrix CMatrix::denominatorOfDiv(float f) { // Boula
 }
 
 //core functions
-
 void CMatrix::add(CMatrix& m) //peter
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
+	for (int iR = 0; iR < nR; iR++)
+		for (int iC = 0; iC < nC; iC++)
 			values[iR][iC] += m.values[iR][iC];
 }
-
-
 void CMatrix::sub(CMatrix& m) //peter
 {
 	if (nR != m.nR || nC != m.nC)
 		throw("Invalid matrix dimension");
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
+	for (int iR = 0; iR < nR; iR++)
+		for (int iC = 0; iC < nC; iC++)
 			values[iR][iC] -= m.values[iR][iC];
 }
-
-
 void CMatrix::mul(CMatrix& m) //peter
 {
 	//cout << nR << "*" << nC << " " << m.nR << "*" << m.nC << endl;
 	if (nC != m.nR)
 		throw("Invalid matrix dimension");
 	CMatrix r(nR, m.nC);
-	for (int iR = 0; iR<r.nR; iR++)
-		for (int iC = 0; iC<r.nC; iC++)
+	for (int iR = 0; iR < r.nR; iR++)
+		for (int iC = 0; iC < r.nC; iC++)
 		{
 			r.values[iR][iC] = 0;
-			for (int k = 0; k<m.nC; k++)
+			for (int k = 0; k < m.nC; k++)
 				r.values[iR][iC] += values[iR][k] * m.values[k][iC];
 		}
 	copy(r);
 }
-
 void CMatrix::div(CMatrix& m) {
 	//double Determinant = m.getDeterminant();
 	//if (Determinant == 0) { cout << "No unique solution\n"; return; throw("No unique solution"); }
@@ -303,11 +291,11 @@ CMatrix CMatrix::getCofactor(int r, int c) //peter
 	if (nR <= 1 && nC <= 1)
 		throw("Invalid matrix dimension");
 	CMatrix m(nR - 1, nC - 1);
-	for (int iR = 0; iR<m.nR; iR++)
-		for (int iC = 0; iC<m.nC; iC++)
+	for (int iR = 0; iR < m.nR; iR++)
+		for (int iC = 0; iC < m.nC; iC++)
 		{
-			int sR = (iR<r) ? iR : iR + 1;
-			int sC = (iC<c) ? iC : iC + 1;
+			int sR = (iR < r) ? iR : iR + 1;
+			int sC = (iC < c) ? iC : iC + 1;
 			m.values[iR][iC] = values[sR][sC];
 		}
 	return m;
@@ -329,17 +317,17 @@ double CMatrix::getDeterminant() {
 	if (m.nR != m.nC)throw("Invalid matrix dimension");
 	if (m.nR == 1 && m.nC == 1)
 		return m.values[0][0];
-	
+
 	//checking the cases of zero determenant 
 	//first case
-	for (int i = 0; i<nR; i++)
+	for (int i = 0; i < nR; i++)
 	{
-		for (int k = i + 1; k<nR; k++)
+		for (int k = i + 1; k < nR; k++)
 		{
 			int zeroflag = 1;
 			double Ratio = m.values[i][0] / m.values[k][0];
 			int Ratioflag = 1;
-			for (int j = 0; j<nC; j++)
+			for (int j = 0; j < nC; j++)
 			{
 				if (Ratio != m.values[i][j] / m.values[k][j]) Ratioflag = 0;
 				if (m.values[i][j] != 0) zeroflag = 0;
@@ -349,14 +337,14 @@ double CMatrix::getDeterminant() {
 		}
 	}
 	//second case
-	for (int i = 0; i<nR; i++)
+	for (int i = 0; i < nR; i++)
 	{
-		for (int k = i + 1; k<nR; k++)
+		for (int k = i + 1; k < nR; k++)
 		{
 			int zeroflag = 1;
 			double Ratio = m.values[0][i] / m.values[0][k];
 			int Ratioflag = 1;
-			for (int j = 0; j<nC; j++)
+			for (int j = 0; j < nC; j++)
 			{
 				if (Ratio != m.values[j][i] / m.values[j][k]) Ratioflag = 0;
 				if (m.values[j][i] != 0) zeroflag = 0;
@@ -404,14 +392,14 @@ double CMatrix::getDeterminant2() //peter
 
 	//checking the cases of zero determenant 
 	//first case
-	for (int i = 0; i<nR; i++)
+	for (int i = 0; i < nR; i++)
 	{
-		for (int k = i + 1; k<nR; k++)
+		for (int k = i + 1; k < nR; k++)
 		{
 			int zeroflag = 1;
 			double Ratio = m.values[i][0] / m.values[k][0];
 			int Ratioflag = 1;
-			for (int j = 0; j<nC; j++)
+			for (int j = 0; j < nC; j++)
 			{
 				if (Ratio != m.values[i][j] / m.values[k][j]) Ratioflag = 0;
 				if (m.values[i][j] != 0) zeroflag = 0;
@@ -421,14 +409,14 @@ double CMatrix::getDeterminant2() //peter
 		}
 	}
 	//second case
-	for (int i = 0; i<nR; i++)
+	for (int i = 0; i < nR; i++)
 	{
-		for (int k = i + 1; k<nR; k++)
+		for (int k = i + 1; k < nR; k++)
 		{
 			int zeroflag = 1;
 			double Ratio = m.values[0][i] / m.values[0][k];
 			int Ratioflag = 1;
-			for (int j = 0; j<nC; j++)
+			for (int j = 0; j < nC; j++)
 			{
 				if (Ratio != m.values[j][i] / m.values[j][k]) Ratioflag = 0;
 				if (m.values[j][i] != 0) zeroflag = 0;
@@ -439,11 +427,11 @@ double CMatrix::getDeterminant2() //peter
 	}
 
 	int i, k, j, flag = 0;
-	for (i = 0; i<nR; i++)                    //Pivotisation
-		for (k = i + 1; k<nR; k++)
-			if ((abs(m.values[i][i])<abs(m.values[k][i])) || abs(m.values[i][i]) <= 0.0001) {
+	for (i = 0; i < nR; i++)                    //Pivotisation
+		for (k = i + 1; k < nR; k++)
+			if ((abs(m.values[i][i]) < abs(m.values[k][i])) || abs(m.values[i][i]) <= 0.0001) {
 				flag++;
-				for (j = 0; j<nR; j++) {
+				for (j = 0; j < nR; j++) {
 					double temp = m.values[i][j];
 					m.values[i][j] = m.values[k][j];
 					m.values[k][j] = temp;
@@ -457,11 +445,11 @@ double CMatrix::getDeterminant2() //peter
 	cout << m.values[i][j] ;
 	cout << "\n";
 	}*/
-	for (i = 0; i<nR - 1; i++)            //loop to perform the gauss elimination
-		for (k = i + 1; k<nR; k++)
+	for (i = 0; i < nR - 1; i++)            //loop to perform the gauss elimination
+		for (k = i + 1; k < nR; k++)
 		{
 			double t = m.values[k][i] / m.values[i][i];
-			for (j = 0; j<nR; j++)
+			for (j = 0; j < nR; j++)
 				m.values[k][j] = m.values[k][j] - t*m.values[i][j];    //make the elements below the pivot elements equal to zero or elimnate the variables
 		}
 
@@ -473,7 +461,7 @@ double CMatrix::getDeterminant2() //peter
 	cout << "\n";
 	}*/
 	double det = 1;
-	for (i = 0; i<nR; i++) {
+	for (i = 0; i < nR; i++) {
 		det = det*m.values[i][i];
 	}
 	if (flag % 2 == 0) {
@@ -494,9 +482,6 @@ double CMatrix::getDeterminant2() //peter
 	}
 	return value;*/
 }
-
-
-
 CMatrix CMatrix::getInverse() //peter
 {
 	if (nR != nC)throw("Invalid matrix dimension");
@@ -505,9 +490,9 @@ CMatrix CMatrix::getInverse() //peter
 	if (Determinant == 0) throw("Invalid matrix Inverse");
 	CMatrix r(nR, nC);
 	int m = 1;
-	for (int iC = 0; iC<nC; iC++)
+	for (int iC = 0; iC < nC; iC++)
 	{
-		for (int iR = 0; iR<nR; iR++)
+		for (int iR = 0; iR < nR; iR++)
 		{
 			r.values[iC][iR] = m* (getCofactor(iR, iC).getDeterminant()) / Determinant;
 			/*//comment
@@ -528,12 +513,11 @@ CMatrix CMatrix::getInverse() //peter
 
 	return r;
 }
-
 CMatrix CMatrix::getTranspose() //Mina Magdy
 {
 	CMatrix M(nC, nR);
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
+	for (int iR = 0; iR < nR; iR++)
+		for (int iC = 0; iC < nC; iC++)
 			M.values[iC][iR] = values[iR][iC];
 	return M;
 }
