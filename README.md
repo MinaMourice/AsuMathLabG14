@@ -4,7 +4,9 @@ Asu MathLab Project
 - [Intro](#intro)
 - [Setup](#setup)
 - [Take it for a spin](#take-it-for-a-spin)
+- [Phase 1](#phase-1-description)
 - [Features](#features)
+- [Phase 2](#phase-2-description)
 - [ToDo](#todo)
 - [Additional](#additional)
 
@@ -50,7 +52,13 @@ Run ./matrix command to run the library in your terminal:
     >F = A / B 
 
 
+## Phase 1 Description
 
+- Implement C++ class for matrix
+- Support dynamic creation and destruction of matrices of any size
+- Support addition, subtraction, multiplication, transpose and division
+- Process input user commands and show results directly 
+- Process input file, show each step result then exit
 
 
 ## Features
@@ -61,6 +69,18 @@ Run ./matrix command to run the library in your terminal:
 * [x] Matrix determinant and inverse.
 * [x] Matrix multiplication and division.
 * [x] Matrix transpose.
+
+## Phase 2 Description
+
+- Support mathematical functions. 
+    * Trigonometric, Logarithmic, Roots, Power
+- Support mathematical expressions.
+    * Either with (dot) or not.
+- Support flexible matrix parser.
+    * Accept matrix in matrix, expressions and variables 
+- Support error handling.
+    * Do not crash for invalid input.
+
 
 
 ## ToDo
