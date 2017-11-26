@@ -56,5 +56,23 @@ public:
 	double getDeterminant2();
 	CMatrix getTranspose();
 	CMatrix getInverse();
+	
+	// ===== PHASE TWO
+	void dotMul(Const CMatrix& m); // Mina Magdy /* (*this) .* m is multiple element by element as general result(i,j)=(*this)(i,j)*m(i,j) */
+	void dotDiv(CMatrix& m); // Mina Magdy /* is a dot divide operation as divide element by element */
+	void dotPow(double d); // Mina Magdy /* is a pow of each element to power of d */
+	void lDiv(const CMatrix& m); // Mina Magdy /* multiply of inverse(A)*B and is called left div */
+	void dotLDiv(const CMatrix& m); // Mina Magdy /* Element by element multiply of inverse of *this and m */
+	friend CMatrix sin(const CMatrix& m); // Mina Magdy /* Get sin for each element */
+	friend CMatrix cos(const CMatrix& m); // Mina Magdy /* Get cos for each element */
+	friend CMatrix tan(const CMatrix& m); // Mina Magdy /* Get tan for each element */
+	friend CMatrix asin(const CMatrix& m); // Mina Magdy /* Get sin-1 for each element */
+	friend CMatrix acos(const CMatrix& m); // Mina Magdy /* Get cos-1 for each element*/
+	friend CMatrix atan(const CMatrix& m); // Mina Magdy /* Get tan-1 for each element */
+	friend CMatrix exp(const CMatrix& m); // Mina Magdy /* Get expontial of each element */
+	friend CMatrix log(const CMatrix& m); // Mina Magdy /* Get the ln of each element */
+	friend CMatrix log10(const CMatrix& m); // Mina Magdy /* Get the log to base 10 of each element */
+
+
 };
 #endif
