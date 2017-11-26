@@ -12,7 +12,7 @@
 * [x] Complex multiplication and division.
 * [x] Complex logarithmic and exponential functions.
 * [x] Complex powers.
-* [x] Complex trigonometric and hyperbolic functions and their inverse.
+* [x] Complex trigonometric, hyperbolic functions and their inverse.
 * [ ] Error Handling.
 
 ## Getting Started
