@@ -584,3 +584,97 @@ CMatrix CMatrix::operator/(CMatrix& m)
 	r /= m;
 	return r;
 }
+void CMatrix::operator\ (CMatrix&m)
+{
+		CMatrix r =*this;
+		r/=m;
+		r=1/r;
+		return r ;
+}
+void CMatrix::operator\=(CMatric&m)
+{
+	div(m);
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			values[iR][iC] = 1/values[iR][iC];
+
+}
+
+void CMatrix::operator==(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]== m.values[iR][iC])? 1:0;
+}
+void CMatrix::operator!=(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]== m.values[iR][iC])? 0:1;
+}
+
+void CMatrix::operator> (CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]> m.values[iR][iC])? 1:0;
+
+}
+void CMatrix::operator< (CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]< m.values[iR][iC])? 1:0;
+
+}
+void CMatrix::operator>=(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]>= m.values[iR][iC])? 1:0;
+
+}
+void CMatrix::operator<=(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]<= m.values[iR][iC])? 1:0;
+
+}
+
+void CMatrix::operator& (CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] = values[iR][iC] & m.values[iR][iC];
+}
+void CMatrix::operator| (CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] = values[iR][iC] | m.values[iR][iC];
+}
