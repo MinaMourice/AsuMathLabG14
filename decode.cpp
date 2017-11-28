@@ -9,86 +9,96 @@ void defMat(string s, string varNames[100], string varContent[100], string outTo
 
 void doOperatrion(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize)
 {
-	//define our differnt operations types
-	string FirstLevelOperators[2]={"'","!"};
-	string SecondLevelOperators[1]={"^"};
-	string ThirdLevelOperators[4] = {"*",".*","/","./"};
-	string FourthLevelOperators[4]={"+","-",".+",".-"};
-	//trigonometric and exponential functions
-	string functions[13]={"sin(","cos(","tan(","atan(","asin(","acos(","sinh(","cosh(","tanh","exp(","log(","log10(","sqrt("};
 	string tempstr;
-	int cursor=0;
-	//int trigonometricIndex =0 ;
-	do
+	//removing spaces
+	for(int string_index=0 ; string_index < s.length() ; string_index++)
 	{
-		int functionExist = 0;
-		for(int i=0 ; i<13 ; i++)
-		{
-			if(s.find(functions[i]) != string::npos) 
-			{
-				cursor=s.find(functions[i]);
-				tempstr=solve((s.substr(s.find(functions[i]),s.find_first_of(")" ,cursor)-s.find(functions[i])+1)),&varNames[100], &varContent[100], variablesNo);
-				s.replace(s.find(functions[i]),s.find_first_of(")" ,cursor)-s.find(functions[i])+1,tempstr);
-				functionExist=1;
-			}
-		}
-		if(functionExist==0) break;
-	} while(1);
-	//do opertions between braces (.....)
-	do
+		if(s[string_index]== ' ') s.replace(string_index , s.length()-string_index ,s.substr(string_index+1,s.length()-string_index-1));
+	}
+	// sperating it to 2 arrays , Parameters array and operators array
+	string parameters[100] , operations[100] ;
+	string operators = "=+-*/.^'!()";
+	int stack_index=0;
+	for(int string_index =0 ; string_index<s.length() ; string_index++)
 	{
-		if(s.find("(") != string::npos)    // this line might can be removed 
+		if(s[string_index] == ' ') continue;
+		//parameters[stack_index]="";  operations[stack_index]=""; //initialinzing the values of stack elements
+		bool operator_exist=false;
+		bool nextoperator_exist= false;
+		bool nextisdigit = false ;
+		if(s[string_index] == '.') {if(isdigit(s[string_index+1])==1) nextisdigit= true ; }
+		for(int checking_index=0 ; checking_index<operators.length();checking_index++)
 		{
-			cursor=s.find("(");
-			tempstr=s.substr(s.find("(")+1 , s.find_first_of(")" , cursor) - s.find("(")-1);   // take a string like --> a+b*6-c^9 
-			doOperatrion(tempstr,&varNames[100],&varContent[100], &outToFile[100] ,variablesNo,outFileSize);
-			s.replace(s.find("("),s.find_first_of(")" ,cursor)-s.find("(")+1,tempstr);
+			if(s[string_index]==operators[checking_index]) operator_exist=true;
+			if(s[string_index+1]==operators[checking_index]) nextoperator_exist=true;
 		}
-	} while (s.find("(") != string::npos); //we replaced all braces from s by its value
-	
-	//do level 1 operations "'","!"
-	
-	do
-	{
-		int spacecursor ;
-		int level1flag=0;
-		for(int i=0 ; i<2 ; i++)
-		{
-			if(s.find(FirstLevelOperators[i]) != string::npos) 
-			{
-				cursor=s.find(FirstLevelOperators[i]);
-				spacecursor=s.find_last_of(" ",cursor);
-				if(spacecursor==cursor-1) spacecursor=s.find_last_of(" ",spacecursor-1);
-				tempstr=solve((s.substr(spacecursor+1,cursor-spacecursor)),&varNames[100], &varContent[100], variablesNo);
-				s.replace(spacecursor+1,cursor-spacecursor,tempstr);
-				level1flag=1;
-			}
-		}
-		if(level1flag==0) break;
-	} while(1);
 
-	//do level 2 opeations
-	do
-	{
-		int spacecursorBefore , spacecursorAfter;
-		int level2flag=0;
-		for(int i=0 ; i<1 ; i++)
+		if(operator_exist==true)
+		{ 
+			if(s[string_index] == '.') parameters[stack_index].insert(parameters[stack_index].end() , s[string_index]);
+			else operations[stack_index].insert(operations[stack_index].end() , s[string_index]);
+			if(s[string_index]!='.'||s[string_index]=='!'||s[string_index]==operators[7]) stack_index++; 
+		}
+		else
 		{
-			if(s.find(SecondLevelOperators[i]) != string::npos) 
+			parameters[stack_index].insert(parameters[stack_index].end() , s[string_index]);
+			if(nextoperator_exist==true && nextisdigit==false && s[string_index] != '.'&& s[string_index+1] != '.' ) stack_index++;
+		}
+	}
+	//solve factorial or transpose operations
+	for (int index=0 ; index<stack_index ; index++)
+	{
+		if(operations[index]=="!"||operations[index]=="'") 
+		{
+			tempstr=solve(parameters[index-1]+operations[index],&varNames[100], &varContent[100], variablesNo);
+			//tempstr= parameters[index-1]+operations[index];
+			//cout<<tempstr<<endl;
+			parameters[index-1]=tempstr;
+			operations[index]="";
+			//cout<<"----->"<<operations[index]<<endl;
+			//remove the empty elements in the stack
+			for(int WBindex=index ; WBindex<stack_index;WBindex++)
 			{
-				cursor=s.find(SecondLevelOperators[i]);
-				spacecursorBefore=s.find_last_of(" ",cursor);
-				if(spacecursorBefore==cursor-1) spacecursorBefore=s.find_last_of(" ",spacecursorBefore-1);
-				spacecursorAfter=s.find_first_of(" ",cursor);
-				if(spacecursorAfter==cursor-1) spacecursorAfter=s.find_first_of(" ",spacecursorAfter-1);
-				tempstr=solve((s.substr(spacecursorBefore+1,spacecursorAfter-spacecursorBefore)),&varNames[100], &varContent[100], variablesNo);
-				s.replace(spacecursorBefore+1,spacecursorAfter-spacecursorBefore,tempstr);
-				level2flag=1;
+				operations[WBindex]=operations[WBindex+1];
+				parameters[WBindex]=parameters[WBindex+1];
+			}
+			stack_index--;
+		}
+	}
+
+	//slove braces
+	// if we find "(" @ index and index+2=")" then this might be sins ,cos ,.. etc 
+	for (int index=0 ; index<stack_index ; index++)
+	{
+		if(operations[index]=="(" && operations[index+2]==")") 
+		{
+			tempstr=solve(parameters[index-1]+operations[index]+parameters[index+1]+operations[index+2],&varNames[100], &varContent[100], variablesNo);
+			//tempstr=parameters[index-1]+operations[index]+parameters[index+1]+operations[index+2];
+			//cout<<tempstr<<endl;
+			parameters[index-1]=tempstr;
+			operations[index]="";
+			parameters[index+1]="";
+			operations[index+2]="";
+			for(int WBindex=index ; WBindex<stack_index;WBindex++)
+			{
+				operations[WBindex]=operations[WBindex+3];
+				parameters[WBindex]=parameters[WBindex+3];
+			}
+			stack_index--;
+		}
+		else if (operations[index]=="("&&(operations[index]=="*"||operations[index]=="/"))
+		{
+			for(int closingBraceIndex=index ; closingBraceIndex<stack_index ; closingBraceIndex++)
+			{
+				if(operations[closingBraceIndex]==")")
+				{
+				
+					
+
+				}
 			}
 		}
-		if(level2flag==0) break;
-	} while(1);
-
+	}
 	
 
 } // Peter /* Will take a string input like A = 3 * sin(0.2) + d (9 + b * exp(3)) where d and b might be matrices*/
