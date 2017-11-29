@@ -1,7 +1,5 @@
 CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , int& variablesNo, int& outFileSize)  // Verina /* Takes a string as input and returns a matrix output, Input may contain previous predefined variables and/or normal numbers */
-
-
-	{
+     	{
 		string operand1 , operand2 ; 
 
 		int place = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") ;
@@ -31,8 +29,8 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 						size_t const findDouble = s.find_first_of("0123456789");
 						if (findDouble != std::string::npos)
 						{
-							size_t const m = s.find_first_not_of("0123456789", n);
-							valueOfOperand2 = stod ( s.substr(n, m != std::string::npos ? m-n : m) );
+							size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
+							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 						}
 
 						int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,place-3) ) );
@@ -49,16 +47,16 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 		{
 				if (findDouble != std::string::npos)
 		         {
-					size_t const m = s.find_first_not_of("0123456789", n);
+					size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
 					if(findDouble<place)
 						{
-							valueOfOperand1 = stod ( s.substr(n, m != std::string::npos ? m-n : m) );
+							valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(place+2,s.length()) ) );
 				            valueOfOperand2 = stod (varContent[operand2index]);
 					    }
 					else
 						{
-							valueOfOperand2 = stod ( s.substr(n, m != std::string::npos ? m-n : m) );
+							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,place) ) ); 
 				            valueOfOperand1 = stod (varContent[operand1index]);
 					    }
@@ -84,8 +82,8 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 						size_t const findDouble = s.find_first_of("0123456789");
 						if (findDouble != std::string::npos)
 						{
-							size_t const m = s.find_first_not_of("0123456789", n);
-							valueOfOperand2 = stod ( s.substr(n, m != std::string::npos ? m-n : m) );
+							size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
+							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 						}	
 					 return valueOfOperand1 .pow (valueOfOperand2) ;
 
@@ -100,16 +98,16 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
              {
 				if (findDouble != std::string::npos)
 				{
-					size_t const m = s.find_first_not_of("0123456789", n);
+					size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
 					if(n<place)
 						{
-							valueOfOperand1 = stod ( s.substr(n, m != std::string::npos ? m-n : m) );
+							valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(place+1,s.length()) ) );
 				            valueOfOperand2 = stod (varContent[operand2index]);
 					    }
 					else
 						{
-							valueOfOperand2 = stod ( s.substr(n, m != std::string::npos ? m-n : m) );
+							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,place) ) ); 
 				            valueOfOperand1 = stod (varContent[operand1index]);
 					    }
@@ -144,3 +142,6 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 
 }
 
+	
+		   
+ 
