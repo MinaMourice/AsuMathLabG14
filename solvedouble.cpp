@@ -1,18 +1,15 @@
-#include "cmatrix.h"
-#include <cmath>
 #include <iostream>
 #include <math.h>
 #include <string> 
 #include <stdlib.h>
 using namespace std;
 
-double solveDouble(string s, string varNames[100], string varContent[100] , int& variablesNo) //  Marina /* Takes a string as input and returns a double output, Input may contain previous predefined variables and/or normal numbers */
+double solveDouble(string s, string varNames[100], string varContent[100] , int& variablesNo)
 {
-	
-int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") ;
-	
-	if (s.at(placeofspecial)=='(')
-	{//sin
+	int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_.") ;
+	if(s.at(placeofspecial)=='(')
+	{
+		//sin
 		string only1operandfromvarnames = s.substr(placeofspecial+1,s.find(')')-placeofspecial-1);
 
 		int only1operandindex =-1;
@@ -38,11 +35,23 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
           	 {return cos(only1operandtodouble);}
 			   else  if (TRIG == "tan")
 	         {return tan(only1operandtodouble);}
+			   else if (TRIG == "sec")
+			 {return 1/cos(only1operandtodouble);}
+			   else if (TRIG == "csc")
+			 {return 1/sin(only1operandtodouble);}
+			   else if (TRIG == "cot")
+		     {return 1/tan(only1operandtodouble);}
 			   else if (TRIG == "asin") 
 	         {return asin(only1operandtodouble);}
 			   else if (TRIG == "acos")  
 	         {return acos(only1operandtodouble);}
                else if (TRIG == "atan")  
+	         {return atan(only1operandtodouble);}
+			   else if (TRIG == "asec")  
+			 {return acos(only1operandtodouble);}
+			   else if (TRIG == "acsc")  
+	         {return asin(only1operandtodouble);}
+			   else if (TRIG == "acot")  
 	         {return atan(only1operandtodouble);}
 			   else if (TRIG == "sinh")
 			 {return sinh(only1operandtodouble);}
@@ -60,10 +69,9 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 	         {return sqrt(only1operandtodouble);}
 	           else if (TRIG == "abs")
 	         {return abs(only1operandtodouble);} 
+		}
 
-			}
-
-			else 
+		else 
 				
 			{
 				//only one as number 
@@ -76,11 +84,23 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 	         {return cos(only1operandasnumbertodouble);}
 	           else if (TRIG == "tan")
 	         {return tan(only1operandasnumbertodouble);}
+			    else if (TRIG == "sec")
+			 {return 1/cos(only1operandasnumbertodouble);}
+			    else if (TRIG == "csc")
+			 {return 1/sin(only1operandasnumbertodouble);}
+				else if (TRIG == "cot")
+		     {return 1/tan(only1operandasnumbertodouble);}
 	           else if (TRIG == "asin")
 	         {return asin(only1operandasnumbertodouble);}
                else if (TRIG == "acos")
 	         {return acos(only1operandasnumbertodouble);}
                else if (TRIG == "atan") 
+	         {return atan(only1operandasnumbertodouble);}
+			   else if (TRIG == "asec")  
+			 {return acos(only1operandasnumbertodouble);}
+			   else if (TRIG == "acsc")  
+	         {return asin(only1operandasnumbertodouble);}
+			   else if (TRIG == "acot")  
 	         {return atan(only1operandasnumbertodouble);}
 			   else if (TRIG == "sinh")
 			 {return sinh(only1operandasnumbertodouble);}
@@ -99,38 +119,87 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 	           else if (TRIG == "abs")
 	         {return abs(only1operandasnumbertodouble);}
 			}
-			}
-	
-	
-	else{
-	//plus
-		//if the operation between two variables 
-				string checkvariable1invariablenames = s.substr(0,placeofspecial);
+	}
+	else
+	{
+		//plus
+		if (placeofspecial==0)
+		{
+			//-2+3
+					int placeofspecial2  = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_.",1) ;
+				    string operand1asnumber1= s.substr(0,placeofspecial2) ;
+	                double operand1asnumbertodouble1 = atof(operand1asnumber1.c_str());
+	                string operand2asnumber2= s.substr(placeofspecial2+1,s.length()) ;
+	                double operand2asnumbertodouble2 = atof(operand2asnumber2.c_str());
+		            string checkvariable2invariablenames = operand2asnumber2;
+
+			        int operand2index =-1;
+	          	    for(int i=0;i<variablesNo;i++)
+		              {
+		                if(checkvariable2invariablenames==varNames[i])
+			              {
+				            operand2index =i;
+			              }
+		              }
+
+				if(operand2index==-1)
+				 //  cout << operand2asnumbertodouble2 << endl <<operand1asnumbertodouble1 << endl ;
+					 //-2+3
+					 {
+						 if (s.at(placeofspecial2)=='+')
+				    {return operand1asnumbertodouble1 + operand2asnumbertodouble2;}
+					     if (s.at(placeofspecial2)=='-')
+	                {return operand1asnumbertodouble1 - operand2asnumbertodouble2;}
+					     if (s.at(placeofspecial2)=='*')
+					{return operand1asnumbertodouble1 * operand2asnumbertodouble2;}
+					     if (s.at(placeofspecial2)=='/')
+				    {return operand1asnumbertodouble1 / operand2asnumbertodouble2;}
+						 if (s.at(placeofspecial2)=='^')
+				    {return pow( operand1asnumbertodouble1 , operand2asnumbertodouble2);}
+				     }
+				else if(operand2index!=-1)
+				   {
+					//-2+B
+					string operand2content=varContent[operand2index] ;
+	                double contentofoperand2inDouble = atof(operand2content.c_str());
+				      
+						  if (s.at(placeofspecial2)=='+')
+					  {return operand1asnumbertodouble1 + contentofoperand2inDouble;}
+						  if (s.at(placeofspecial2)=='-')
+					  {return operand1asnumbertodouble1 - contentofoperand2inDouble;}
+						  if (s.at(placeofspecial2)=='*')
+					  {return operand1asnumbertodouble1 * contentofoperand2inDouble;}
+						  if (s.at(placeofspecial2)=='/')
+					  {return operand1asnumbertodouble1 / contentofoperand2inDouble;}
+						  if (s.at(placeofspecial2)=='^')
+					  {return pow( operand1asnumbertodouble1 , contentofoperand2inDouble);}
+				    }	
+		     }
+		else
+		{
+			    string checkvariable1invariablenames = s.substr(0,placeofspecial);
 		        string checkvariable2invariablenames = s.substr(placeofspecial+1,s.length());
 
 				int operand1index =-1;
 			    int operand2index =-1;
-		for(int i=0;i<variablesNo;i++)
-		{
-			if(checkvariable1invariablenames==varNames[i])
-			{
-				operand1index =i;
-			}
-		    if(checkvariable2invariablenames==varNames[i])
-			{
-				operand2index =i;
-			}
-		}
-
-		
-
+		     for(int i=0;i<variablesNo;i++)
+		        {
+			       if(checkvariable1invariablenames==varNames[i])
+			        {
+				        operand1index =i;
+			         }
+		          if(checkvariable2invariablenames==varNames[i])
+			         {
+				        operand2index =i;
+			         }
+		        }
+			  //if the operation between two variables 
 		if( operand1index !=-1 && operand2index!=-1)
 		{
 				string operand1content=varContent[operand1index] ;
 	            double contentofoperand1inDouble = atof(operand1content.c_str());
 	            string operand2content=varContent[operand2index] ;
-	            double contentofoperand2inDouble = atof(operand2content.c_str());
-	
+	            double contentofoperand2inDouble = atof(operand2content.c_str());	
 	         if (s.at(placeofspecial)=='+')
 	      {return contentofoperand1inDouble + contentofoperand2inDouble;}
 	         else if(s.at(placeofspecial)=='-')
@@ -141,20 +210,34 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 	      {return contentofoperand1inDouble / contentofoperand2inDouble;}
 	         else if(s.at(placeofspecial)=='^')
 	      {return pow(contentofoperand1inDouble,contentofoperand2inDouble);}
-
 		}
+		 //B+2
+		else if(operand1index !=-1  &&  operand2index ==-1)
+		{
+			    string operand1content=varContent[operand1index] ;
+	            double contentofoperand1inDouble = atof(operand1content.c_str());
+				string operand2asnumber= s.substr(placeofspecial+1,s.length()) ;
+	            double operand2asnumbertodouble = atof(operand2asnumber.c_str());
 
-
+		    if (s.at(placeofspecial)=='+')
+	     {return contentofoperand1inDouble + operand2asnumbertodouble;}
+			if (s.at(placeofspecial)=='-')
+	     {return contentofoperand1inDouble - operand2asnumbertodouble;}
+			if (s.at(placeofspecial)=='*')
+	     {return contentofoperand1inDouble * operand2asnumbertodouble;}
+			if (s.at(placeofspecial)=='/')
+	     {return contentofoperand1inDouble / operand2asnumbertodouble;}
+			if (s.at(placeofspecial)=='^')
+	     {return pow(contentofoperand1inDouble,operand2asnumbertodouble);}
+		}
 
 		else if( operand1index ==-1 && operand2index==-1) 
 		{
 			//if the two inputs are numbers
-
 				string operand1asnumber= s.substr(0,placeofspecial) ;
 	            double operand1asnumbertodouble = atof(operand1asnumber.c_str());
 	            string operand2asnumber= s.substr(placeofspecial+1,s.length()) ;
 	            double operand2asnumbertodouble = atof(operand2asnumber.c_str());
-
 	        if (s.at(placeofspecial)=='+')
 	     {return operand1asnumbertodouble + operand2asnumbertodouble;}
 	        else if(s.at(placeofspecial)=='-')
@@ -166,6 +249,7 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 	        else if(s.at(placeofspecial)=='^')
 	     {return pow(operand1asnumbertodouble,operand2asnumbertodouble);}
 				}
+		//2+B
 		else if (operand1index ==-1  &&  operand2index !=-1)
 				{
 				string operand1asnumber= s.substr(0,placeofspecial) ;
@@ -183,28 +267,6 @@ int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 			if (s.at(placeofspecial)=='^')
 	     {return pow(operand1asnumbertodouble,contentofoperand2inDouble);}
 				}
-	   else if(operand1index !=-1  &&  operand2index ==-1)
-		{
-			    string operand1content=varContent[operand1index] ;
-	            double contentofoperand1inDouble = atof(operand1content.c_str());
-				string operand2asnumber= s.substr(placeofspecial+1,s.length()) ;
-	            double operand2asnumbertodouble = atof(operand2asnumber.c_str());
-
-		    if (s.at(placeofspecial)=='+')
-	     {return contentofoperand1inDouble + operand2asnumbertodouble;}
-			if (s.at(placeofspecial)=='-')
-	     {return contentofoperand1inDouble - operand2asnumbertodouble;}
-			if (s.at(placeofspecial)=='*')
-	     {return contentofoperand1inDouble * operand2asnumbertodouble;}
-			if (s.at(placeofspecial)=='/')
-	     {return contentofoperand1inDouble / operand2asnumbertodouble;}
-			if (s.at(placeofspecial)=='^')
-	     {return pow(contentofoperand1inDouble,operand2asnumbertodouble);}
-		
 		}
-
-
+		}
 	}
-
-}
-
