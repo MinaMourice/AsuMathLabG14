@@ -1,5 +1,5 @@
 CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , int& variablesNo, int& outFileSize)  // Verina /* Takes a string as input and returns a matrix output, Input may contain previous predefined variables and/or normal numbers */
-     	{
+	{
 		string operand1 , operand2 ;  
 
 		int placeOfOPerator = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") ;
@@ -33,7 +33,7 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 						if (findDouble != std::string::npos)
 						{
 							size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
-							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
+							double valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 						}
 
 						int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,placeOfOPerator-3) ) );
@@ -46,22 +46,22 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 						
 			else if(s[placeOfOPerator]==46)                      // .
 			{
-				size_t const findDouble = s.find_first_of("0123456789");  CMatrix valueOfOperand1 , valueOfOperand2 ;
+				size_t const findDouble = s.find_first_of("0123456789");  
 		{
 				if (findDouble != std::string::npos)
 		         {
 					size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
 					if(findDouble<placeOfOPerator)
 						{
-							valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
+							double valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(placeOfOPerator+2,s.length()) ) );
-				            valueOfOperand2 = CMatrix (varContent[operand2index]);
+				            CMatrix valueOfOperand2 = CMatrix (varContent[operand2index]);
 					    }
 					else
 						{
-							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
+							double valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,placeOfOPerator) ) ); 
-				            valueOfOperand1 = CMatrix (varContent[operand1index]);
+				            CMatrix valueOfOperand1 = CMatrix (varContent[operand1index]);
 					    }
 
 				}
@@ -69,10 +69,10 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 				else 
 				{
 					int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,placeOfOPerator) ) ); 
-				    valueOfOperand1 = CMatrix (varContent[operand1index]);					
+				    CMatrix valueOfOperand1 = CMatrix (varContent[operand1index]);					
 				
 					int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(placeOfOPerator+2,s.length()) ) );
-				    valueOfOperand2 = CMatrix (varContent[operand2index]);
+				    CMatrix valueOfOperand2 = CMatrix (varContent[operand2index]);
 				}
      	}
 				
@@ -86,7 +86,7 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 						if (findDouble != std::string::npos)
 						{
 							size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
-							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
+							double valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 						}	
 					 return valueOfOperand1 .pow (valueOfOperand2) ;
 
@@ -97,22 +97,22 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 			
 			else if(s[placeOfOPerator]==43 || s[placeOfOPerator]==45 || s[placeOfOPerator]==42 || s[placeOfOPerator]==47 || s[placeOfOPerator]==92 || s[placeOfOPerator]==38 || s[placeOfOPerator]==124)
 			{
-				size_t const findDouble = s.find_first_of("0123456789");  CMatrix valueOfOperand1 , valueOfOperand2 ;
+				size_t const findDouble = s.find_first_of("0123456789");  
              {
 				if (findDouble != std::string::npos)
 				{
 					size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
 					if(findDouble<placeOfOPerator)
 						{
-							valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
+							double valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(placeOfOPerator+1,s.length()) ) );
-				            valueOfOperand2 = CMatrix (varContent[operand2index]);
+				            CMatrix valueOfOperand2 = CMatrix (varContent[operand2index]);
 					    }
 					else
 						{
-							valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
+							double valueOfOperand2 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,placeOfOPerator) ) ); 
-				            valueOfOperand1 = CMatrix (varContent[operand1index]);
+				            CMatrix valueOfOperand1 = CMatrix (varContent[operand1index]);
 					    }
 
 				}
@@ -120,10 +120,10 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 				else 
 				{
 					int operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,placeOfOPerator) ) ); 
-				    valueOfOperand1 = CMatrix (varContent[operand1index]);					
+				    CMatrix valueOfOperand1 = CMatrix (varContent[operand1index]);					
 				
 					int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(placeOfOPerator+1,s.length()) ) );
-				    valueOfOperand2 = CMatrix (varContent[operand2index]);
+				    CMatrix valueOfOperand2 = CMatrix (varContent[operand2index]);
 				}
 			}
 
