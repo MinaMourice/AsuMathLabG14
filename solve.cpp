@@ -99,7 +99,7 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 				if (findDouble != std::string::npos)
 				{
 					size_t const endDouble = s.find_first_not_of("0123456789", findDouble);
-					if(n<place)
+					if(findDouble<place)
 						{
 							valueOfOperand1 = stod ( s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble) );
 							int operand2index = distance( varNames, find( varNames , varNames + 100 , s.substr(place+1,s.length()) ) );
