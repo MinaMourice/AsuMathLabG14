@@ -1,17 +1,107 @@
-#include "cmatrix.h"
+#include "stdafx.h"
+#include "decode.h"
 #include "solve.h"
+#include "cmatrix.h"
+#include <iostream>
+#include <sstream>
+using namespace std;
+void print(string s, string varNames[100], string varContent[100], int& variableNo) {
+	for (int index = 0; index < variableNo; index++) {
+		if (varNames[index] == s) {
+			cout << varNames[index] << "=" << varContent[index]<<endl;
+			return;
+		}
+	}
+	cout << s << " is not defined"<< endl;
+}
+void decode(string info, string varNames[100], string varContent[100], int& variableNo) {
+	int defMatFlag = 0;
+	for (int charIndex = 0; charIndex < info.length(); charIndex++) {
+		if (info[charIndex] == '[') {
+			defMatFlag = 1;
+			defMat(info, varNames, varContent, variableNo);
+			//cout << "send: " << info << "to defMat" << endl;
+			break;
+		}
+	}
+	if (defMatFlag == 0) {
+		if (info.find("rand") != string::npos || info.find("eye") != string::npos || info.find("ones") != string::npos || info.find("zeros") != string::npos) {
+			defSpecialMat(info, varNames, varContent, variableNo);
+			//cout << "send: " << info << "to defSpecialMat" << endl;
+		}
+		else if (info.find('=') != string::npos) {
+			doOperation(info, varNames, varContent, variableNo);
+			//cout << "send: " << info << "to doOperation" << endl;
+		}
+		else {
+			print(info, varNames, varContent, variableNo);
+		}
+	}
+}
+void defSpecialMat(string s, string varNames[100], string varContent[100], int& variablesNo) {
+	int NR; int NC; int x = 0; int h = 0; int initialization; string str;
+	int len = s.length();
+	// for removing any spaces in string s
+	for (int i = 0; i<len; i++)
+	{
+		if (s[i] == ' ')
+		{
+			for (int j = i; j<len; j++)
+			{
+				s[j] = s[j + 1];
+			}
+			len--;
+		}
+	}
+	int i = s.find('=');
+		str = s.substr(0, i);
+	int j = s.find('(');
+	string initial = s.substr(i + 1, j - 2);
+	NR = atoi(s.substr(j + 1, s.find(',') - 1).c_str());
+	NC = atoi(s.substr(s.find(',') + 1, s.find(')') - 1).c_str());
 
+	if (initial[0] == 'Z' || initial[0] == 'z') initialization = 0;
+	else if (initial[0] == 'O' || initial[0] == 'o') initialization = 1;
+	else if (initial[0] == 'E' || initial[0] == 'e')
+	{
+		if (NR != NC)
+		{
+			throw ("Invalid Matrix Dimension");
+		}
+		else initialization = 2;
+	}
+	else if (initial[0] == 'R' || initial[0] == 'r') initialization = 3;
+	else initialization = 4;
 
-void defSpecialMat(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize) {} // Hanaa /* Define special matrices like B = rand(2, 3), C = eye(2, 4), d = F = ones(2, 3) and g = zeros(5, 4) */
+	for (int k = 0; k<variablesNo; k++)
+	{
+		if (str == varNames[k])
+		{
+			CMatrix content(NR, NC, initialization, 0.0);
+			varContent[k] = content.getOriginalString();
+			h = 1;
+			break;
+		}
+
+	}
+	if (h == 0) {
+		varNames[variablesNo] = str;
+		CMatrix content(NR, NC, initialization, 0.0);
+		varContent[variablesNo] = content.getOriginalString();
+		variablesNo++;
+	}
+
+	std::size_t found1 = s.find(';');
+	if (found1 != std::string::npos)
+	{
+		x = 1;
+	}
+	if (x == 0)
+	{
+		print(str, varNames, varContent, variablesNo);
+	}
 
 	
-void defMat(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize)
-{
 
+}
 
-} // Mina Mouries /* Define matrices that contain variables like b = [1; 2] a = [5] A = a = [1 3 4 5 a sin(0.4); 3 2 3 4 [9 2]; [2 3 4 2 1; 2 3 4 5 6], b] i.e: any matrix other than special matrices defined above*/
-void doOperatrion(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize) {} // Peter /* Will take a string input like A = 3 * sin(0.2) + d (9 + b * exp(3)) where d and b might be matrices*/
-
-void printToFile(string file, string outToFile[100] , int& outFileSize) {} // Beshoy /* Takes the file name as input and prints all the data in it */
-
-void decode(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize) {} // Beshoy /* Takes line by line from main function and determine how to work on each line */
