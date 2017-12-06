@@ -19,6 +19,7 @@ CMatrix diagPow(const CMatrix& mat, const double& d) {
 	return CMatrix("[]");
 }
 
+//Jacobi
 bool issymmetric(const CMatrix& mat) {
 	bool matSymmetric = true;
 	for (int iR = 1; iR < mat.nR && matSymmetric; iR++)
@@ -178,4 +179,65 @@ CMatrix symmPow(const CMatrix& mat, const double& d) {
 	delete[] eigenValues;
 	//return mat.dotPow(d);
 	return CMatrix("[]");
+}
+
+// QR-decomposition
+CMatrix CMatrix::subColumn(const int& C) {
+    CMatrix column(nR, 1);
+    for (int iR = 0; iR < nR; iR++)
+        column.values[iR][0] = values[iR][C];
+    
+    return column;
+}
+double innerProd(const CMatrix& mat1, const CMatrix& mat2) {
+    double ans = 0.0;
+
+    for (int iR = 0; iR < nR; iR++)
+        for (int iC = 0; iC < nC; iC++)
+            ans += column.values[iR][iC] * values[iR][iC];
+    
+    return ans;
+}
+double columnLength(const CMatrix& mat) {
+    double ans = 0.0;
+    
+    for (int iR = 0; iR < nR; iR++)
+        ans += mat.values[iR][0] * mat.values[iR][0];
+    
+    return sqrt(ans);
+}
+
+void qrDecomp(const CMatrix& mat, CMatrix& q, CMatrix r) {
+
+    // Calculating q
+    for (int iC = 0, iC < nC, iC++) {
+        CMatrix column = subColumn(iC);
+        if (iC > 0) {
+            for (int i = iC - 1; i >= 0; i--) {
+                CMatrix tempMat = q.subColumn(i);
+                column = column - (innerProd(column, tempMat)/innerProd(tempMat, tempMat)) * tempMat;
+            }
+        }
+        double length = columnLength(column);
+        for (int iR = 0; iR < nR; iR++)
+            q.values[iR][iC] = column.values[iR][iC] / length;
+    }
+
+    r = mat.getInverse() * q;
+}
+
+CMatrix generalPower(const CMatrix& eigenVectors, const double eigenValues[], const double d) {
+
+    CMatrix eigenDiagMat(eigenVectors.nR, eigenVectors.nC);
+    for (int i = 0; i < eigenVectors.nR; i++)
+        eigenDiagMat[i][i] = eigenValues[i];
+
+    CMatrix tempMat = diagPow(eigenDiagMat, d);
+    tempMat = eigenVectors * tempMat * eigenVectors.getInverse();
+
+    return tempMat;
+}
+
+CMatrix getEigenVectors(const CMatrix& mat, const double eigenValues[]) {
+    
 }
