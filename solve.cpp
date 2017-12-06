@@ -4,8 +4,6 @@
 
 using namespace std;
 
-// Hanaa 
-/* Takes a string as input and returns a string output, Input may contain previous predefined variables and/or normal numbers */
 string solve(string s, string varNames[100], string varContent[100], int& variablesNo) {
 	int  counter1 = 0;
 	string operation[21] = { "+","-","*","/","+=","-=","*=","/=","\\","\\=","&","|","~",".*","./",".\\",".^",".*=","./=",".^=",".\\=" };
@@ -81,8 +79,7 @@ string solve(string s, string varNames[100], string varContent[100], int& variab
 
 
 }
-  //  Marina
-  /* Takes a string as input and returns a double output, Input may contain previous predefined variables and/or normal numbers */
+ 
 double solveDouble(string s, string varNames[100], string varContent[100], int& variablesNo) 
 {
 
