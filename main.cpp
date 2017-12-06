@@ -58,7 +58,7 @@ int main(int argc,char* argv[])
 				cout << ">>";
 			}
 		}
-		/*cout << "no=" << variableNo<<endl;
+		/*cout << "no =" << variableNo<<endl;
 		for (int i = 0; i < variableNo; i++)
 			cout<<varNames[i] << "=" <<varContent[i]<<endl;*/
 		
