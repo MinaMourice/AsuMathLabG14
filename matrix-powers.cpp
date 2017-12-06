@@ -1,6 +1,47 @@
-#include "stdafx.h"
 #include "cmatrix.h"
 # include <iostream>
+
+void CMatrix::pow(double& d) {
+    if (nC != nR) throw("for A^b, A must be a square matrix. Use .^ for elementwise power.");
+
+    if (d < 0.0) this.copy((this.getInverse()).posPower(d)));
+    else if (d > 0.0) this.copy(this.posPower(d));
+    else this.copy(CMatrix(nR, nC, 2));
+}
+bool equal(CMatrix m) {
+    if (nR != m.nR || nC != m.nC) return false;
+    for (int iR = 0;  iR < nR; iR++)
+        for (int iC = 0;  iC < nC; iC++)
+            if (values[iR][iC] != m.values[iR][iC]) return false;
+    return true;
+}
+#define ITERATIONS 10000
+CMatrix CMatrix::posPower(double& d) {
+    if (d == double(int(d))) { // Case1 => power is an int number;
+        CMatrix tempMat = this;
+        for (int i = 1; i < d; i++) tempMat = tempMat * this;
+        return tempMat;
+    }
+    if (isdiagonal(this)) return diagPow(this, d); // Case2 => Diagonal matrix
+    else if (issymmetric(this)) return symmPow(this, d); // Case3 => Symmetric matrix
+    else {
+        CMatrix tempMat = this;
+        CMatrix q(nR, nC);
+        CMatrix r(nR, nC);
+        for (int i = 0; i < ITERATIONS; i++) {
+            qrDecomp(tempMat, q, r)
+            tempMat = r * q;
+        }
+
+        double eigenValues[nR];
+        for (int i = 0, i < nR; i++)
+            eigenValues[i] = tempMat[i][i];
+
+        CMatrix eigenVectors = getEigenVectors(this, eigenValues);
+
+        return generalPower(eigenVectors, eigenValues[], d);
+    }
+}
 
 // Diagonal matrices powers
 bool isdiagonal(const CMatrix& mat) {
