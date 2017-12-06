@@ -568,3 +568,123 @@ CMatrix CMatrix::operator/(CMatrix& m)
 	r /= m;
 	return r;
 }
+CMatrix sin(const CMatrix& m) 
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = sin(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix cos(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = cos(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix tan(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = tan(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix csc(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = 1.0/sin(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix sec(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = 1.0/cos(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix cot(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = 1.0/tan(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix asin(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = asin(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix acos(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = acos(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix atan(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = atan(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix exp(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = exp(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix log(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = log(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix log10(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = log10(m.values[iR][iC]);
+	return M;
+
+}
