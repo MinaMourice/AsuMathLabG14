@@ -7,10 +7,12 @@ void defSpecialMat(string s, string varNames[100], string varContent[100], strin
 void defMat(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize) {} 
 // Mina Mouries /* Define matrices that contain variables like b = [1; 2] a = [5] A = a = [1 3 4 5 a sin(0.4); 3 2 3 4 [9 2]; [2 3 4 2 1; 2 3 4 5 6], b] i.e: any matrix other than special matrices defined above*/
 
-void doOperatrion(string s, string varNames[100], string varContent[100], string outToFile[100] , int& variablesNo, int& outFileSize)
+
+void doOperation(string& s, string varNames[100], string varContent[100] , int& variablesNo)
 {
 	string tempstr;
-	//removing spaces
+	//int cursor=0;
+	//removing all spaces from string
 	for(int string_index=0 ; string_index < s.length() ; string_index++)
 	{
 		if(s[string_index]== ' ') s.replace(string_index , s.length()-string_index ,s.substr(string_index+1,s.length()-string_index-1));
@@ -44,18 +46,17 @@ void doOperatrion(string s, string varNames[100], string varContent[100], string
 			parameters[stack_index].insert(parameters[stack_index].end() , s[string_index]);
 			if(nextoperator_exist==true && nextisdigit==false && s[string_index] != '.'&& s[string_index+1] != '.' ) stack_index++;
 		}
+
 	}
+
 	//solve factorial or transpose operations
 	for (int index=0 ; index<stack_index ; index++)
 	{
 		if(operations[index]=="!"||operations[index]=="'") 
 		{
 			tempstr=solve(parameters[index-1]+operations[index],&varNames[100], &varContent[100], variablesNo);
-			//tempstr= parameters[index-1]+operations[index];
-			//cout<<tempstr<<endl;
 			parameters[index-1]=tempstr;
 			operations[index]="";
-			//cout<<"----->"<<operations[index]<<endl;
 			//remove the empty elements in the stack
 			for(int WBindex=index ; WBindex<stack_index;WBindex++)
 			{
@@ -66,41 +67,198 @@ void doOperatrion(string s, string varNames[100], string varContent[100], string
 		}
 	}
 
-	//slove braces
-	// if we find "(" @ index and index+2=")" then this might be sins ,cos ,.. etc 
+	//slove arguments
+	// if we find "(" @ index and index+2=")" then it might be sins ,cos ,.. etc 
 	for (int index=0 ; index<stack_index ; index++)
 	{
 		if(operations[index]=="(" && operations[index+2]==")") 
 		{
 			tempstr=solve(parameters[index-1]+operations[index]+parameters[index+1]+operations[index+2],&varNames[100], &varContent[100], variablesNo);
-			//tempstr=parameters[index-1]+operations[index]+parameters[index+1]+operations[index+2];
-			//cout<<tempstr<<endl;
 			parameters[index-1]=tempstr;
 			operations[index]="";
 			parameters[index+1]="";
 			operations[index+2]="";
+			//remove the empty elements in the stack
 			for(int WBindex=index ; WBindex<stack_index;WBindex++)
 			{
 				operations[WBindex]=operations[WBindex+3];
 				parameters[WBindex]=parameters[WBindex+3];
 			}
-			stack_index--;
+			stack_index-=3;
+			index-=4;
 		}
-		else if (operations[index]=="("&&(operations[index]=="*"||operations[index]=="/"))
+	}
+	//solve arguments "(" do some operations")"
+	for (int index=stack_index ; index>0 ; index++) //index is the index of opening arguments
+	{
+		 if (operations[index]=="("/*&&(operations[index]=="*"||operations[index]=="/")*/)
 		{
-			for(int closingBraceIndex=index ; closingBraceIndex<stack_index ; closingBraceIndex++)
+			for(int closingArgumentIndex=index ; closingArgumentIndex<stack_index ; closingArgumentIndex++)
 			{
-				if(operations[closingBraceIndex]==")")
+				if(operations[closingArgumentIndex]==")")
 				{
-				
-					
+					//do power operation
+					for (int solveArgumentindex=0 ; index<stack_index ; index++)
+					{
+						if(operations[solveArgumentindex]=="^")
+						{
+							tempstr=solve(parameters[solveArgumentindex-1]+operations[solveArgumentindex]+parameters[solveArgumentindex+1],&varNames[100], &varContent[100], variablesNo);
+							parameters[solveArgumentindex-1]=tempstr;
+							operations[solveArgumentindex]="";
+							parameters[solveArgumentindex+1]="";
+							//remove the empty elements in the stack
+							for(int WBindex=solveArgumentindex ; WBindex<stack_index;WBindex++)
+							{
+								operations[WBindex]=operations[WBindex+2];
+								parameters[WBindex]=parameters[WBindex+2];
+							}
+							stack_index-=2;
+							closingArgumentIndex-=2;
+							solveArgumentindex-=3;
+						}
+					}
+					//do mul and div operation
+					for (int solveArgumentindex=0 ; solveArgumentindex<stack_index ; solveArgumentindex++)
+					{
+						if(operations[solveArgumentindex]=="*"||operations[solveArgumentindex]=="/"||operations[solveArgumentindex]==".*"||operations[solveArgumentindex]=="./")
+						{
+							tempstr=solve(parameters[solveArgumentindex-1]+operations[solveArgumentindex]+parameters[solveArgumentindex+1],&varNames[100], &varContent[100], variablesNo);
+							parameters[solveArgumentindex-1]=tempstr;
+							operations[solveArgumentindex]="";
+							parameters[solveArgumentindex+1]="";
+							//remove the empty elements in the stack
+							for(int WBindex=solveArgumentindex ; WBindex<stack_index;WBindex++)
+							{
+								operations[WBindex]=operations[WBindex+2];
+								parameters[WBindex]=parameters[WBindex+2];
+							}
+							stack_index-=2;
+							closingArgumentIndex-=2;
+							solveArgumentindex-=3;
+						}
+					}
+					//do add and sub operations
+					for (int solveArgumentindex=0 ; solveArgumentindex<stack_index ; solveArgumentindex++)
+					{
+						if(operations[solveArgumentindex]=="+"||operations[solveArgumentindex]=="-"||operations[solveArgumentindex]==".+"||operations[solveArgumentindex]==".-")
+						{
+							tempstr=solve(parameters[solveArgumentindex-1]+operations[solveArgumentindex]+parameters[solveArgumentindex+1],&varNames[100], &varContent[100], variablesNo);
+							parameters[solveArgumentindex-1]=tempstr;
+							operations[solveArgumentindex]="";
+							parameters[solveArgumentindex+1]="";
+							//remove the empty elements in the stack
+							for(int WBindex=solveArgumentindex ; WBindex<stack_index;WBindex++)
+							{
+								operations[WBindex]=operations[WBindex+2];
+								parameters[WBindex]=parameters[WBindex+2];
+							}
+							stack_index-=2;
+							closingArgumentIndex-=2;
+							solveArgumentindex-=3;
+						}
+					}
+					// testing for loop
+					/*tempstr="";
+					for (int testindex=1 ; testindex < closingArgumentIndex-index ; testindex++)
+					{
+						if(testindex%2==0) tempstr.insert(tempstr.length() , operations[index+testindex]);//BracesDoOpearation[0].insert(BracesDoOpearation[0].end() , parameters[index+testindex]);
+						else tempstr.insert(tempstr.length() , parameters[index+testindex]);
+					}
+					cout<<"parsing is"<<tempstr<<endl;*/
 
+					//replacing old by new data and remove unused elements from stack
+					parameters[index]=parameters[index+1];
+					for(int removeindex=0 ; removeindex < closingArgumentIndex-index ; removeindex++)
+					{
+						if(removeindex%2==0) operations[index+removeindex]="";
+						else parameters[index+removeindex]="";
+					}
+					//remove the empty elements in the stack
+					for(int WBindex=index+1 ; WBindex<stack_index;WBindex++)
+					{
+						operations[WBindex]=operations[WBindex+(closingArgumentIndex-index)];
+						parameters[WBindex]=parameters[WBindex+(closingArgumentIndex-index)];
+					}
+					stack_index-=(closingArgumentIndex-index);
+					index-=closingArgumentIndex-index;
+					break;
 				}
 			}
 		}
 	}
-	
 
+
+
+	//slove simple opeartions like * , / , ... etc
+	for (int index=0 ; index<stack_index ; index++)
+	{
+		if(operations[index]=="^")
+		{
+			tempstr=solve(parameters[index-1]+operations[index]+parameters[index+1],&varNames[100], &varContent[100], variablesNo);
+			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
+			parameters[index-1]=tempstr;
+			operations[index]="";
+			parameters[index+1]="";
+			//remove the empty elements in the stack
+			for(int WBindex=index ; WBindex<stack_index;WBindex++)
+			{
+				operations[WBindex]=operations[WBindex+2];
+				parameters[WBindex]=parameters[WBindex+2];
+			}
+			stack_index-=2;
+			index-=3;
+		}
+	}
+	for (int index=0 ; index<stack_index ; index++)
+	{
+		if(operations[index]=="*"||operations[index]=="/"||operations[index]==".*"||operations[index]=="./")
+		{
+			tempstr=solve(parameters[index-1]+operations[index]+parameters[index+1],&varNames[100], &varContent[100], variablesNo);
+			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
+			parameters[index-1]=tempstr;
+			operations[index]="";
+			parameters[index+1]="";
+			//remove the empty elements in the stack
+			for(int WBindex=index ; WBindex<stack_index;WBindex++)
+			{
+				operations[WBindex]=operations[WBindex+2];
+				parameters[WBindex]=parameters[WBindex+2];
+			}
+			stack_index-=2;
+			index-=3;
+		}
+	}
+	for (int index=0 ; index<stack_index ; index++)
+	{
+		if(operations[index]=="+"||operations[index]=="-"||operations[index]==".+"||operations[index]==".-")
+		{
+			tempstr=solve(parameters[index-1]+operations[index]+parameters[index+1],&varNames[100], &varContent[100], variablesNo);
+			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
+			parameters[index-1]=tempstr;
+			operations[index]="";
+			parameters[index+1]="";
+			//remove the empty elements in the stack
+			for(int WBindex=index ; WBindex<stack_index;WBindex++)
+			{
+				operations[WBindex]=operations[WBindex+2];
+				parameters[WBindex]=parameters[WBindex+2];
+			}
+			stack_index-=2;
+			index-=3;
+		}
+	}
+
+	if(stack_index==3&&operations[1]=="="&&parameters[0]=="temp")
+	{
+		s = parameters[0]+operations[1]+parameters[2];
+	}
+	else if(stack_index==3&&operations[1]=="="&&parameters[0]!="temp") 
+	{
+		varNames[variablesNo]=parameters[0];
+		varContent[variablesNo]=parameters[2];
+		variablesNo++;
+	}
+	else  s=parameters[0];
 } // Peter /* Will take a string input like A = 3 * sin(0.2) + d (9 + b * exp(3)) where d and b might be matrices*/
 
 void printToFile(string file, string outToFile[100] , int& outFileSize) {} 
