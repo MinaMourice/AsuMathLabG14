@@ -23,97 +23,97 @@ bool isFloat(string myString) {
 
 void defMat(string s)
 {
-	string varnames[100];
+	string varNames[100];
 	string varContent[100];
 	string array[100], text, token, replace, value;
-	size_t Equal_pos, found_var, found_par1,diff, found_par2, semi_colon,  semi_colon_2, semi_colon_no, colon, token2_pos, final_semi_colon;
+	size_t Equal_pos, found_var, found_par1, diff, found_par2, semi_colon, semi_colon_2, semi_colon_no, colon, token2_pos, final_semi_colon;
 	int flag = 0, c = 0, replaced_pos, Equal_no, variablesNo = 4;
 
-	varnames[0] = "c";
+	varNames[0] = "c";
 	varContent[0] = "[0.9998;1.9683;-555]";
-	varnames[1] = "ce";
+	varNames[1] = "ce";
 	varContent[1] = "[2.2 3.3;5.5 -7.89;9.65 x]";
-	varnames[2] = "x";
+	varNames[2] = "x";
 	varContent[2] = "5";
-	varnames[3] = "c1";
+	varNames[3] = "c1";
 	varContent[3] = "[2.2 3.3;5.5 -7.89;9.65 x]";
-	sort(varnames, varnames + variablesNo - 1);
+	sort(varNames, varNames + variablesNo - 1);
 	Equal_no = count(s.begin(), s.end(), '=');
 
 
-//	cout << "variablesNo :" << variablesNo << endl;
+	//	cout << "variablesNo :" << variablesNo << endl;
 	final_semi_colon = s.find_first_of(";", s.find_last_of("]"));
 	if (final_semi_colon != string::npos)s.erase(final_semi_colon, 1);
-	cout << s << endl;
+	//cout << s << endl;
 
 	// Replace The Variable in all matrix By it's Value
-	
-	for (int i = variablesNo; i>=0; i--)
+
+	for (int i = variablesNo; i >= 0; i--)
 	{
-		for (int count = variablesNo; count>=0; count--)
+		for (int count = variablesNo; count >= 0; count--)
 		{
-			found_var = varContent[i].find(varnames[count]);
+			found_var = varContent[i].find(varNames[count]);
 			//cout << found_var << endl;
 			while (found_var != string::npos)
 			{
 				//cout << "first 'var' found at: " << found_var << '\n';
-				varContent[i].replace(found_var, varnames[count].length(), varContent[count]);
+				varContent[i].replace(found_var, varNames[count].length(), varContent[count]);
 				//cout << varContent[i] << endl;
-				found_var = varContent[i].find(varnames[i], found_var + 1);
+				found_var = varContent[i].find(varNames[i], found_var + 1);
 			}
 		}
 	}
 	/*
 	for (int i = 0; i < variablesNo; i++)
 	{
-		istringstream iss4(varContent[i]);
-		cout << "start" << endl;
-		while (getline(iss4, token, ' '))
-		{
-			cout << token << endl;
-			if (!isFloat(token))
-			{
-				token2_pos = varContent[i].find(token);
-				for (int i = variablesNo; i >= 0; i--)
-				{
-					if (token.compare(varnames[i]) != 0)
-					{
-						value = varContent[i];
-						cout << value << endl;
-					}
-				}
-				varContent[i].replace(token2_pos, token.length(), value);
-			}
-		}
-		cout << "end" << endl;
+	istringstream iss4(varContent[i]);
+	cout << "start" << endl;
+	while (getline(iss4, token, ' '))
+	{
+	cout << token << endl;
+	if (!isFloat(token))
+	{
+	token2_pos = varContent[i].find(token);
+	for (int i = variablesNo; i >= 0; i--)
+	{
+	if (token.compare(varnames[i]) != 0)
+	{
+	value = varContent[i];
+	cout << value << endl;
+	}
+	}
+	varContent[i].replace(token2_pos, token.length(), value);
+	}
+	}
+	cout << "end" << endl;
 
 	}*/
 
 	// Replace The Variable in s By it's Value
 	for (int i = variablesNo; i >= 0; i--)
 	{
-		found_var = s.find(varnames[i]);
+		found_var = s.find(varNames[i]);
 		while (found_var != string::npos)
 		{
-			cout << "first 'var' found at: " << found_var << '\n';
-			s.replace(found_var, varnames[i].length(), varContent[i]);
-			found_var = s.find(varnames[i], found_var + 1);
+			//cout << "first 'var' found at: " << found_var << '\n';
+			s.replace(found_var, varNames[i].length(), varContent[i]);
+			found_var = s.find(varNames[i], found_var + 1);
 		}
 	}
-	cout << "first: " << s << endl;
+	//	cout << "first: " << s << endl;
 	//more than one variable have the same content a=b=...
 	for (int b = 0; b<Equal_no; b++)
 	{
 		Equal_pos = s.find_first_of('=');
-		varnames[variablesNo] = s.substr(0, Equal_pos);
+		varNames[variablesNo] = s.substr(0, Equal_pos);
 		s.erase(0, Equal_pos + 1);
 		variablesNo++;
-		string::iterator end_pos = remove(varnames[variablesNo].begin(), varnames[variablesNo].end(), ' ');
-		varnames[variablesNo].erase(end_pos, varnames[variablesNo].end());
-		cout << varnames[variablesNo];
+		string::iterator end_pos = remove(varNames[variablesNo].begin(), varNames[variablesNo].end(), ' ');
+		varNames[variablesNo].erase(end_pos, varNames[variablesNo].end());
+		//cout << varnames[variablesNo];
 	}
 
-	cout << s << endl;
+	//cout << s << endl;
 
 	// parsing '[' to ']'
 	if (s.find_first_of("[") != string::npos&&s.find_last_of("]") != string::npos)
@@ -121,23 +121,23 @@ void defMat(string s)
 		s.erase(s.find_first_of("["), 1);
 		s.erase(s.find_last_of("]"), 1);
 		istringstream iss3(s);
-		cout << "start" << endl;
+		//cout << "start" << endl;
 		/*while (getline(iss3, token, ' '))
 		{
-			cout << token << endl;
-			if (!isFloat(token))
-			{
-				token2_pos = s.find(token);
-				for (int i = variablesNo; i >= 0; i--)
-				{
-					if (token.compare(varnames[i]) != 0)
-					{
-						value = varContent[i];
-						cout << value << endl;
-					}
-				}
-				s.replace(token2_pos, token.length(), value);
-			}
+		cout << token << endl;
+		if (!isFloat(token))
+		{
+		token2_pos = s.find(token);
+		for (int i = variablesNo; i >= 0; i--)
+		{
+		if (token.compare(varnames[i]) != 0)
+		{
+		value = varContent[i];
+		cout << value << endl;
+		}
+		}
+		s.replace(token2_pos, token.length(), value);
+		}
 		}
 		cout << "end" << endl;*/
 		//cout << s << endl;
@@ -146,7 +146,7 @@ void defMat(string s)
 		found_par1 = s.find_first_of("[");
 		found_par2 = s.find_first_of("]");
 
-		cout << s << endl;
+		//cout << s << endl;
 		while (found_par1 != string::npos&& found_par2 != string::npos)
 		{
 
@@ -180,17 +180,17 @@ void defMat(string s)
 				//cout<<array[0]<<";"<<array[1]<<endl;
 
 
-				colon = s.find_first_of(",", found_par2,2);
+				colon = s.find_first_of(",", found_par2, 2);
 				semi_colon_2 = s.find_first_of(";", found_par2);
-			//	cout << "semi_colon_2 : " << semi_colon_2 << endl;
+				//	cout << "semi_colon_2 : " << semi_colon_2 << endl;
 				diff = colon - found_par2;
-			//	cout << "found_par2 : " << found_par2 << endl;
-			//	diff2 = semi_colon_2 - found_par2;
-			//	cout << "diff2 : " << diff2<< endl;
-				
+				//	cout << "found_par2 : " << found_par2 << endl;
+				//	diff2 = semi_colon_2 - found_par2;
+				//	cout << "diff2 : " << diff2<< endl;
+
 				//	cout<<diff<<endl;
 				//if  (diff>4 || diff<0) 
-				if(semi_colon_2>100)
+				if (semi_colon_2>100)
 				{
 					for (int i = 0; i<c; i++)
 					{
@@ -199,9 +199,9 @@ void defMat(string s)
 						else
 							replace += array[i];
 					}
-					cout<<"replace : "<<replace<<endl;
+					//cout<<"replace : "<<replace<<endl;
 					s.replace(replaced_pos, found_par2 - replaced_pos + 1, replace);//replace array
-																					cout<<s<<endl;
+																					//cout<<s<<endl;
 					replace.clear();
 					flag = 0;
 					//cout<<replaced_pos<<endl;
@@ -232,15 +232,16 @@ void defMat(string s)
 			istringstream iss2(token);
 			while (getline(iss2, token, ' '))
 			{
-				cout << token << endl;
+				//cout << token << endl;
 				if (!isFloat(token) && token.find_first_not_of(' ') != string::npos)
 				{
 					token2_pos = s.find(token);
-					s.replace(token2_pos, token.length(), "temp");
+					doOperation(token, varNames, varContent, variablesNo);
+					s.replace(token2_pos, token.length(), token);
 				}
 			}
 		}
-		cout << s << endl;
+		//cout << s << endl;
 		s = "[" + s + "]";
 	}
 	if (final_semi_colon == string::npos)
