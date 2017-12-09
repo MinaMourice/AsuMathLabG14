@@ -162,8 +162,8 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 
 				if(s[placeOfOPerator+1]==42)        return valueOfOperand1 . dotMul (valueOfOperand2) ;       // **
 				else if(s[placeOfOPerator+1]==47)   return valueOfOperand1 . dotDiv (valueOfOperand2) ;       // **
-				else if(s[placeOfOPerator+1]==93)   return valueOfOperand1 . dotLDiv (valueOfOperand2) ;       // **
-				else if(s.substr(placeOfOPerator+1,placeOfOPerator+3)=="pow(" || s[placeOfOPerator]==94)   
+				else if(s[placeOfOPerator+1]==92)   return valueOfOperand1 . dotLDiv (valueOfOperand2) ;       // **
+				else if(s.substr(placeOfOPerator+1,placeOfOPerator+3)=="pow(" || s[placeOfOPerator+1]==94)   
 					{
 						int findDouble = s.find_first_of("0123456789");
 						if (findDouble != std::string::npos)
