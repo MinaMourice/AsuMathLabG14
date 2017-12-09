@@ -22,14 +22,14 @@ bool isFloat(string myString) {
 }
 
 
-void defMat(string s,string varNames[100],string varContent[100],int& variablesNo)
+void defMat(string s, string varNames[100], string varContent[100], int& variablesNo)
 {
-	
+
 	string array[100], text, token, replace, value;
 	size_t Equal_pos, found_var, found_par1, diff, found_par2, semi_colon, semi_colon_2, semi_colon_no, colon, token2_pos, final_semi_colon;
 	int flag = 0, c = 0, replaced_pos, Equal_no;
+	string name;
 
-	
 	//sort(varNames, varNames + variablesNo - 1);
 	Equal_no = count(s.begin(), s.end(), '=');
 
@@ -85,7 +85,7 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 	// Replace The Variable in s By it's Value
 	for (int i = variablesNo; i >= 0; i--)
 	{
-		found_var = s.find(varNames[i],Equal_pos);
+		found_var = s.find(varNames[i], Equal_pos);
 		while (found_var != string::npos)
 		{
 			//cout << "first 'var' found at: " << found_var << '\n';
@@ -95,11 +95,13 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 	}
 	//	cout << "first: " << s << endl;
 	//more than one variable have the same content a=b=...
-	for (int b = 0; b<Equal_no; b++)
+	for (int b = 0; b < Equal_no; b++)
 	{
 		Equal_pos = s.find_first_of('=');
 		varNames[variablesNo] = s.substr(0, Equal_pos);
 		remove_if(varNames[variablesNo].begin(), varNames[variablesNo].end(), isspace);
+		name= varNames[variablesNo];
+
 		s.erase(0, Equal_pos + 1);
 		variablesNo++;
 		//string::iterator end_pos = remove(varNames[variablesNo].begin(), varNames[variablesNo].end(), ' ');
@@ -150,7 +152,7 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 			colon = s.find_first_of(",", found_par1);
 			//cout<<semi_colon<<endl;
 			//if there is semi-colon between the two braces []
-			if (found_par1<semi_colon&&semi_colon< found_par2)
+			if (found_par1 < semi_colon&&semi_colon < found_par2)
 			{
 				//	cout<<count_1<<endl;
 				//	if(count_1==0)
@@ -184,9 +186,9 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 
 				//	cout<<diff<<endl;
 				//if  (diff>4 || diff<0) 
-				if (semi_colon_2>100)
+				if (semi_colon_2 > 100)
 				{
-					for (int i = 0; i<c; i++)
+					for (int i = 0; i < c; i++)
 					{
 						if (i != c - 1)
 							replace += array[i] + ";";
@@ -199,14 +201,14 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 					replace.clear();
 					flag = 0;
 					//cout<<replaced_pos<<endl;
-					for (int i = 0; i<c; i++)
+					for (int i = 0; i < c; i++)
 						array[i].clear();
 					//cout<<array[0]<<endl;
 					//empty arrray & replace	
 				}
 				c = 0;
 			}
-			else if (found_par1<colon&&colon< found_par2)
+			else if (found_par1 < colon&&colon < found_par2)
 				s.erase(colon, 1);
 			else
 			{
@@ -240,30 +242,28 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 	}
 	//else
 	//{
-		//s = "[" + s + "]";
+	//s = "[" + s + "]";
 	//}
-	if (final_semi_colon == string::npos)
-		//cout << s << endl;
-		print(s, varNames, varContent, variablesNo);
+	
 
 
 	//int real = variablesNo - Equal_no;
-	for (int b = 1; b<=Equal_no; b++)
+	for (int b = 1; b <= Equal_no; b++)
 	{
-		varContent[variablesNo-b] = s;
+		varContent[variablesNo - b] = s;
 		//cout<<varContent[variablesNo]<<variablesNo<<endl;
 	}
 
 
 	//find similar variables
-	
+
 	for (int i = 0; i<variablesNo; i++)
 	{
 		for (int j = i + 1; j<variablesNo; j++)
 		{
 			if (varNames[i] == varNames[j])
 			{
-				
+
 				varContent[i] = varContent[j];
 				for (int x = j; x <= variablesNo; x++)
 				{
@@ -274,8 +274,11 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 			}
 		}
 	}
-
-} // Mina Mouries /* Define matrices that contain variables like b = [1; 2] a = [5] A = a = [1 3 4 5 a sin(0.4); 3 2 3 4 [9 2]; [2 3 4 2 1; 2 3 4 5 6], b] i.e: any matrix other than special matrices defined above*/
+	if (final_semi_colon == string::npos) {
+		//cout << "//" << name<<"//";
+		print(name, varNames, varContent, variablesNo);
+	}
+}// Mina Mouries /* Define matrices that contain variables like b = [1; 2] a = [5] A = a = [1 3 4 5 a sin(0.4); 3 2 3 4 [9 2]; [2 3 4 2 1; 2 3 4 5 6], b] i.e: any matrix other than special matrices defined above*/
 
 
 
