@@ -19,6 +19,13 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100], int
 						numberString = s.substr(findDouble, endDouble != std::string::npos ? endDouble - findDouble : endDouble);
 						valueOfOperand1 = CMatrix(valueOfOperand2.getnR(), valueOfOperand2.getnC(), 4, stod(numberString));
 					}
+					else if(findDouble==placeOfOPerator)          //"a--3"
+				    	{
+					        operand1index = distance( varNames, find( varNames , varNames + 100 , s.substr(0,placeOfOPerator) ) ); 
+				                valueOfOperand1 = CMatrix (varContent[operand1index]);
+						numberString = s.substr(findDouble+1, endDouble != std::string::npos ? s.length()-findDouble : endDouble) ;
+						valueOfOperand2 = CMatrix(valueOfOperand1.getnR(), valueOfOperand1.getnC(), 4, stod(numberString)) ;
+				        }
 					else
 					{
 						operand1index = distance(varNames, find(varNames, varNames + 100, s.substr(0, placeOfOPerator)));
