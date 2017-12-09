@@ -2,18 +2,16 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100], int
 {
 	string operand1, operand2;  CMatrix valueOfOperand1, valueOfOperand2;  string numberString; int operand1index, operand2index;
 
-	int placeOfOPerator = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_");
+	int placeOfOPerator = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_" , 1);
 	if (placeOfOPerator != std::string::npos)
 	{
-
-
 		if (s[placeOfOPerator] == 43 || s[placeOfOPerator] == 45 || s[placeOfOPerator] == 42 || s[placeOfOPerator] == 47 || s[placeOfOPerator] == 92 || s[placeOfOPerator] == 38 || s[placeOfOPerator] == 124)
 		{
-			int findDouble = s.find_first_of("0123456789");
+			int findDouble = s.find_first_of("-0123456789");
 			{
+				int endDouble = s.find_first_not_of("0123456789", findDouble+1);
 				if (findDouble != std::string::npos)
 				{
-					int endDouble = s.find_first_not_of("0123456789", findDouble);
 					if (findDouble<placeOfOPerator)
 					{
 						operand2index = distance(varNames, find(varNames, varNames + 100, s.substr(placeOfOPerator + 1, s.length())));
@@ -112,11 +110,10 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100], int
 
 		else if (s[placeOfOPerator] == 46)                      // .
 		{
-			int findDouble = s.find_first_of("0123456789");
+			int findDouble = s.find_first_of("-0123456789");
+			int endDouble = s.find_first_not_of("0123456789", findDouble+1);
 			if (findDouble != std::string::npos)
 			{
-				int endDouble = s.find_first_not_of("0123456789", findDouble);
-				//cout<<s.substr(findDouble, endDouble != std::string::npos ? endDouble-findDouble : endDouble);
 				if (findDouble<placeOfOPerator)
 				{
 					operand2index = distance(varNames, find(varNames, varNames + 100, s.substr(placeOfOPerator + 2, s.length())));
