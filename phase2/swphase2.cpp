@@ -66,7 +66,7 @@ int main(int argc,char* argv[])
 		}
 		
 	}
-	catch (const char* error) { cout << error<<endl; }*/
+	catch (const char* error) { cout << error<<endl; }
 
 	
 
