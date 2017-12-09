@@ -670,6 +670,7 @@ CMatrix cot(const CMatrix& m)
 	return M;
 
 }
+
 CMatrix asin(const CMatrix& m)
 {
 
@@ -700,6 +701,159 @@ CMatrix atan(const CMatrix& m)
 	return M;
 
 }
+CMatrix acsc(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = asin(1.0/m.values[iR][iC]);
+	return M;
+
+}
+CMatrix asec(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = acos(1.0/m.values[iR][iC]);
+	return M;
+
+}
+CMatrix acot(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = atan(1.0/m.values[iR][iC]);
+	return M;
+
+}
+
+CMatrix sinh(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = sinh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix cosh(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = cosh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix tanh(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = tanh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix csch(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = 1.0 / sinh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix sech(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = 1.0 / cosh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix coth(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = 1.0 / tanh(m.values[iR][iC]);
+	return M;
+
+}
+
+CMatrix asinh(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = asinh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix acosh(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = acosh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix atanh(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = atanh(m.values[iR][iC]);
+	return M;
+
+}
+CMatrix acsch(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = asinh(1.0 / m.values[iR][iC]);
+	return M;
+
+}
+CMatrix asech(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = acosh(1.0 / m.values[iR][iC]);
+	return M;
+
+}
+CMatrix acoth(const CMatrix& m)
+{
+
+	CMatrix M(m.nR, m.nC);
+	for (int iR = 0; iR<m.nR; iR++)
+		for (int iC = 0; iC<m.nC; iC++)
+			M.values[iR][iC] = atanh(1.0 / m.values[iR][iC]);
+	return M;
+
+}
+
 CMatrix exp(const CMatrix& m)
 {
 

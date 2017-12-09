@@ -69,9 +69,28 @@ public:
 	friend CMatrix csc(const CMatrix& m);
 	friend CMatrix sec(const CMatrix& m);
 	friend CMatrix cot(const CMatrix& m);
+
 	friend CMatrix asin(const CMatrix& m);
 	friend CMatrix acos(const CMatrix& m);
 	friend CMatrix atan(const CMatrix& m);
+	friend CMatrix acsc(const CMatrix& m);
+	friend CMatrix asec(const CMatrix& m);
+	friend CMatrix acot(const CMatrix& m);
+
+	friend CMatrix sinh(const CMatrix& m);
+	friend CMatrix cosh(const CMatrix& m);
+	friend CMatrix tanh(const CMatrix& m);
+	friend CMatrix csch(const CMatrix& m);
+	friend CMatrix sech(const CMatrix& m);
+	friend CMatrix coth(const CMatrix& m);
+
+	friend CMatrix asinh(const CMatrix& m);
+	friend CMatrix acosh(const CMatrix& m);
+	friend CMatrix atanh(const CMatrix& m);
+	friend CMatrix acsch(const CMatrix& m);
+	friend CMatrix asech(const CMatrix& m);
+	friend CMatrix acoth(const CMatrix& m);
+
 	friend CMatrix exp(const CMatrix& m); 
 	friend CMatrix log(const CMatrix& m); 
 	friend CMatrix log10(const CMatrix& m);

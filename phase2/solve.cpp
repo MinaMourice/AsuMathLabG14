@@ -87,10 +87,11 @@ string solve(string s, string varNames[100], string varContent[100], int& variab
   /* Takes a string as input and returns a double output, Input may contain previous predefined variables and/or normal numbers */
 double solveDouble(string s, string varNames[100], string varContent[100], int& variablesNo) 
 {
-
 	int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_.");
+	
 	if (s.at(placeofspecial) == '(')
 	{
+		
 		//sin
 		string only1operandfromvarnames = s.substr(placeofspecial + 1, s.find(')') - placeofspecial - 1);
 
@@ -107,8 +108,8 @@ double solveDouble(string s, string varNames[100], string varContent[100], int& 
 		{
 			string only1operandcontent = varContent[only1operandindex];
 			double only1operandtodouble = atof(only1operandcontent.c_str());
-
-
+			
+			
 			//only one operand
 
 			if (TRIG == "sin")
@@ -147,6 +148,18 @@ double solveDouble(string s, string varNames[100], string varContent[100], int& 
 			{
 				return atan(only1operandtodouble);
 			}
+			else if (TRIG == "acsc")
+			{
+				return asin(1.0/only1operandtodouble);
+			}
+			else if (TRIG == "asec")
+			{
+				return acos(1.0/only1operandtodouble);
+			}
+			else if (TRIG == "acot")
+			{
+				return atan(1.0/only1operandtodouble);
+			}
 			else if (TRIG == "sinh")
 			{
 				return sinh(only1operandtodouble);
@@ -170,6 +183,30 @@ double solveDouble(string s, string varNames[100], string varContent[100], int& 
 			else if (TRIG == "coth")
 			{
 				return (exp(2 * only1operandtodouble) + 1) / (exp(2 * only1operandtodouble) - 1);
+			}
+			else if (TRIG == "asinh")
+			{
+				return asinh(only1operandtodouble);
+			}
+			else if (TRIG == "acosh")
+			{
+				return acosh(only1operandtodouble);
+			}
+			else if (TRIG == "atanh")
+			{
+				return atanh(only1operandtodouble);
+			}
+			else if (TRIG == "acsch")
+			{
+				return asinh(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "asech")
+			{
+				return acosh(1.0/only1operandtodouble);
+			}
+			else if (TRIG == "acoth")
+			{
+				return atanh(1.0/only1operandtodouble);
 			}
 			else if (TRIG == "exp")
 			{
@@ -197,9 +234,10 @@ double solveDouble(string s, string varNames[100], string varContent[100], int& 
 
 		{
 			//only one as number 
-
+			
 			double  only1operandasnumbertodouble = atof(only1operandfromvarnames.c_str());
-
+			
+			
 			if (TRIG == "sin")
 			{
 				return sin(only1operandasnumbertodouble);
@@ -236,6 +274,18 @@ double solveDouble(string s, string varNames[100], string varContent[100], int& 
 			{
 				return atan(only1operandasnumbertodouble);
 			}
+			else if (TRIG == "acsc")
+			{
+				return asin(1.0/only1operandasnumbertodouble);
+			}
+			else if (TRIG == "asec")
+			{
+				return acos(1.0/only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acot")
+			{
+				return atan(1.0/only1operandasnumbertodouble);
+			}
 			else if (TRIG == "sinh")
 			{
 				return sinh(only1operandasnumbertodouble);
@@ -259,6 +309,30 @@ double solveDouble(string s, string varNames[100], string varContent[100], int& 
 			else if (TRIG == "coth")
 			{
 				return (exp(2 * only1operandasnumbertodouble) + 1) / (exp(2 * only1operandasnumbertodouble) - 1);
+			}
+			else if (TRIG == "asinh")
+			{
+				return asinh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acosh")
+			{
+				return acosh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "atanh")
+			{
+				return atanh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acsch")
+			{
+				return asinh(1.0/only1operandasnumbertodouble);
+			}
+			else if (TRIG == "asech")
+			{
+				return acosh(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acoth")
+			{
+				return atanh(1.0/only1operandasnumbertodouble);
 			}
 			else if (TRIG == "exp")
 			{
