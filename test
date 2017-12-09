@@ -99,13 +99,14 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 	{
 		Equal_pos = s.find_first_of('=');
 		varNames[variablesNo] = s.substr(0, Equal_pos);
+		remove_if(varNames[variablesNo].begin(), varNames[variablesNo].end(), isspace);
 		s.erase(0, Equal_pos + 1);
 		variablesNo++;
-		string::iterator end_pos = remove(varNames[variablesNo].begin(), varNames[variablesNo].end(), ' ');
-		varNames[variablesNo].erase(end_pos, varNames[variablesNo].end());
+		//string::iterator end_pos = remove(varNames[variablesNo].begin(), varNames[variablesNo].end(), ' ');
+		//varNames[variablesNo].erase(end_pos, varNames[variablesNo].end());
 		//cout <<varNames[variablesNo];
 	}
-	cout << "variablesNo :" << variablesNo << endl;
+	//cout << "variablesNo :" << variablesNo << endl;
 	//cout << s << endl;
 
 	// parsing '[' to ']'
@@ -242,8 +243,8 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 		//s = "[" + s + "]";
 	//}
 	if (final_semi_colon == string::npos)
-		cout << s << endl;
-
+		//cout << s << endl;
+		print(s, varNames, varContent, variablesNo);
 
 
 	//int real = variablesNo - Equal_no;
@@ -267,6 +268,7 @@ void defMat(string s,string varNames[100],string varContent[100],int& variablesN
 				for (int x = j; x <= variablesNo; x++)
 				{
 					varContent[x] = varContent[x + 1];
+					varNames[x] = varNames[x + 1];
 				}
 				variablesNo--;
 			}
