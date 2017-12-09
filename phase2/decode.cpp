@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "decode.h"
 #include "solve.h"
 #include "cmatrix.h"
