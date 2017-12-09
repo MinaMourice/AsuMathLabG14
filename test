@@ -21,22 +21,14 @@ bool isFloat(string myString) {
 }
 
 
-void defMat(string s)
+void defMat(string s,string varNames[100],string varContent[100],int&variablesNo)
 {
-	string varNames[100];
-	string varContent[100];
+	
 	string array[100], text, token, replace, value;
 	size_t Equal_pos, found_var, found_par1, diff, found_par2, semi_colon, semi_colon_2, semi_colon_no, colon, token2_pos, final_semi_colon;
-	int flag = 0, c = 0, replaced_pos, Equal_no, variablesNo = 4;
+	int flag = 0, c = 0, replaced_pos, Equal_no;
 
-	varNames[0] = "c";
-	varContent[0] = "[0.9998;1.9683;-555]";
-	varNames[1] = "ce";
-	varContent[1] = "[2.2 3.3;5.5 -7.89;9.65 x]";
-	varNames[2] = "x";
-	varContent[2] = "5";
-	varNames[3] = "c1";
-	varContent[3] = "[2.2 3.3;5.5 -7.89;9.65 x]";
+	
 	sort(varNames, varNames + variablesNo - 1);
 	Equal_no = count(s.begin(), s.end(), '=');
 
@@ -236,7 +228,7 @@ void defMat(string s)
 				if (!isFloat(token) && token.find_first_not_of(' ') != string::npos)
 				{
 					token2_pos = s.find(token);
-					doOperation(token, varNames, varContent, variablesNo);
+					//					doOperation(token, varNames, varContent, variablesNo);
 					s.replace(token2_pos, token.length(), token);
 				}
 			}
@@ -244,6 +236,10 @@ void defMat(string s)
 		//cout << s << endl;
 		s = "[" + s + "]";
 	}
+	//else
+	//{
+		//s = "[" + s + "]";
+	//}
 	if (final_semi_colon == string::npos)
 		cout << s << endl;
 
@@ -264,6 +260,17 @@ void defMat(string s)
 
 int main()
 {
-
-	defMat("g=[c c1]");
+	string varNames[100];
+	string varContent[100];
+	int variableNo = 4;
+	varNames[0] = "c";
+	varContent[0] = "[0.9998;1.9683;-555]";
+	varNames[1] = "ce";
+	varContent[1] = "[2.2 3.3;5.5 -7.89;9.65 x]";
+	varNames[2] = "x";
+	varContent[2] = "5";
+	varNames[3] = "c1";
+	varContent[3] = "[2.2 3.3;5.5 -7.89;9.65 x]";
+	
+	defMat("g=[3 4 5]", varNames, varContent, variableNo);
 }
