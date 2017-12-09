@@ -21,12 +21,12 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 				else if(s.substr(0,placeOfOPerator)=="sec")     return sec   (valueOfOperand2) ;
 				else if(s.substr(0,placeOfOPerator)=="csc")     return csc   (valueOfOperand2) ;
 				else if(s.substr(0,placeOfOPerator)=="cot")     return cot   (valueOfOperand2) ;
-				//else if(s.substr(0,placeOfOPerator)=="sinh")     return sinh  (valueOfOperand2) ;
-				//else if(s.substr(0,placeOfOPerator)=="cosh")     return cosh  (valueOfOperand2) ;
-				//else if(s.substr(0,placeOfOPerator)=="tanh")     return tanh  (valueOfOperand2) ;
-				//else if(s.substr(0,placeOfOPerator)=="tanh")     return sech  (valueOfOperand2) ;
-				//else if(s.substr(0,placeOfOPerator)=="tanh")     return csch   (valueOfOperand2) ;
-				//else if(s.substr(0,placeOfOPerator)=="tanh")     return coth  (valueOfOperand2) ;
+				else if(s.substr(0,placeOfOPerator)=="sinh")     return sinh  (valueOfOperand2) ;
+				else if(s.substr(0,placeOfOPerator)=="cosh")     return cosh  (valueOfOperand2) ;
+				else if(s.substr(0,placeOfOPerator)=="tanh")     return tanh  (valueOfOperand2) ;
+				else if(s.substr(0,placeOfOPerator)=="tanh")     return sech  (valueOfOperand2) ;
+				else if(s.substr(0,placeOfOPerator)=="tanh")     return csch   (valueOfOperand2) ;
+				else if(s.substr(0,placeOfOPerator)=="tanh")     return coth  (valueOfOperand2) ;
 
 				else if(s.substr(0,placeOfOPerator)=="asin")    return asin  (valueOfOperand2) ;
 				else if(s.substr(0,placeOfOPerator)=="acos")    return acos  (valueOfOperand2) ;
@@ -90,9 +90,9 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 					else 	 valueOfOperand2 = CMatrix ("[" + varContent[operand2index] + "]");
 				}
 
-				if(s[placeOfOPerator]==42)        return valueOfOperand1 . dotMul (valueOfOperand2) ;       // **
-				else if(s[placeOfOPerator]==47)   return valueOfOperand1 . dotDiv (valueOfOperand2) ;       // **
-				else if(s[placeOfOPerator]==93)   return valueOfOperand1 . dotLDiv (valueOfOperand2) ;       // **
+				if(s[placeOfOPerator+1]==42)        return valueOfOperand1 . dotMul (valueOfOperand2) ;       // **
+				else if(s[placeOfOPerator+1]==47)   return valueOfOperand1 . dotDiv (valueOfOperand2) ;       // **
+				else if(s[placeOfOPerator+1]==93)   return valueOfOperand1 . dotLDiv (valueOfOperand2) ;       // **
 				else if(s.substr(placeOfOPerator+1,placeOfOPerator+3)=="pow(" || s[placeOfOPerator]==94)   
 					{
 						int findDouble = s.find_first_of("0123456789");
@@ -142,7 +142,7 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 				}
 			 }
 			  
-			if(s[placeOfOPerator]==43)        return valueOfOperand1 + valueOfOperand2 ;
+			if(s[placeOfOPerator]==43)        return (valueOfOperand1 + valueOfOperand2) ;
 		    else if(s[placeOfOPerator]==45)   return valueOfOperand1 - valueOfOperand2 ;
 			else if(s[placeOfOPerator]==42)   return valueOfOperand1 * valueOfOperand2 ;
 			else if(s[placeOfOPerator]==47)   return valueOfOperand1 / valueOfOperand2 ;
@@ -154,6 +154,8 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
 	
 	}
   }
+	
+			
 	
 		
 					
