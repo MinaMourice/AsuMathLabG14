@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <sstream>
 #include <math.h>
+
 using namespace std;
 
 
@@ -21,7 +22,7 @@ bool isFloat(string myString) {
 }
 
 
-void defMat(string s,string varNames[100],string varContent[100],int&variablesNo)
+void defMat(string s,string varNames[100],string varContent[100],int& variablesNo)
 {
 	
 	string array[100], text, token, replace, value;
@@ -29,11 +30,11 @@ void defMat(string s,string varNames[100],string varContent[100],int&variablesNo
 	int flag = 0, c = 0, replaced_pos, Equal_no;
 
 	
-	sort(varNames, varNames + variablesNo - 1);
+	//sort(varNames, varNames + variablesNo - 1);
 	Equal_no = count(s.begin(), s.end(), '=');
 
 
-	//	cout << "variablesNo :" << variablesNo << endl;
+	//cout << "variablesNo :" << variablesNo << endl;
 	final_semi_colon = s.find_first_of(";", s.find_last_of("]"));
 	if (final_semi_colon != string::npos)s.erase(final_semi_colon, 1);
 	//cout << s << endl;
@@ -80,11 +81,11 @@ void defMat(string s,string varNames[100],string varContent[100],int&variablesNo
 	cout << "end" << endl;
 
 	}*/
-
+	Equal_pos = s.find_first_of('=');
 	// Replace The Variable in s By it's Value
 	for (int i = variablesNo; i >= 0; i--)
 	{
-		found_var = s.find(varNames[i]);
+		found_var = s.find(varNames[i],Equal_pos);
 		while (found_var != string::npos)
 		{
 			//cout << "first 'var' found at: " << found_var << '\n';
@@ -102,9 +103,9 @@ void defMat(string s,string varNames[100],string varContent[100],int&variablesNo
 		variablesNo++;
 		string::iterator end_pos = remove(varNames[variablesNo].begin(), varNames[variablesNo].end(), ' ');
 		varNames[variablesNo].erase(end_pos, varNames[variablesNo].end());
-		//cout << varnames[variablesNo];
+		//cout <<varNames[variablesNo];
 	}
-
+	cout << "variablesNo :" << variablesNo << endl;
 	//cout << s << endl;
 
 	// parsing '[' to ']'
@@ -112,9 +113,9 @@ void defMat(string s,string varNames[100],string varContent[100],int&variablesNo
 	{
 		s.erase(s.find_first_of("["), 1);
 		s.erase(s.find_last_of("]"), 1);
-		istringstream iss3(s);
+		/*istringstream iss3(s);
 		//cout << "start" << endl;
-		/*while (getline(iss3, token, ' '))
+		while (getline(iss3, token, ' '))
 		{
 		cout << token << endl;
 		if (!isFloat(token))
@@ -245,14 +246,32 @@ void defMat(string s,string varNames[100],string varContent[100],int&variablesNo
 
 
 
-
-	for (int b = 0; b<Equal_no; b++)
+	//int real = variablesNo - Equal_no;
+	for (int b = 1; b<=Equal_no; b++)
 	{
-		varContent[variablesNo] = s;
+		varContent[variablesNo-b] = s;
 		//cout<<varContent[variablesNo]<<variablesNo<<endl;
 	}
 
 
+	//find similar variables
+	
+	for (int i = 0; i<variablesNo; i++)
+	{
+		for (int j = i + 1; j<variablesNo; j++)
+		{
+			if (varNames[i] == varNames[j])
+			{
+				
+				varContent[i] = varContent[j];
+				for (int x = j; x <= variablesNo; x++)
+				{
+					varContent[x] = varContent[x + 1];
+				}
+				variablesNo--;
+			}
+		}
+	}
 
 } // Mina Mouries /* Define matrices that contain variables like b = [1; 2] a = [5] A = a = [1 3 4 5 a sin(0.4); 3 2 3 4 [9 2]; [2 3 4 2 1; 2 3 4 5 6], b] i.e: any matrix other than special matrices defined above*/
 
@@ -271,6 +290,16 @@ int main()
 	varContent[2] = "5";
 	varNames[3] = "c1";
 	varContent[3] = "[2.2 3.3;5.5 -7.89;9.65 x]";
+	cout << varNames[2] << "=" << varContent[2] << endl;
+	defMat("g=[ce c]", varNames, varContent,variableNo);
+	//cout << varNames[4]<<"="<<varContent[4] << endl;
+
+	defMat("x=[6 4 5]", varNames, varContent, variableNo);
+	//cout << varNames[5] << "=" << varContent[5] << endl;
 	
-	defMat("g=[3 4 5]", varNames, varContent, variableNo);
+	defMat("e=[6 4 5]", varNames, varContent, variableNo);
+	for (int i=0;i<variableNo;i++)
+	cout << varNames[i] << "=" << varContent[i] << endl;
+//	defMat("g=[ce c]", varNames, varContent, variableNo);
+	//cout << varNames[6] << varContent[6] << endl;
 }
