@@ -5,10 +5,11 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100], int
 	int placeOfOPerator = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_" , 1) ;
 	if (placeOfOPerator != std::string::npos)
 		{
-			if(s.substr(placeOfOPerator+1,1)=="-") {op2const=-1; s.erase(placeOfOPerator+1,1);}
+			if(s.substr(placeOfOPerator+1,1)=="-"&&s.substr(placeOfOPerator,2)!=".-") {op2const=-1; s.erase(placeOfOPerator+1,1);}
+			if(s.substr(placeOfOPerator+1,1)=="-"&&s.substr(placeOfOPerator,2)==".-") {op2const=1;}
 			if(s.substr(placeOfOPerator+2,1)=="-") {op2const=-1; s.erase(placeOfOPerator+2,1);}
 	                if(s.substr(0,1)=="-") {op1const=-1; s.erase(0,1);}
-	          placeOfOPerator = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_" , 1) ;
+	        placeOfOPerator = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_" , 1) ;
 		if (s[placeOfOPerator] == 43 || s[placeOfOPerator] == 45 || s[placeOfOPerator] == 42 || s[placeOfOPerator] == 47 || s[placeOfOPerator] == 92 || s[placeOfOPerator] == 38 || s[placeOfOPerator] == 124)
 		{
 			int findDouble = s.find_first_of("0123456789");   
