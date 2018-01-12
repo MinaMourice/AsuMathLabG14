@@ -1,49 +1,44 @@
 #include "cmatrix.h"
-# include <iostream>
+#include <iostream>
+#include <cmath>
 
-void CMatrix::pow(double& d) {
-    if (nC != nR) throw("for A^b, A must be a square matrix. Use .^ for elementwise power.");
+void CMatrix::pow(const double& d) {
+	if (nC != nR) throw("for A^b, A must be a square matrix. Use .^ for elementwise power.");
 
-    if (d < 0.0) this.copy((this.getInverse()).posPower(d)));
-    else if (d > 0.0) this.copy(this.posPower(d));
-    else this.copy(CMatrix(nR, nC, 2));
+	if (d < 0.0) copy(getInverse().posPower(d));
+	else if (d > 0.0) copy(posPower(d));
+	else copy(CMatrix(nR, nC, 2));
 }
-bool equal(CMatrix m) {
-    if (nR != m.nR || nC != m.nC) return false;
-    for (int iR = 0;  iR < nR; iR++)
-        for (int iC = 0;  iC < nC; iC++)
-            if (values[iR][iC] != m.values[iR][iC]) return false;
-    return true;
-}
-#define ITERATIONS 10000
-CMatrix CMatrix::posPower(double& d) {
-    if (d == double(int(d))) { // Case1 => power is an int number;
-        CMatrix tempMat = this;
-        for (int i = 1; i < d; i++) tempMat = tempMat * this;
-        return tempMat;
-    }
-    if (isdiagonal(this)) return diagPow(this, d); // Case2 => Diagonal matrix
-    else if (issymmetric(this)) return symmPow(this, d); // Case3 => Symmetric matrix
-    else {
-        CMatrix tempMat = this;
-        CMatrix q(nR, nC);
-        CMatrix r(nR, nC);
-        for (int i = 0; i < ITERATIONS; i++) {
-            qrDecomp(tempMat, q, r)
-            tempMat = r * q;
-        }
+#define ITERATIONS 30
+CMatrix CMatrix::posPower(const double& d) {
+	/*if (d == double(int(d))) { // Case1 => power is an int number;
+		CMatrix tempMat = *this;
+		for (int i = 1; i < d; i++) tempMat = tempMat * *this;
+		return tempMat;
+	}*/
+	if (isdiagonal(*this)) return diagPow(*this, d); // Case2 => Diagonal matrix
+	//else if (issymmetric(*this)) return symmPow(*this, d); // Case3 => Symmetric matrix
+	else {
+		CMatrix tempMat = *this;
+		CMatrix q(nR, nC);
+		CMatrix r(nR, nC);
+		CMatrix eigenVectors(nR, nC, 2);
+		for (int i = 0; i < ITERATIONS; i++) {
+			qrDecomp(tempMat, q, r);
+			eigenVectors = eigenVectors * q;
+			tempMat = r * q;
+		}
+		CMatrix eigenValues(nR, nC);
+		for (int i = 0; i < nR; i++) {
+			eigenValues.values[i][i] = tempMat.values[i][i];
+			cout << eigenValues.values[i][i] << endl;
+		}
 
-        double eigenValues[nR];
-        for (int i = 0, i < nR; i++)
-            eigenValues[i] = tempMat[i][i];
-
-        CMatrix eigenVectors = getEigenVectors(this, eigenValues);
-
-        return generalPower(eigenVectors, eigenValues[], d);
-    }
+		return generalPower(eigenVectors, eigenValues, d);
+	}
 }
 
-// Diagonal matrices powers
+// Diagonal matrices power
 bool isdiagonal(const CMatrix& mat) {
 	bool matDiagonal = true;
 	for (int iR = 1; iR < mat.nR && matDiagonal; iR++)
@@ -56,11 +51,12 @@ bool isdiagonal(const CMatrix& mat) {
 CMatrix diagPow(const CMatrix& mat, const double& d) {
 	CMatrix temp;
 	temp = mat;
-	//return temp.dotPow(d);
-	return CMatrix("[]");
+	for (int iR = 0; iR < temp.nR; iR++)
+		temp.values[iR][iR] = pow(temp.values[iR][iR], d);
+	return temp;
 }
 
-//Jacobi
+// Symmetric matrices power
 bool issymmetric(const CMatrix& mat) {
 	bool matSymmetric = true;
 	for (int iR = 1; iR < mat.nR && matSymmetric; iR++)
@@ -71,7 +67,7 @@ bool issymmetric(const CMatrix& mat) {
 	return  matSymmetric;
 }
 void jacobiEigenAnalysis(const CMatrix matrix, const int& maxIterations, CMatrix& eigenVectors, double eigenValues[], int &iteraNo, int &rotationsNo) {
-
+	// REQUIRES FIXING!!
 	CMatrix mat;
 	mat = matrix;
 	eigenVectors = CMatrix(mat.nR, mat.nR, 2);
@@ -222,63 +218,69 @@ CMatrix symmPow(const CMatrix& mat, const double& d) {
 	return CMatrix("[]");
 }
 
-// QR-decomposition
-CMatrix CMatrix::subColumn(const int& C) {
-    CMatrix column(nR, 1);
-    for (int iR = 0; iR < nR; iR++)
-        column.values[iR][0] = values[iR][C];
-    
-    return column;
+// General power
+bool CMatrix::equal(CMatrix m) {
+	if (nR != m.nR || nC != m.nC) return false;
+	for (int iR = 0; iR < nR; iR++)
+		for (int iC = 0; iC < nC; iC++)
+			if (values[iR][iC] != m.values[iR][iC]) return false;
+	return true;
+}
+CMatrix subColumn(const CMatrix& mat, const int& C) {
+	CMatrix column(mat.nR, 1);
+	for (int iR = 0; iR < mat.nR; iR++)
+		column.values[iR][0] = mat.values[iR][C];
+
+	return column;
 }
 double innerProd(const CMatrix& mat1, const CMatrix& mat2) {
-    double ans = 0.0;
+	double ans = 0.0;
 
-    for (int iR = 0; iR < nR; iR++)
-        for (int iC = 0; iC < nC; iC++)
-            ans += column.values[iR][iC] * values[iR][iC];
-    
-    return ans;
+	for (int iR = 0; iR < mat1.nR; iR++)
+		for (int iC = 0; iC < mat1.nC; iC++)
+			ans += mat1.values[iR][iC] * mat2.values[iR][iC];
+
+	return ans;
 }
-double columnLength(const CMatrix& mat) {
-    double ans = 0.0;
-    
-    for (int iR = 0; iR < nR; iR++)
-        ans += mat.values[iR][0] * mat.values[iR][0];
-    
-    return sqrt(ans);
+double columnLength(const CMatrix& mat, const int& column) {
+	double ans = 0.0;
+
+	for (int iR = 0; iR < mat.nR; iR++)
+		ans += mat.values[iR][column] * mat.values[iR][column];
+
+	return sqrt(ans);
 }
+void qrDecomp(const CMatrix& mat, CMatrix& q, CMatrix& r) {
 
-void qrDecomp(const CMatrix& mat, CMatrix& q, CMatrix r) {
-
-    // Calculating q
-    for (int iC = 0, iC < nC, iC++) {
-        CMatrix column = subColumn(iC);
-        if (iC > 0) {
-            for (int i = iC - 1; i >= 0; i--) {
-                CMatrix tempMat = q.subColumn(i);
-                column = column - (innerProd(column, tempMat)/innerProd(tempMat, tempMat)) * tempMat;
-            }
-        }
-        double length = columnLength(column);
-        for (int iR = 0; iR < nR; iR++)
-            q.values[iR][iC] = column.values[iR][iC] / length;
-    }
-
-    r = mat.getInverse() * q;
-}
-
-CMatrix generalPower(const CMatrix& eigenVectors, const double eigenValues[], const double d) {
-
-    CMatrix eigenDiagMat(eigenVectors.nR, eigenVectors.nC);
-    for (int i = 0; i < eigenVectors.nR; i++)
-        eigenDiagMat[i][i] = eigenValues[i];
-
-    CMatrix tempMat = diagPow(eigenDiagMat, d);
-    tempMat = eigenVectors * tempMat * eigenVectors.getInverse();
-
-    return tempMat;
-}
-
-CMatrix getEigenVectors(const CMatrix& mat, const double eigenValues[]) {
-    
+	// Calculating Q
+	// Orthognalizing the matrix
+	q = mat;
+	CMatrix column;
+	CMatrix columnResult;
+	CMatrix tempMat;
+	for (int iC = 1; iC < mat.nC; iC++) {
+		column = subColumn(mat, iC);
+		columnResult = column;
+		for (int i = iC - 1; i >= 0; i--) {
+			tempMat = subColumn(q, i);
+			double scale = innerProd(column, tempMat) / innerProd(tempMat, tempMat);
+			for (int j = 0; j < tempMat.nR; j++)
+				tempMat.values[j][0] *= scale;
+			columnResult = columnResult - tempMat;
+		}
+		for (int iR = 0; iR < q.nR; iR++)
+			q.values[iR][iC] = columnResult.values[iR][0];
+	}
+	// Orthonormalizing the matrix
+	for (int iC = 0; iC < q.nC; iC++) {
+		double length = columnLength(q, iC);
+		for (int iR = 0; iR < q.nR; iR++)
+			q.values[iR][iC] /= length;
+	}
+	
+	// Calculating R
+	r = q;
+	r = q.getInverse();
+	tempMat = mat;
+	r = r * tempMat;
 }
