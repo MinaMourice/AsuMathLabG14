@@ -463,7 +463,7 @@ complex exp(const complex& z) {
 }
 
 complex complex::pow(const double& d) {
-	if (isComplex) {
+	if (isComplex || re <= SENSITIVITY) {
 		double absTemp = std::pow(static_cast<double>(abs()), static_cast<double>(d));
 		double argTemp = d * arg();
 		return complex(absTemp * cos(argTemp), absTemp * sin(argTemp));
@@ -471,7 +471,7 @@ complex complex::pow(const double& d) {
 	return std::pow(re, d);
 }
 complex pow(const complex& z, const double& d) {
-	if (z.isComplex) {
+	if (z.isComplex || z.re <= SENSITIVITY) {
 		double absTemp = pow(abs(z), d);
 		double argTemp = d * arg(z);
 		return complex(absTemp * cos(argTemp), absTemp * sin(argTemp));
@@ -483,17 +483,16 @@ complex pow(const double& d, const complex& c) {
 	return std::pow(d, c.re);
 }
 complex complex::pow(const complex& c) {
-	if (isComplex && c.isComplex) return exp(log(*this) * c);
-	else if (isComplex) return pow(c.re);
+	if ((isComplex || re <= SENSITIVITY) && c.isComplex) return exp(log(*this) * c);
+	else if (isComplex || re <= SENSITIVITY) return pow(c.re);
 	else if (c.isComplex) return ::pow(re, c);
 	return std::pow(re, c.re);
 }
 complex pow(const complex& z, const complex& c) {
-	if (z.isComplex && c.isComplex) return exp(log(z) * c);
-	else if (z.isComplex) return pow(z, c.re);
+	if ((z.isComplex || z.re <= SENSITIVITY) && c.isComplex) return exp(log(z) * c);
+	else if (z.isComplex || z.re <= SENSITIVITY) return pow(z, c.re);
 	else if (c.isComplex) return pow(z.re, c);
 	return std::pow(z.re, c.re);
-
 }
 complex sqrt(const complex& z) {
 	if (z.isComplex || z.re <= SENSITIVITY) {
