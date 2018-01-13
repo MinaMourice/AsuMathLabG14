@@ -1,8 +1,11 @@
-#include "stdafx.h"
 #include "cmatrix.h"
 #include "pcomplexlib.h"
 #include <iostream>
 
+#define ITERATIONS 24
+
+// Strassen multiplaying algorithm - DON'T USE IT UNTIL THE CODE IS OPTIMIZED
+// fix
 CMatrix CMatrix::subMatrix(const int& rowToStartAt, const int& columnToStartAt, const int& rowsNo, const int& columnsNo) {
 	CMatrix temp(rowsNo, columnsNo);
 	int temprow;
@@ -98,6 +101,51 @@ void CMatrix::smul(CMatrix& m) {
 	copy(result);
 }
 
+// Powers of matrices
+void CMatrix::pow(const complex& d) {
+	if (nC != nR) throw("for A^b, A must be a square matrix. Use .^ for elementwise power.");
+
+	complex x = d;
+	if (x == 0.0) {
+		copy(CMatrix(nR, nC, 2)); return;
+	}
+	else if (x == 1.0) {
+		return;
+	}
+	copy(posPower(d));
+}
+CMatrix CMatrix::posPower(const complex& d) {
+	// Power in case of positive integers
+	complex x = d;
+	if (x > 0.0 && x == complex(int(abs(d)))) { // Case1 => power is an int number;
+		CMatrix tempMat = *this;
+		for (int i = 1; i < d; i++) tempMat = tempMat * *this;
+		return tempMat;
+	}
+	else if (isdiagonal(*this)) { // Case1 => Diagonal matrix
+		return diagPow(*this, d);
+	}
+	// fix
+	//else if (issymmetric(*this)) return symmPow(*this, d); // Case2 => Symmetric matrix
+	else { // Case3 => General matrix
+		CMatrix tempMat = *this;
+		CMatrix q(nR, nC);
+		CMatrix r(nR, nC);
+		CMatrix eigenVectors(nR, nC, 2);
+		for (int i = 0; i < ITERATIONS; i++) {
+			qrDecomp(tempMat, q, r);
+			eigenVectors = eigenVectors * q;
+			tempMat = r * q;
+		}
+		CMatrix eigenValues(nR, nC);
+		for (int i = 0; i < nR; i++) {
+			eigenValues.values[i][i] = tempMat.values[i][i];
+		}
+
+		return generalPower(eigenVectors, eigenValues, d);
+	}
+}
+
 // Diagonal matrices powers
 bool isdiagonal(const CMatrix& mat) {
 	bool matDiagonal = true;
@@ -113,13 +161,12 @@ CMatrix diagPow(const CMatrix& mat, const complex& d) {
 	temp = mat;
 	for (int iR = 0; iR < temp.nR; iR++) {
 		temp.values[iR][iR] = pow(temp.values[iR][iR], d);
-		cout << temp.values[iR][iR] << " ";
 	}
-	cout << endl;
 	return temp;
 }
 
-// this contains how to validate the eigen values and vector.
+// Symmetric matrices powers - DON'T USE IT | DOESN'T REACH MAXIMUM ITERATIONS AND NEEDS DEBUGGING
+// fix
 bool issymmetric(const CMatrix& mat) {
 	bool matSymmetric = true;
 	for (int iR = 1; iR < mat.nR && matSymmetric; iR++)
@@ -129,7 +176,7 @@ bool issymmetric(const CMatrix& mat) {
 
 	return  matSymmetric;
 }
-void jacobiEigenAnalysis(const CMatrix matrix, const int& maxIterations, CMatrix& eigenVectors, complex eigenValues[], int &iteraNo, int &rotationsNo) {
+/*void jacobiEigenAnalysis(const CMatrix matrix, const int& maxIterations, CMatrix& eigenVectors, complex eigenValues[], int &iteraNo, int &rotationsNo) {
 
 	CMatrix mat;
 	mat = matrix;
@@ -279,8 +326,9 @@ CMatrix symmPow(const CMatrix& mat, const complex& d) {
 	delete[] eigenValues;
 	//return mat.dotPow(d);
 	return CMatrix("[]");
-}
+}*/
 
+// General matrices powers
 CMatrix subColumn(const CMatrix& mat, const int& C) {
 	CMatrix column(mat.nR, 1);
 	for (int iR = 0; iR < mat.nR; iR++)
@@ -290,7 +338,6 @@ CMatrix subColumn(const CMatrix& mat, const int& C) {
 }
 complex innerProd(const CMatrix& mat1, const CMatrix& mat2) {
 	complex ans = 0.0;
-
 	for (int iR = 0; iR < mat1.nR; iR++)
 		for (int iC = 0; iC < mat1.nC; iC++)
 			ans += mat1.values[iR][iC] * mat2.values[iR][iC];
@@ -299,7 +346,6 @@ complex innerProd(const CMatrix& mat1, const CMatrix& mat2) {
 }
 complex columnLength(const CMatrix& mat, const int& column) {
 	complex ans = 0.0;
-
 	for (int iR = 0; iR < mat.nR; iR++)
 		ans += mat.values[iR][column] * mat.values[iR][column];
 
@@ -341,61 +387,10 @@ void qrDecomp(const CMatrix& mat, CMatrix& q, CMatrix& r) {
 }
 
 CMatrix generalPower(const CMatrix& eigenVectors, const CMatrix& eigenValues, const complex& d) {
-
 	CMatrix tempMat = diagPow(eigenValues, d);
 	CMatrix tempEVec;
 	tempEVec.copy(eigenVectors);
 	tempMat = tempEVec * tempMat * tempEVec.getInverse();
 
 	return tempMat;
-}
-
-void CMatrix::pow(const complex& d) {
-	if (nC != nR) throw("for A^b, A must be a square matrix. Use .^ for elementwise power.");
-
-	complex x = d;
-	if (x.real() < 0.0) copy(getInverse().posPower(d));
-	else if (x.real() > 0.0) copy(posPower(d));
-	else copy(CMatrix(nR, nC, 2));
-}
-bool CMatrix::equal(CMatrix m) {
-	if (nR != m.nR || nC != m.nC) return false;
-	for (int iR = 0; iR < nR; iR++)
-		for (int iC = 0; iC < nC; iC++)
-			if (values[iR][iC] != m.values[iR][iC]) return false;
-	return true;
-}
-#define ITERATIONS 30
-CMatrix CMatrix::posPower(const complex& d) {
-	/*if (d == complex(int(d))) { // Case1 => power is an int number;
-		CMatrix tempMat = *this;
-		for (int i = 1; i < d; i++) tempMat = tempMat * *this;
-		return tempMat;
-	}*/
-	cout << "in\n";
-	if (isdiagonal(*this)) return diagPow(*this, d); // Case2 => Diagonal matrix
-	//else if (issymmetric(*this)) return symmPow(*this, d); // Case3 => Symmetric matrix
-	else {
-		cout << "in2\n";
-		CMatrix tempMat = *this;
-		CMatrix q(nR, nC);
-		CMatrix r(nR, nC);
-		CMatrix eigenVectors(nR, nC, 2);
-		for (int i = 0; i < ITERATIONS; i++) {
-			cout << "in3\n";
-			qrDecomp(tempMat, q, r);
-			cout << "in4\n";
-			eigenVectors = eigenVectors * q;
-			tempMat = r * q;
-		}
-		cout << "in5\n";
-		CMatrix eigenValues(nR, nC);
-		for (int i = 0; i < nR; i++) {
-			eigenValues.values[i][i] = tempMat.values[i][i];
-			cout << eigenValues.values[i][i] << endl;
-		}
-		cout << "lamda" << eigenValues.getString() << "V" << eigenVectors.getString();
-
-		return generalPower(eigenVectors, eigenValues, d);
-	}
 }

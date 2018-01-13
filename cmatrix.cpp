@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "cmatrix.h"
 #include "pcomplexlib.h"
 #include <math.h>

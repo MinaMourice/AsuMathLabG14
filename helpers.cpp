@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "cmatrix.h"
 #include "helpers.h"
 #include <fstream>

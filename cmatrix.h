@@ -58,22 +58,29 @@ public:
 	CMatrix getTranspose();
 	CMatrix getInverse();
 
+	// Strassen multiplaying
 	CMatrix subMatrix(const int& rowToStartAt, const int& columnToStartAt, const int& rowsNo, const int& columnsNo);
 	friend CMatrix concatinate(const CMatrix& mat11, const CMatrix& mat12, const CMatrix& mat21, const CMatrix& mat22);
 	void smul(CMatrix& m);
+
+	// Matrices powers
+	void pow(const complex& d);
+
 	friend bool isdiagonal(const CMatrix& mat);
 	friend CMatrix diagPow(const CMatrix& mat, const complex& d);
+
 	friend bool issymmetric(const CMatrix& mat);
-	friend void jacobiEigenAnalysis(const CMatrix matrix, const int& maxIterations, CMatrix& eigenVectors, complex eigenValues[], int &iteraNo, int &rotationsNo);
-	friend CMatrix symmPow(const CMatrix& mat, const complex& d);
+	//friend void jacobiEigenAnalysis(const CMatrix matrix, const int& maxIterations, CMatrix& eigenVectors, complex eigenValues[], int &iteraNo, int &rotationsNo);
+	//friend CMatrix symmPow(const CMatrix& mat, const complex& d);
+	
 	friend CMatrix subColumn(const CMatrix& mat, const int& C);
 	friend complex innerProd(const CMatrix& mat1, const CMatrix& mat2);
 	friend complex columnLength(const CMatrix& mat, const int& column);
 	friend void qrDecomp(const CMatrix& mat, CMatrix& q, CMatrix& r);
-	bool equal(CMatrix m);
-	void pow(const complex& d);
+
+	friend CMatrix generalPower(const CMatrix& eigenVectors, const CMatrix& eigenValues, const complex& d);
+
 private:
 	CMatrix CMatrix::posPower(const complex& d);
-	friend CMatrix generalPower(const CMatrix& eigenVectors, const CMatrix& eigenValues, const complex& d);
 };
 #endif

@@ -9,7 +9,7 @@ using std::ostringstream;
 #define PI 3.141592653589793
 
 static complex j = complex(0.0, 1.0); // j or i (imaginary one)
-static double SENSITIVITY = 0.001; // Used only in returning the values of re/im in external containers. Because when you do operations on doubles, if the return value is zero its not actually saved as 0.00000 but instead as a very low value 0.0000001;
+static double SENSITIVITY = 0.0000000000001; // Used only in returning the values of re/im in external containers. Because when you do operations on doubles, if the return value is zero its not actually saved as 0.00000 but instead as a very low value 0.0000001;
 
 complex::complex(void) {
 	reset();
@@ -40,7 +40,7 @@ complex::complex(const string& str) {
 	bool areWeReadingFloat = false;
 	bool didWeReadRealAndImag = false; // Only if the string contains a second sign in the number
 	bool didWeEncounterImagChar = false; // Only if the string contains "j" or "i"
-	// ===== Decoding the entered string
+										 // ===== Decoding the entered string
 	for (int count = 0; count < sLength; count++) {
 		char c = str[count];
 		if (c == ' ');
@@ -178,8 +178,8 @@ complex round(const complex& z, const int& precision) {
 complex::operator const complex() { return complex(re, im); }
 complex::operator const string() { return to_string(); }
 /*complex::operator const bool() {
-	if (abs() > SENSITIVITY) return true;
-	else return false;
+if (abs() > SENSITIVITY) return true;
+else return false;
 }
 complex::operator const int() { return static_cast<int>(re); }
 complex::operator const float() { return static_cast<float>(re); }*/  // no support in c++98
@@ -609,7 +609,7 @@ complex acsch(const complex& z) {
 	return log(1.0 / z + sqrt(1.0 / pow(z, 2.0) + 1.0));
 	// or
 	return log(1.0 / z + sqrt(1.0 + pow(z, 2.0)) / abs(z)); // 8lt
-	// or
+															// or
 	return asinh(1.0 / z);
 }
 complex asech(const complex& z) {

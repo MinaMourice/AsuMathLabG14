@@ -58,7 +58,7 @@ public:
 	void operator=(const complex& z);
 	void operator=(const double& d);
 	friend complex operator-(const complex& z); // -z
-	// ===== Addition operators
+												// ===== Addition operators
 	complex operator+(const complex& z);
 	complex operator+(const double& d);
 	friend complex operator+(const double& d, const complex& z);
@@ -93,7 +93,7 @@ public:
 	complex operator~(); // conjugate
 	friend double operator<(int, const complex& z); // argument
 
-	// ===== Input and output assignments
+													// ===== Input and output assignments
 	friend void getValue(complex& z);
 	friend ostream& operator<<(ostream& stream, const complex& z);
 	friend string to_string(const complex& z);
