@@ -56,5 +56,20 @@ public:
 	double getDeterminant2();
 	CMatrix getTranspose();
 	CMatrix getInverse();
+	
+	
+	friend CMatrix sinh(const CMatrix& m);
+	friend CMatrix cosh(const CMatrix& m);
+	friend CMatrix tanh(const CMatrix& m);
+	friend CMatrix csch(const CMatrix& m);
+	friend CMatrix sech(const CMatrix& m);
+	friend CMatrix coth(const CMatrix& m);
+
+	friend CMatrix asinh(const CMatrix& m);
+	friend CMatrix acosh(const CMatrix& m);
+	friend CMatrix atanh(const CMatrix& m);
+	friend CMatrix acsch(const CMatrix& m);
+	friend CMatrix asech(const CMatrix& m);
+	friend CMatrix acoth(const CMatrix& m);
 };
 #endif
