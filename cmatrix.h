@@ -17,14 +17,14 @@ public:
 	~CMatrix(); // Destructor
 	enum MI { MI_ZEROS, MI_ONES, MI_EYE, MI_RAND, MI_VALUE }; // Constants
 
-															  // Copy functions and all its dependencies - Boula
-															  // ===
+	// Copy functions and all its dependencies - Boula
+	// ===
 	void reset(); // makes the current matrix 0*0
 	void copy(const CMatrix& m); // copies matrix m into current matrix
 	void copy(complex d); // copies the 1*1 matrix [d] into current matrix 
 	void copy(string s); // copies the string matrix into current matrix
 	string getOriginalString();
-	string getString(const int columnsToPrintEachTime = 7); // generates current matrix's string
+	string getString(const int columnsToPrintEachTimeIn = 0); // generates current matrix's string
 	CMatrix denominatorOfDiv(float f);
 	// ===
 

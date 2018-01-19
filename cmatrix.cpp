@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "cmatrix.h"
 #include "pcomplexlib.h"
 #include <math.h>
@@ -199,32 +200,57 @@ string CMatrix::getOriginalString() { // Boula
 	s = "[" + s.substr(2, s.length() - 3) + "]";
 	return s;
 }
-string CMatrix::getString(const int columnsToPrintEachTime) { // Boula
+#include <windows.h>
+string CMatrix::getString(const int columnsToPrintEachTimeIn) { // Boula
 															  // support up to 99*99 matrix
-	if (nR == 0 || nC == 0) return "\n\t[empty]\n";
+	if (nR == 0 || nC == 0) return "\n        [empty]\n";
 
+	int columnsToPrintEachTime = columnsToPrintEachTimeIn;
 	int columnSize = 20 - 2 * columnsToPrintEachTime;
+	if (columnsToPrintEachTimeIn < 1) {
+		int maxElementWidth = to_string(values[0][0]).length();
+		for (int iR = 0; iR < nR; iR++)
+			for (int iC = 0; iC < nC; iC++)
+				if (to_string(values[iR][iC]).length() > maxElementWidth) maxElementWidth = to_string(values[iR][iC]).length();
+
+		int terminalColumns;
+		This is here to give you an error!
+		// Uncomment the code required per your operating system only!
+		
+		// If windows
+		/*CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		terminalColumns = csbi.srWindow.Right - csbi.srWindow.Left + 1;*/
+		
+		// If linux
+		/*struct winsize size;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+		terminalColumnWidth = size.ws_col;*/
+
+		columnSize = maxElementWidth + 1;
+		int rowReservedSpace = 8 + 9 + 8;
+		columnsToPrintEachTime = ((terminalColumns - rowReservedSpace) / columnSize);
+		if (columnsToPrintEachTime < 1) columnsToPrintEachTime = 1;
+	}
+
 	int printedColumns = 0;
 	string s = "\n";
 	bool biggerThanSix = nC > columnsToPrintEachTime;
 	while (printedColumns < nC) {
-		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "\tColumns " + to_string(printedColumns + 1) + " through " + to_string(printedColumns + columnsToPrintEachTime) + ":\n";
+		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "        Columns " + to_string(printedColumns + 1) + " through " + to_string(printedColumns + columnsToPrintEachTime) + ":\n";
 		else
 		{
-			if (printedColumns + 1 != nC) s += "\tColumns " + to_string(printedColumns + 1) + " through " + to_string(nC) + ":\n";
-			else s += "\tColumn " + to_string(printedColumns + 1) + ":\n";
+			if (printedColumns + 1 != nC) s += "        Columns " + to_string(printedColumns + 1) + " through " + to_string(nC) + ":\n";
+			else s += "        Column " + to_string(printedColumns + 1) + ":\n";
 		}
 		int columnsToPrint = ((nC - printedColumns) >= columnsToPrintEachTime) ? columnsToPrintEachTime : nC - printedColumns;
 		for (int iR = 0; iR < nR; iR++)
 		{
-			if (biggerThanSix) s += "\tRow " + to_string(iR + 1) + ": "; else s += "\tRow " + to_string(iR + 1) + ": ";
+			if (biggerThanSix) s += "        Row " + to_string(iR + 1) + ": "; else s += "        Row " + to_string(iR + 1) + ": ";
 			if (iR < 9 && nR >= 9) s += " "; // 9 is row number 10
-			s += "\t";
+			s += "        ";
 			for (int iC = 0; iC < columnsToPrint; iC++)
 			{
-				/*char buffer[70];
-				snprintf(buffer, 70, "%g\t", values[iR][printedColumns + iC]);
-				s += buffer;*/
 				string k;
 				if (values[iR][printedColumns + iC] >= 0.00) k = " ";
 				k += to_string(values[iR][printedColumns + iC]);
