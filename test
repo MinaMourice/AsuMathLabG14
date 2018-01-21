@@ -13,12 +13,23 @@
 using namespace std;
 
 
-bool isFloat(string myString) {
+bool isFloat(string myString) 
+{
 	istringstream iss(myString);
 	double f;
 	iss >> noskipws >> f; // noskipws considers leading whitespace invalid
 						  // Check the entire string was consumed and if either failbit or badbit is set
 	return iss.eof() && !iss.fail();
+}
+
+bool isComplex(string mystring)
+{
+	std::size_t found = mystring.find_first_of("ij");
+	if (found == std::string::npos)
+	{
+		return false;
+	}
+	return true;
 }
 
 
@@ -117,6 +128,7 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 	{
 		s.erase(s.find_first_of("["), 1);
 		s.erase(s.find_last_of("]"), 1);
+		cout << "erase :" << s << endl;
 		/*istringstream iss3(s);
 		//cout << "start" << endl;
 		while (getline(iss3, token, ' '))
@@ -213,9 +225,11 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 				s.erase(colon, 1);
 			else
 			{
-				s.erase(found_par1, 1);
-				s.erase(found_par2 - 1, 1);
-
+				//s.erase(found_par1, 1);
+				//s.erase(found_par2 - 1, 1);
+				s.erase(remove(s.begin(), s.end(), '['), s.end());
+				s.erase(remove(s.begin(), s.end(), ']'), s.end());
+				cout << "Second erase :" << s<<endl;
 			}
 
 			found_par1 = s.find_first_of("[", found_par1 + 1);
@@ -230,17 +244,19 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 			while (getline(iss2, token, ' '))
 			{
 				//cout << token << endl;
-				if (!isFloat(token) && token.find_first_not_of(' ') != string::npos)
+				if ((!isFloat(token) && token.find_first_not_of(' ') != string::npos ) && (!isComplex(token)))
 				{
+					cout << token << endl;
 					token2_pos = s.find(token);
 					//					doOperation(token, varNames, varContent, variablesNo);
-					s.replace(token2_pos, token.length(), token);
+					s.replace(token2_pos, token.length(),token);
+					//s.replace(token2_pos, token.length(),"temp");
 				}
 			}
 		}
 		//cout << s << endl;
-		s.erase(remove(s.begin(), s.end(), '['), s.end());
-		s.erase(remove(s.begin(), s.end(), ']'), s.end());
+	//	s.erase(remove(s.begin(), s.end(), '['), s.end());
+	//	s.erase(remove(s.begin(), s.end(), ']'), s.end());
 		s = "[" + s + "]";
 	}
 	//else
@@ -291,21 +307,21 @@ int main()
 	string varContent[100];
 	int variableNo = 4;
 	varNames[0] = "c";
-	varContent[0] = "[0.9998;1.9683;-555]";
-	varNames[1] = "ce";
-	varContent[1] = "[2.2 3.3;5.5 -7.89;9.65 x]";
-	varNames[2] = "x";
-	varContent[2] = "5";
+	varContent[0] = "[0.9998 1.9683 -555]";
+	varNames[2] = "ce";
+	varContent[2] = "[c;5.5 -7.89 x;9.65 x x]";
+	varNames[1] = "x";
+	varContent[1] = "5i";
 	varNames[3] = "c1";
 	varContent[3] = "[2.2 3.3;5.5 -7.89;9.65 x]";
 	cout << varNames[2] << "=" << varContent[2] << endl;
-	defMat("g     =[ce c]", varNames, varContent, variableNo);
+	defMat("g                                =[ce]", varNames, varContent, variableNo);
 	//cout << varNames[4]<<"="<<varContent[4] << endl;
 
-	defMat("o3=[[g;g;g;g] [g;g;g;g]]", varNames, varContent, variableNo);
+//	defMat("o3=[[g;g;g;g] [g;g;g;g]]", varNames, varContent, variableNo);
 	//cout << varNames[5] << "=" << varContent[5] << endl;
 
-	defMat("e=[6 4 5]", varNames, varContent, variableNo);
+//	defMat("e=[6 4 5]", varNames, varContent, variableNo);
 	for (int i = 0; i<variableNo; i++)
 		cout << varNames[i] << "=" << varContent[i] << endl;
 	//	defMat("g=[ce c]", varNames, varContent, variableNo);
