@@ -560,7 +560,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	}
 	for (int index = 0; index<stack_index; index++)
 	{
-		if (operations[index] == "*" || operations[index] == "/" || operations[index] == ".*" || operations[index] == "./")
+		if (operations[index] == "*" || operations[index] == "/" || operations[index] == ".*" || operations[index] == "./"||operations[index] == "\\"||operations[index] == ".\\")
 		{
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
 			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
@@ -604,9 +604,23 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	}
 	else if (stack_index == 4 && operations[1] == "="&&parameters[0] != "temp"&& parameters[3]==";")
 	{
+		bool variablexsist=false;
+		for(int checkingindex=0 ; checkingindex<variablesNo;checkingindex++)
+		{
+			if(varNames[checkingindex]==parameters[0])
+			{
+				variablexsist=true;
+				varNames[checkingindex] = parameters[0];
+				varContent[checkingindex] = parameters[2];
+				break;
+			}
+		}
+		if(variablexsist==false)
+		{
 		varNames[variablesNo] = parameters[0];
 		varContent[variablesNo] = parameters[2];
 		variablesNo++;
+		}
 	}
 	else if (stack_index == 3 && operations[1] == "="&&parameters[0] == "temp")
 	{
@@ -614,9 +628,23 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	}
 	else if (stack_index == 3  && operations[1] == "=" &&parameters[0] != "temp" )
 	{
+		bool variablexsist=false;
+		for(int checkingindex=0 ; checkingindex<variablesNo;checkingindex++)
+		{
+			if(varNames[checkingindex]==parameters[0])
+			{
+				variablexsist=true;
+				varNames[checkingindex] = parameters[0];
+				varContent[checkingindex] = parameters[2];
+				break;
+			}
+		}
+		if(variablexsist==false)
+		{
 		varNames[variablesNo] = parameters[0];
 		varContent[variablesNo] = parameters[2];
 		variablesNo++;
+		}
 		print(parameters[0], varNames, varContent,variablesNo);
 	}
 	else  s = parameters[0];
