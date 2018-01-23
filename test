@@ -66,7 +66,7 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 				found_var = varContent[i].find(varNames[i], found_var + 1);
 			}
 		}
-	} 
+	}
 	/*
 	for (int i = 0; i < variablesNo; i++)
 	{
@@ -128,7 +128,7 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 	{
 		s.erase(s.find_first_of("["), 1);
 		s.erase(s.find_last_of("]"), 1);
-		cout << "erase :" << s << endl;
+		//cout << "erase :" << s << endl;
 		/*istringstream iss3(s);
 		//cout << "start" << endl;
 		while (getline(iss3, token, ' '))
@@ -229,7 +229,7 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 				//s.erase(found_par2 - 1, 1);
 				s.erase(remove(s.begin(), s.end(), '['), s.end());
 				s.erase(remove(s.begin(), s.end(), ']'), s.end());
-				cout << "Second erase :" << s<<endl;
+			//	cout << "Second erase :" << s<<endl;
 			}
 
 			found_par1 = s.find_first_of("[", found_par1 + 1);
@@ -246,11 +246,11 @@ void defMat(string s, string varNames[100], string varContent[100], int& variabl
 				//cout << token << endl;
 				if ((!isFloat(token) && token.find_first_not_of(' ') != string::npos ) && (!isComplex(token)))
 				{
-					cout << token << endl;
+					//cout << token << endl;
 					token2_pos = s.find(token);
 					//					doOperation(token, varNames, varContent, variablesNo);
-					s.replace(token2_pos, token.length(),token);
-					//s.replace(token2_pos, token.length(),"temp");
+					//s.replace(token2_pos, token.length(),token);
+					s.replace(token2_pos, token.length(),"temp");
 				}
 			}
 		}
