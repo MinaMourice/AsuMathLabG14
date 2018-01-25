@@ -355,7 +355,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	}
 	// sperating it to 2 arrays , Parameters array and operators array
 	string parameters[100], operations[100];
-	string operators = "=+-\\*/.^'!();";
+	string operators = "=+-\\*/.^'!()&|;";
 	int stack_index = 0;
 	for (int string_index = 0; string_index<s.length(); string_index++)
 	{
@@ -502,6 +502,29 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 							solveArgumentindex -= 3;
 						}
 					}
+
+					//do bitwise and , or operations
+					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
+					{
+						if (operations[solveArgumentindex] == "&" || operations[solveArgumentindex] == "|")
+						{
+							
+							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
+							parameters[solveArgumentindex - 1] = tempstr;
+							operations[solveArgumentindex] = "";
+							parameters[solveArgumentindex + 1] = "";
+							//remove the empty elements in the stack
+							for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+							{
+								operations[WBindex] = operations[WBindex + 2];
+								parameters[WBindex] = parameters[WBindex + 2];
+							}
+							stack_index -= 2;
+							closingArgumentIndex -= 2;
+							solveArgumentindex -= 3;
+						}
+					}
+
 	/*///////////////////
 	cout<<stack_index<<endl;
 	for(int i=0 ; i < stack_index ; i++)
@@ -551,13 +574,14 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 	}
 
+
 	// if we find "(" @ index and index+2=")" then it might be sins ,cos ,.. etc 
 	for (int index = 0; index<stack_index; index++)
 	{
 		if (operations[index] == "(" && operations[index + 2] == ")")
 		{
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1] + operations[index + 2], varNames, varContent, variablesNo);
-		parameters[index - 1] = tempstr;
+			parameters[index - 1] = tempstr;
 			operations[index] = "";
 			parameters[index + 1] = "";
 			operations[index + 2] = "";
@@ -616,6 +640,27 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	for (int index = 0; index<stack_index; index++)
 	{
 		if (operations[index] == "+" || operations[index] == "-" || operations[index] == ".+" || operations[index] == ".-")
+		{
+			//cout<<parameters[index - 1] + operations[index] + parameters[index + 1]<<endl;
+			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
+			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
+			parameters[index - 1] = tempstr;
+			operations[index] = "";
+			parameters[index + 1] = "";
+			//remove the empty elements in the stack
+			for (int WBindex = index; WBindex<stack_index; WBindex++)
+			{
+				operations[WBindex] = operations[WBindex + 2];
+				parameters[WBindex] = parameters[WBindex + 2];
+			}
+			stack_index -= 2;
+			index -= 3;
+		}
+	}
+
+	for (int index = 0; index<stack_index; index++)
+	{
+		if (operations[index] == "&" || operations[index] == "|" )
 		{
 			//cout<<parameters[index - 1] + operations[index] + parameters[index + 1]<<endl;
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
