@@ -841,6 +841,75 @@ void CMatrix::operator.^=(double&m)
 			m.values[iR][iC] = m.values[iR][iC]^num;
 }
 
+
+
+CMatrix CMatrix::operator-()
+{
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] = -values[iR][iC];
+return *this;
+}
+
+istream& operator >> (istream &is, CMatrix& m)
+{
+string s;
+getline(is, s, ']');
+s+="]";
+m = CMatrix(s);
+return is;
+}
+
+ostream& operator << (ostream &os, CMatrix& m)
+{
+os<<m.getString();
+return os;
+}
+
+
+
+CMatrix::operator const string()
+{
+return getOriginalString();
+}
+
+//pre post increment and decrement
+
+void CMatrix::operator++()
+{
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] ++;
+return *this;
+}
+
+void CMatrix::operator++(int)
+{
+CMatrix c =*this ;
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		c.values[iR][iC] ++;
+return c ;
+}
+
+void CMatrix::operator--()
+{
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] --;
+return *this;
+}
+
+void CMatrix::operator--(int)
+{
+CMatrix c = *this ;
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		c.values[iR][iC] ++;
+return c ;
+}
+
+
 //Hanaa
 
 
