@@ -86,8 +86,12 @@ Run ./matrix command to run the library in your terminal:
 ## ToDo
 
 * [x] Matrix trigonometric functions.
+* [x] Matrix inverse trigonometric functions.
+* [x] Matrix hyperbolic functions.
+* [x] Matrix inverse hyperbolic functions.
+* [x] Matrix bitWise functions.
 * [x] Matrix logarithmic and exponential functions.
-* [ ] Matrix roots and power functions.
+* [X] Matrix roots and power functions.
 * [ ] Error Handling.
 
 ## Additional
