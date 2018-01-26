@@ -15,7 +15,14 @@ public:
 	/*constractors and destractors*/
 	CMatrix(); // default Constructor 
 	~CMatrix(); // Destructor
+	//constractors with diff arguments
+	CMatrix(int nR, int nC, int initialization = MI_ZEROS, double initializationValue = 0.0);
+	CMatrix(int nR, int nC, double first, ...);
+	CMatrix(CMatrix& m);
+	CMatrix(double d);
+	CMatrix(string s);
 	enum MI { MI_ZEROS, MI_ONES, MI_EYE, MI_RAND, MI_VALUE }; // Constants
+	
 
 	// Copy functions and all its dependencies - Boula
 	// ===
@@ -26,16 +33,29 @@ public:
 	string getOriginalString();
 	string getString(const int columnsToPrintEachTimeIn = 0); // generates current matrix's string
 	CMatrix denominatorOfDiv(float f);
+
 	// ===
 
 	// Constructors With Different Passing Parameters - Beshoy
-	CMatrix(int nR, int nC, int initialization = MI_ZEROS, complex initializationValue = 0.0);
-	CMatrix(int nR, int nC, complex first, ...);
-	CMatrix(CMatrix& m);
-	CMatrix(complex d);
-	CMatrix(string s);
+	
+	void add(CMatrix& m);
+	void sub(CMatrix& m);
+	void mul(CMatrix& m);
+	void div(CMatrix& m);
+	
+	CMatrix getCofactor(int r, int c);
+	void swapRow(int row1, int row2);
+	double getDeterminant();
+	CMatrix getTranspose();
+	CMatrix getInverse();
+	
+	CMatrix dotMul(CMatrix& m);
+	CMatrix dotDiv(CMatrix& m);
+	CMatrix dotPow(double d);
+	CMatrix lDiv(CMatrix& m);
+	CMatrix dotLDiv(CMatrix& m);
 
-	/*operators*/
+
 	CMatrix operator=(const CMatrix& m);
 	void operator+=(CMatrix& m);
 	CMatrix operator+(CMatrix& m);
@@ -46,41 +66,19 @@ public:
 	void operator/=(CMatrix& m);
 	CMatrix operator/(CMatrix& m);
 
-	////////////////////Core Operation Team/////////////////////
-	void add(CMatrix& m);
-	void sub(CMatrix& m);
-	void mul(CMatrix& m);
-	void div(CMatrix& m);
-	CMatrix getCofactor(int r, int c);
-	void swapRow(int row1, int row2);
-	complex getDeterminant();
-	complex getDeterminant2();
-	CMatrix getTranspose();
-	CMatrix getInverse();
 
-	// Strassen multiplaying
-	CMatrix subMatrix(const int& rowToStartAt, const int& columnToStartAt, const int& rowsNo, const int& columnsNo);
-	friend CMatrix concatinate(const CMatrix& mat11, const CMatrix& mat12, const CMatrix& mat21, const CMatrix& mat22);
-	void smul(CMatrix& m);
+	friend CMatrix sin(const CMatrix& m); 
+	friend CMatrix cos(const CMatrix& m); 
+	friend CMatrix tan(const CMatrix& m);
+	friend CMatrix csc(const CMatrix& m);
+	friend CMatrix sec(const CMatrix& m);
+	friend CMatrix cot(const CMatrix& m);
+	friend CMatrix asin(const CMatrix& m);
+	friend CMatrix acos(const CMatrix& m);
+	friend CMatrix atan(const CMatrix& m);
+	friend CMatrix exp(const CMatrix& m); 
+	friend CMatrix log(const CMatrix& m); 
+	friend CMatrix log10(const CMatrix& m);
 
-	// Matrices powers
-	void pow(const complex& d);
-
-	friend bool isdiagonal(const CMatrix& mat);
-	friend CMatrix diagPow(const CMatrix& mat, const complex& d);
-
-	friend bool issymmetric(const CMatrix& mat);
-	//friend void jacobiEigenAnalysis(const CMatrix matrix, const int& maxIterations, CMatrix& eigenVectors, complex eigenValues[], int &iteraNo, int &rotationsNo);
-	//friend CMatrix symmPow(const CMatrix& mat, const complex& d);
-	
-	friend CMatrix subColumn(const CMatrix& mat, const int& C);
-	friend complex innerProd(const CMatrix& mat1, const CMatrix& mat2);
-	friend complex columnLength(const CMatrix& mat, const int& column);
-	friend void qrDecomp(const CMatrix& mat, CMatrix& q, CMatrix& r);
-
-	friend CMatrix generalPower(const CMatrix& eigenVectors, const CMatrix& eigenValues, const complex& d);
-
-private:
-	CMatrix CMatrix::posPower(const complex& d);
 };
 #endif
