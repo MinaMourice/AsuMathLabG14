@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include "cmatrix.h"
+#include "pcomplexlib.h"
 #include <math.h>
 #include <cmath>
 #include <stdarg.h>
@@ -14,7 +16,9 @@ CMatrix::~CMatrix()
 {
 	reset();
 }
+
 CMatrix::CMatrix(int nR, int nC, int initialization, double initializationValue) 
+
 {
 	this->nR = nR;
 	this->nC = nC;
@@ -22,10 +26,12 @@ CMatrix::CMatrix(int nR, int nC, int initialization, double initializationValue)
 	{
 		values = NULL; return;
 	}
+
 	values = new double*[nR];
 	for (int iR = 0; iR < nR; iR++)
 	{
 		values[iR] = new double[nC];
+
 		for (int iC = 0; iC < nC; iC++)
 		{
 			switch (initialization)
@@ -44,7 +50,9 @@ CMatrix::CMatrix(int nR, int nC, int initialization, double initializationValue)
 		}
 	}
 }
+
 CMatrix::CMatrix(int nR, int nC, double first, ...) 
+
 {
 	this->nR = nR;
 	this->nC = nC;
@@ -52,15 +60,17 @@ CMatrix::CMatrix(int nR, int nC, double first, ...)
 	{
 		values = NULL; return;
 	}
-	values = new double*[nR];
+	values = new complex*[nR];
 	va_list va;
 	va_start(va, first);
 	for (int iR = 0; iR < nR; iR++)
 	{
+
 		values[iR] = new double[nC];
+
 		for (int iC = 0; iC < nC; iC++)
 		{
-			values[iR][iC] = (iC == 0 && iR == 0) ? first : va_arg(va, double);
+			values[iR][iC] = (iC == 0 && iR == 0) ? first : va_arg(va, complex);
 		}
 	}
 	va_end(va);
@@ -77,6 +87,7 @@ CMatrix::CMatrix(string s)
 	values = NULL;
 	copy(s);
 }
+
 CMatrix::CMatrix(double d) 
 {
 	nR = nC = 0;
@@ -84,7 +95,9 @@ CMatrix::CMatrix(double d)
 	copy(d);
 }
 
+
 void CMatrix::reset() { 
+
 	if (values) {
 		for (int i = 0; i < nR; i++)
 			delete[] values[i];
@@ -98,6 +111,7 @@ void CMatrix::copy(const CMatrix& m) {
 	this->nR = m.nR;
 	this->nC = m.nC;
 	if ((nR*nC) == 0) { values = NULL; return; }
+
 	values = new double*[nR];
 	for (int iR = 0; iR < nR; iR++) {
 		values[iR] = new double[nC];
@@ -105,11 +119,12 @@ void CMatrix::copy(const CMatrix& m) {
 	}
 }
 void CMatrix::copy(double d) { 
+
 	reset();
 	this->nR = 1;
 	this->nC = 1;
-	values = new double*[1];
-	values[0] = new double[1];
+	values = new complex*[1];
+	values[0] = new complex[1];
 	values[0][0] = d;
 }
 void CMatrix::copy(string s) { 
@@ -139,10 +154,12 @@ void CMatrix::copy(string s) {
 	if (!trueLine) nr--;
 	if (!trueColoum) nc--;
 	nR = nr + 1; nC = nc + 1;
+
 	values = new double*[nR];
 	for (int iR = 0; iR < nR; iR++)
 	{
 		values[iR] = new double[nC];
+
 		for (int iC = 0; iC < nC; iC++)
 		{
 			values[iR][iC] = atof(temp_matrix[iR][iC].c_str());
@@ -154,18 +171,22 @@ ostringstream os;
 os << t;
 return os.str();
 }*/
+
 /*
 string to_string(const int& t) {
+
 	ostringstream os;
 	os << t;
 	return os.str();
 }
-string to_string(const double& t) {
+string to_string(const complex& t) {
 	ostringstream os;
 	os << t;
 	return os.str();
 }*/
+
 /*string to_string_with_precision(double value, int n = 6)
+
 {
 string sValue = to_string(value);
 if (value < 0) {
@@ -196,32 +217,64 @@ string CMatrix::getOriginalString() {
 	s = "[" + s.substr(2, s.length() - 3) + "]";
 	return s;
 }
-string CMatrix::getString(const int columnsToPrintEachTime) { 
+
+#include <windows.h>
+string CMatrix::getString(const int columnsToPrintEachTimeIn) { // Boula
 															  // support up to 99*99 matrix
-	if (nR == 0 || nC == 0) return "\n\t[empty]\n";
+	if (nR == 0 || nC == 0) return "\n        [empty]\n";
+
+	int columnsToPrintEachTime = columnsToPrintEachTimeIn;
+	int columnSize = 20 - 2 * columnsToPrintEachTime;
+	if (columnsToPrintEachTimeIn < 1) {
+		int maxElementWidth = to_string(values[0][0]).length();
+		for (int iR = 0; iR < nR; iR++)
+			for (int iC = 0; iC < nC; iC++)
+				if (to_string(values[iR][iC]).length() > maxElementWidth) maxElementWidth = to_string(values[iR][iC]).length();
+
+		int terminalColumns;
+		This is here to give you an error!
+		// Uncomment the code required per your operating system only!
+		
+		// If windows
+		/*CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		terminalColumns = csbi.srWindow.Right - csbi.srWindow.Left + 1;*/
+		
+		// If linux
+		/*struct winsize size;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+		terminalColumnWidth = size.ws_col;*/
+
+		columnSize = maxElementWidth + 1;
+		int rowReservedSpace = 8 + 9 + 8;
+		columnsToPrintEachTime = ((terminalColumns - rowReservedSpace) / columnSize);
+		if (columnsToPrintEachTime < 1) columnsToPrintEachTime = 1;
+	}
+
 
 	int columnSize = 20 - 2 * columnsToPrintEachTime;
 	int printedColumns = 0;
 	string s = "\n";
 	bool biggerThanSix = nC > columnsToPrintEachTime;
 	while (printedColumns < nC) {
-		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "\tColumns " + to_string(printedColumns + 1) + " through " + to_string(printedColumns + columnsToPrintEachTime) + ":\n";
+
+		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "        Columns " + to_string(printedColumns + 1) + " through " + to_string(printedColumns + columnsToPrintEachTime) + ":\n";
 		else
 		{
-			if (printedColumns + 1 != nC) s += "\tColumns " + to_string(printedColumns + 1) + " through " + to_string(nC) + ":\n";
-			else s += "\tColumn " + to_string(printedColumns + 1) + ":\n";
+			if (printedColumns + 1 != nC) s += "        Columns " + to_string(printedColumns + 1) + " through " + to_string(nC) + ":\n";
+			else s += "        Column " + to_string(printedColumns + 1) + ":\n";
+
 		}
 		int columnsToPrint = ((nC - printedColumns) >= columnsToPrintEachTime) ? columnsToPrintEachTime : nC - printedColumns;
 		for (int iR = 0; iR < nR; iR++)
 		{
-			if (biggerThanSix) s += "\tRow " + to_string(iR + 1) + ": "; else s += "\tRow " + to_string(iR + 1) + ": ";
+
+			if (biggerThanSix) s += "        Row " + to_string(iR + 1) + ": "; else s += "        Row " + to_string(iR + 1) + ": ";
 			if (iR < 9 && nR >= 9) s += " "; // 9 is row number 10
-			s += "\t";
+			s += "        ";
+    
 			for (int iC = 0; iC < columnsToPrint; iC++)
 			{
-				/*char buffer[70];
-				snprintf(buffer, 70, "%g\t", values[iR][printedColumns + iC]);
-				s += buffer;*/
 				string k;
 				if (values[iR][printedColumns + iC] >= 0.00) k = " ";
 				k += to_string(values[iR][printedColumns + iC]);
@@ -246,6 +299,7 @@ CMatrix CMatrix::denominatorOfDiv(float f) {
 }
 
 
+
 void CMatrix::add(CMatrix& m) 
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
@@ -254,6 +308,7 @@ void CMatrix::add(CMatrix& m)
 			values[iR][iC] += m.values[iR][iC];
 }
 void CMatrix::sub(CMatrix& m) 
+
 {
 	if (nR != m.nR || nC != m.nC)
 		throw("Invalid matrix dimension");
@@ -261,6 +316,7 @@ void CMatrix::sub(CMatrix& m)
 		for (int iC = 0; iC < nC; iC++)
 			values[iR][iC] -= m.values[iR][iC];
 }
+
 void CMatrix::mul(CMatrix& m) 
 {
 	//cout << nR << "*" << nC << " " << m.nR << "*" << m.nC << endl;
@@ -277,7 +333,7 @@ void CMatrix::mul(CMatrix& m)
 	copy(r);
 }
 void CMatrix::div(CMatrix& m) {
-	//double Determinant = m.getDeterminant();
+	//complex Determinant = m.getDeterminant();
 	//if (Determinant == 0) { cout << "No unique solution\n"; return; throw("No unique solution"); }
 	CMatrix x;
 	x.copy(m.getInverse());
@@ -340,7 +396,7 @@ CMatrix CMatrix::getCofactor(int r, int c)
 	return m;
 }
 void CMatrix::swapRow(int row1, int row2) {
-	double tmp, *p1, *p2;
+	complex tmp;
 
 	if (row1 == row2) return;
 	for (int i = 0; i < nC; i++) {
@@ -349,7 +405,7 @@ void CMatrix::swapRow(int row1, int row2) {
 		values[row2][i] = tmp;
 	}
 }
-double CMatrix::getDeterminant() {
+complex CMatrix::getDeterminant() {
 	CMatrix m = *this;
 
 	if (m.nR != m.nC)throw("Invalid matrix dimension");
@@ -363,7 +419,7 @@ double CMatrix::getDeterminant() {
 		for (int k = i + 1; k < nR; k++)
 		{
 			int zeroflag = 1;
-			double Ratio = m.values[i][0] / m.values[k][0];
+			complex Ratio = m.values[i][0] / m.values[k][0];
 			int Ratioflag = 1;
 			for (int j = 0; j < nC; j++)
 			{
@@ -380,7 +436,7 @@ double CMatrix::getDeterminant() {
 		for (int k = i + 1; k < nR; k++)
 		{
 			int zeroflag = 1;
-			double Ratio = m.values[0][i] / m.values[0][k];
+			complex Ratio = m.values[0][i] / m.values[0][k];
 			int Ratioflag = 1;
 			for (int j = 0; j < nC; j++)
 			{
@@ -392,15 +448,17 @@ double CMatrix::getDeterminant() {
 		}
 	}
 
-	int maxRow, dia;
-	double max, temp;
+	int maxRow;
+	complex max, temp;
 	int sign = 1;
 	for (int dia = 0; dia < nR; dia++) {
 		maxRow = dia, max = abs(m.values[dia][dia]);
 
-		for (int iR = dia + 1; iR < nR; iR++)
-			if ((temp = abs(m.values[iR][dia])) > max)
+		for (int iR = dia + 1; iR < nR; iR++) {
+			temp = abs(m.values[iR][dia]);
+			if (temp > max)
 				maxRow = iR, max = temp;
+		}
 
 		if ((dia != maxRow) || (abs(m.values[dia][dia]) <= 0.0000000000000000001)) {
 			m.swapRow(dia, maxRow);
@@ -416,17 +474,17 @@ double CMatrix::getDeterminant() {
 		}
 	}
 
-	double determinant = 1.0;
+	complex determinant = 1.0;
 	for (int i = 0; i < nR; i++) determinant *= m.values[i][i];
 
 	return sign * determinant;
 }
 
+
 CMatrix CMatrix::getInverse() 
 {
 	if (nR != nC)throw("Invalid matrix dimension");
-	double Determinant = getDeterminant();
-
+	complex Determinant = getDeterminant();
 	if (Determinant == 0) throw("Invalid matrix Inverse");
 	CMatrix r(nR, nC);
 	int m = 1;
@@ -453,7 +511,9 @@ CMatrix CMatrix::getInverse()
 
 	return r;
 }
-CMatrix CMatrix::getTranspose(){
+
+CMatrix CMatrix::getTranspose() //Mina Magdy
+{
 	CMatrix M(nC, nR);
 	for (int iR = 0; iR < nR; iR++)
 		for (int iC = 0; iC < nC; iC++)

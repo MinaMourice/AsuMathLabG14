@@ -2,13 +2,14 @@
 #define CMATRIX_H
 
 #include <string>
+#include "pcomplexlib.h"
 
 using namespace std;
 
 class CMatrix {
 private:
 	int nR, nC;    // Row & column Number
-	double** values;  // pointer to pointer values (Matrix r*c)
+	complex** values;  // pointer to pointer values (Matrix r*c)
 
 public:
 	/*constractors and destractors*/
@@ -23,14 +24,19 @@ public:
 	enum MI { MI_ZEROS, MI_ONES, MI_EYE, MI_RAND, MI_VALUE }; // Constants
 	
 
-        // Copy functions and all its dependencies
+	// Copy functions and all its dependencies - Boula
+	// ===
 	void reset(); // makes the current matrix 0*0
 	void copy(const CMatrix& m); // copies matrix m into current matrix
-	void copy(double d); // copies the 1*1 matrix [d] into current matrix 
+	void copy(complex d); // copies the 1*1 matrix [d] into current matrix 
 	void copy(string s); // copies the string matrix into current matrix
 	string getOriginalString();
-	string getString(const int columnsToPrintEachTime = 7); // generates current matrix's string
+	string getString(const int columnsToPrintEachTimeIn = 0); // generates current matrix's string
 	CMatrix denominatorOfDiv(float f);
+
+	// ===
+
+	// Constructors With Different Passing Parameters - Beshoy
 	
 	void add(CMatrix& m);
 	void sub(CMatrix& m);
@@ -49,6 +55,7 @@ public:
 	CMatrix lDiv(CMatrix& m);
 	CMatrix dotLDiv(CMatrix& m);
 
+
 	CMatrix operator=(const CMatrix& m);
 	void operator+=(CMatrix& m);
 	CMatrix operator+(CMatrix& m);
@@ -58,6 +65,7 @@ public:
 	CMatrix operator*(CMatrix& m);
 	void operator/=(CMatrix& m);
 	CMatrix operator/(CMatrix& m);
+
 
 	friend CMatrix sin(const CMatrix& m); 
 	friend CMatrix cos(const CMatrix& m); 
