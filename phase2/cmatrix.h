@@ -43,6 +43,47 @@ public:
 	CMatrix operator*(CMatrix& m);
 	void operator/=(CMatrix& m);
 	CMatrix operator/(CMatrix& m);
+	
+	
+	CMatrix CMatrix::operator-()
+	CMatrix::operator const string()
+	void CMatrix::operator++()
+	void CMatrix::operator++(int)
+	void CMatrix::operator--()
+	void CMatrix::operator--(int)
+
+	istream& operator >> (istream &is, CMatrix& m)
+	ostream& operator << (ostream &os, CMatrix& m)
+
+	CMatrix CMatrix::operator\ (CMatrix&m)
+	void CMatrix::operator\=(CMatric&m)
+	void CMatrix::operator.*=(CMatrix&m)
+	void CMatrix::operator.^=(CMatrix&m)
+	void CMatrix::operator./=(CMatrix&m)
+	void CMatrix::operator.\=(CMatrix&m)
+	CMatrix CMatrix::operator.*(CMatrix&m)
+	CMatrix CMatrix::operator.^(CMatrix&m)
+	CMatrix CMatrix::operator./(CMatrix&m)
+	CMatrix CMatrix::operator.\(CMatrix&m)
+	void CMatrix::operator==(CMatrix&m)
+	void CMatrix::operator!=(CMatrix&m)
+	void CMatrix::operator~=(CMatrix&m)
+	CMatrix CMatrix::operator> (CMatrix&m)
+	CMatrix CMatrix::operator< (CMatrix&m)
+	void CMatrix::operator>=(CMatrix&m)
+	void CMatrix::operator<=(CMatrix&m)
+	void CMatrix::operator=>(CMatrix&m)
+	void CMatrix::operator=<(CMatrix&m)
+	CMatrix CMatrix::operator& (CMatrix&m)
+	CMatrix CMatrix::operator| (CMatrix&m)
+	CMatrix CMatrix::operator.*(double&m)
+	void CMatrix::operator.*=(double&m)
+	CMatrix CMatrix::operator./(double&m)
+	void CMatrix::operator./=(double&m)
+	CMatrix CMatrix::operator.\(double&m)
+	void CMatrix::operator.\=(double&m)
+	CMatrix CMatrix::operator.^(double&m)
+	void CMatrix::operator.^=(double&m)
 
 	
 	void add(CMatrix& m);
