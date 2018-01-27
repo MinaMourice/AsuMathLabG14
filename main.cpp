@@ -7,6 +7,7 @@ void go_space(string &input , char ch);
 bool validate_brackets(string input);
 void matrix_limit(string &input);
 string get_name(string input);
+void sequence_operators(string input);
 map<string, pair<string, pair<int,int> > > matrix_data;
 
 int main(){
@@ -22,6 +23,9 @@ int main(){
 	}
 }
 void errors_handler(string input){
+	// check sequenced operators 
+	sequence_operators(input);
+	
 	// guarantee every special char have spaces before and after
 	string matrix_name =  get_name(input);
 	matrix_limit(input);
@@ -144,4 +148,13 @@ string get_name(string input){
 		if(input[i] != ' ') ret += input[i];
 	}
 	return ret;
+}
+
+void sequence_operators(string input){
+	map<char,int> mat_checker;
+	mat_checker['/'] = 1 , mat_checker['-'] = 1 , mat_checker['+'] = 1 , mat_checker['*'] = 1;
+	for(int i = 1 ; i < input.size() ; i++){
+		char ch = input[i] , prev_ch = input[i-1];
+		if(mat_checker[ch] == 1 && mat_checker[prev_ch] == 1) throw("sequenced operators");
+	}
 }
