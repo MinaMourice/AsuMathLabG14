@@ -499,6 +499,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 
 	}
 
+
 	//solve factorial or transpose operations
 	for (int index = 0; index<stack_index; index++)
 	{
@@ -520,12 +521,13 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	//slove arguments
 
 	//solve arguments "(" do some operations")"
-	bool simpletrignometricfn_exist=false;
+	
 	bool more_arguments = false;
 	do
 	{
 	for (int index = stack_index-1; index>0; index--) //index is the index of opening arguments
 	{
+		bool simpletrignometricfn_exist=false;
 		if (operations[index] == "("/*&&(operations[index]=="*"||operations[index]=="/")*/)
 		{
 			for (int closingArgumentIndex = index; closingArgumentIndex<stack_index; closingArgumentIndex++)
@@ -573,9 +575,9 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 								parameters[WBindex] = parameters[WBindex + 3];
 							}
 							stack_index -= 3;
-							index -= 4;
-							if(solveArgumentindex==index&&closingArgumentIndex==index+2) {simpletrignometricfn_exist=true; break;}
 							
+							if(solveArgumentindex==index&&closingArgumentIndex==index+2) {simpletrignometricfn_exist=true; break;}
+							index -= 4;
 						}
 					}	
 					if(simpletrignometricfn_exist) break;
@@ -653,7 +655,6 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 					}
 					}
 					while(argument_exist);
-	
 
 	/*///////////////////
 	cout<<stack_index<<endl;
@@ -704,12 +705,12 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 				}
 			}
 		}
-		
+		if(simpletrignometricfn_exist) break;
 	}
 
 	for(int argumentindex=0; argumentindex<stack_index; argumentindex++) 
 		{
-						if (operations[argumentindex] != ""&&operations[argumentindex]!="("&&operations[argumentindex]!=")")  more_arguments=true;
+			if (/*operations[argumentindex] != ""&&*/operations[argumentindex]=="("||operations[argumentindex]==")") { more_arguments=true; break;}
 						else more_arguments=false;
 		}
 	}
@@ -821,19 +822,11 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 	}
 
-		////////////////////
-	for ( int i=0 ; i<stack_index ; i++)
-	{
-		cout<<parameters[i]<<">>"<<operations[i]<<endl;
-
-	}
-	///////////////////
-
-	if (stack_index == 4 && operations[1] == "="&&parameters[0] == "temp" && parameters[3]==";")
+	/*if (stack_index == 4 && operations[1] == "="&&parameters[0] == "temp" && parameters[3]==";")
 	{
 		s = parameters[0] + operations[1] + parameters[2];
-	}
-	else if (stack_index == 4 && operations[1] == "="&&parameters[0] != "temp"&& parameters[3]==";")
+	}*/
+	if (stack_index == 4 && operations[1] == "="&&parameters[0] != "temp"&& operations[3]==";")
 	{
 		bool variablexsist=false;
 		for(int checkingindex=0 ; checkingindex<variablesNo;checkingindex++)
@@ -853,10 +846,10 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		variablesNo++;
 		}
 	}
-	else if (stack_index == 3 && operations[1] == "="&&parameters[0] == "temp")
+	/*else if (stack_index == 3 && operations[1] == "="&&parameters[0] == "temp")
 	{
 		s = parameters[0] + operations[1] + parameters[2];
-	}
+	}*/
 	else if (stack_index == 3  && operations[1] == "=" &&parameters[0] != "temp" )
 	{
 		bool variablexsist=false;
@@ -878,5 +871,9 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 		print(parameters[0], varNames, varContent,variablesNo);
 	}
-	else  s = parameters[0];
+	else if (stack_index == 2  && operations[1] == ";")
+	{
+		s=parameters[0];
+	}
+	else  { s = parameters[0]; cout<<parameters[0];}
 }
