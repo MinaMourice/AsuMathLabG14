@@ -611,7 +611,7 @@ CMatrix CMatrix::operator/(CMatrix& m)
 
 //Geo
 
-void CMatrix::operator==(CMatrix&m)
+CMatrix CMatrix::operator==(CMatrix&m)
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
 	CMatrix A;
@@ -619,8 +619,9 @@ void CMatrix::operator==(CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] =(values[iR][iC]== m.values[iR][iC])? 1:0;
+	return A;
 }
-void CMatrix::operator!=(CMatrix&m)
+CMatrix CMatrix::operator!=(CMatrix&m)
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
 	CMatrix A;
@@ -628,6 +629,7 @@ void CMatrix::operator!=(CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] =(values[iR][iC]== m.values[iR][iC])? 0:1;
+	return A;
 }
 
 CMatrix CMatrix::operator> (CMatrix&m)
@@ -638,7 +640,7 @@ CMatrix CMatrix::operator> (CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] =(values[iR][iC]> m.values[iR][iC])? 1:0;
-
+	return A;
 }
 CMatrix CMatrix::operator< (CMatrix&m)
 {
@@ -648,9 +650,9 @@ CMatrix CMatrix::operator< (CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] =(values[iR][iC]< m.values[iR][iC])? 1:0;
-
+	return A;
 }
-void CMatrix::operator>=(CMatrix&m)
+CMatrix CMatrix::operator>=(CMatrix&m)
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
 	CMatrix A;
@@ -658,9 +660,9 @@ void CMatrix::operator>=(CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] =(values[iR][iC]>= m.values[iR][iC])? 1:0;
-
+	return A;
 }
-void CMatrix::operator<=(CMatrix&m)
+CMatrix CMatrix::operator<=(CMatrix&m)
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
 	CMatrix A;
@@ -668,7 +670,7 @@ void CMatrix::operator<=(CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] =(values[iR][iC]<= m.values[iR][iC])? 1:0;
-
+	return A;
 }
 
 CMatrix CMatrix::operator& (CMatrix&m)
@@ -679,6 +681,7 @@ CMatrix CMatrix::operator& (CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] = values[iR][iC] & m.values[iR][iC];
+	return A;
 }
 CMatrix CMatrix::operator| (CMatrix&m)
 {
@@ -688,6 +691,7 @@ CMatrix CMatrix::operator| (CMatrix&m)
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
 			A.values[iR][iC] = values[iR][iC] | m.values[iR][iC];
+	return A;
 }
 
 CMatrix CMatrix::operator-()
