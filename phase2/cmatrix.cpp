@@ -722,7 +722,7 @@ return getOriginalString();
 
 //pre post increment and decrement
 
-void CMatrix::operator++()
+CMatrix CMatrix::operator++()
 {
 for(int iR=0;iR<nR;iR++)
 	for(int iC=0;iC<nC;iC++)
@@ -730,7 +730,7 @@ for(int iR=0;iR<nR;iR++)
 return *this;
 }
 
-void CMatrix::operator++(int)
+CMatrix CMatrix::operator++(int)
 {
 CMatrix c =*this ;
 for(int iR=0;iR<nR;iR++)
@@ -739,7 +739,7 @@ for(int iR=0;iR<nR;iR++)
 return c ;
 }
 
-void CMatrix::operator--()
+CMatrix CMatrix::operator--()
 {
 for(int iR=0;iR<nR;iR++)
 	for(int iC=0;iC<nC;iC++)
@@ -747,7 +747,7 @@ for(int iR=0;iR<nR;iR++)
 return *this;
 }
 
-void CMatrix::operator--(int)
+CMatrix CMatrix::operator--(int)
 {
 CMatrix c = *this ;
 for(int iR=0;iR<nR;iR++)
