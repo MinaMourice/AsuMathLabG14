@@ -1,5 +1,6 @@
 #ifndef SOLVE_H
 #define SOLVE_H
+
 #include <string>
 #include"cmatrix.h"
 #include <iostream>

@@ -81,14 +81,17 @@ Run ./matrix command to run the library in your terminal:
 - Support error handling.
     * Do not crash for invalid input.
 
-
-
 ## ToDo
 
-* [ ] Matrix trigonometric functions.
-* [ ] Matrix logarithmic and exponential functions.
-* [ ] Matrix roots and power functions.
+* [x] Matrix trigonometric functions.
+* [x] Matrix inverse trigonometric functions.
+* [x] Matrix hyperbolic functions.
+* [x] Matrix inverse hyperbolic functions.
+* [x] Matrix bitWise functions.
+* [x] Matrix logarithmic and exponential functions.
+* [X] Matrix roots and power functions.
 * [ ] Error Handling.
+
 
 ## Additional
 You can always check [the doctor's project charter](https://docs.google.com/presentation/d/1UIO4qOuu7vfbQWdxS-UbUa06dTc-YmUGgjZ1Gn9T0Bo/), [our google drive spreadsheet](
