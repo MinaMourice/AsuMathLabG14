@@ -47,22 +47,22 @@ public:
 	
 	CMatrix CMatrix::operator-()
 	CMatrix::operator const string()
-	void CMatrix::operator++()
-	void CMatrix::operator++(int)
-	void CMatrix::operator--()
-	void CMatrix::operator--(int)
+	CMatrix CMatrix::operator++()
+	CMatrix CMatrix::operator++(int)
+	CMatrix CMatrix::operator--()
+	CMatrix CMatrix::operator--(int)
 
 	istream& operator >> (istream &is, CMatrix& m)
 	ostream& operator << (ostream &os, CMatrix& m)
 
 	
-	void CMatrix::operator==(CMatrix&m)
-	void CMatrix::operator!=(CMatrix&m)
-	void CMatrix::operator~=(CMatrix&m)
+	CMatrix CMatrix::operator==(CMatrix&m)
+	CMatrix CMatrix::operator!=(CMatrix&m)
+	CMatrix CMatrix::operator~=(CMatrix&m)
 	CMatrix CMatrix::operator> (CMatrix&m)
 	CMatrix CMatrix::operator< (CMatrix&m)
-	void CMatrix::operator>=(CMatrix&m)
-	void CMatrix::operator<=(CMatrix&m)
+	CMatrix CMatrix::operator>=(CMatrix&m)
+	CMatrix CMatrix::operator<=(CMatrix&m)
 	
 	CMatrix CMatrix::operator& (CMatrix&m)
 	CMatrix CMatrix::operator| (CMatrix&m)
