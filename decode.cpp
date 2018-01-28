@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 using namespace std;
+
 void print(string s, string varNames[100], string varContent[100], int& variableNo) {
 	for (int index = 0; index < variableNo; index++) {
 		if (varNames[index] == s) {
@@ -19,24 +20,37 @@ void decode(string info, string varNames[100], string varContent[100], int& vari
 		if (info[charIndex] == '[') {
 			defMatFlag = 1;
 			defMat(info, varNames, varContent, variableNo);
+
+			cout << "send: " << info << "to defMat" << endl;
+
 			//cout << "send: " << info << "to defMat" << endl;
+
 			break;
 		}
 	}
 	if (defMatFlag == 0) {
 		if (info.find("rand") != string::npos || info.find("eye") != string::npos || info.find("ones") != string::npos || info.find("zeros") != string::npos) {
 			defSpecialMat(info, varNames, varContent, variableNo);
+
 			//cout << "send: " << info << "to defSpecialMat" << endl;
 		}
 		else if (info.find('=') != string::npos) {
 			doOperation(info, varNames, varContent, variableNo);
 			//cout << "send: " << info << "to doOperation" << endl;
+
+			//cout << "send: " << info << "to defSpecialMat" << endl;
+		}
+		else if (info.find('=') != string::npos) {
+			doOperation(info, varNames, varContent, variableNo);
+			//cout << "send: " << info << "to doOperation" << endl;
+
 		}
 		else {
 			print(info, varNames, varContent, variableNo);
 		}
 	}
 }
+
 void defSpecialMat(string s, string varNames[100], string varContent[100], int& variablesNo) {
 	int NR; int NC; int x=0; int h=0; int initialization; string str;
 	
@@ -98,4 +112,5 @@ void defSpecialMat(string s, string varNames[100], string varContent[100], int& 
 	variablesNo++;
 	
 }
+
 

@@ -2,7 +2,7 @@
 #define CMATRIX_H
 
 #include <string>
-#include "pcomplexlib.h"
+
 
 using namespace std;
 
@@ -67,6 +67,34 @@ public:
 	CMatrix operator/(CMatrix& m);
 
 
+	////////////////////Core Operation Team/////////////////////
+	void add(CMatrix& m);
+	void sub(CMatrix& m);
+	void mul(CMatrix& m);
+	void div(CMatrix& m);
+	CMatrix getCofactor(int r, int c);
+	void swapRow(int row1, int row2);
+	double getDeterminant();
+	double getDeterminant2();
+	CMatrix getTranspose();
+	CMatrix getInverse();
+	
+	
+	friend CMatrix sinh(const CMatrix& m);
+	friend CMatrix cosh(const CMatrix& m);
+	friend CMatrix tanh(const CMatrix& m);
+	friend CMatrix csch(const CMatrix& m);
+	friend CMatrix sech(const CMatrix& m);
+	friend CMatrix coth(const CMatrix& m);
+
+	friend CMatrix asinh(const CMatrix& m);
+	friend CMatrix acosh(const CMatrix& m);
+	friend CMatrix atanh(const CMatrix& m);
+	friend CMatrix acsch(const CMatrix& m);
+	friend CMatrix asech(const CMatrix& m);
+	friend CMatrix acoth(const CMatrix& m);
+
+
 	friend CMatrix sin(const CMatrix& m); 
 	friend CMatrix cos(const CMatrix& m); 
 	friend CMatrix tan(const CMatrix& m);
@@ -79,6 +107,7 @@ public:
 	friend CMatrix exp(const CMatrix& m); 
 	friend CMatrix log(const CMatrix& m); 
 	friend CMatrix log10(const CMatrix& m);
+
 
 };
 #endif

@@ -81,6 +81,7 @@ Run ./matrix command to run the library in your terminal:
 - Support error handling.
     * Do not crash for invalid input.
 
+
 ## ToDo
 
 * [x] Matrix trigonometric functions.
@@ -91,6 +92,7 @@ Run ./matrix command to run the library in your terminal:
 * [x] Matrix logarithmic and exponential functions.
 * [X] Matrix roots and power functions.
 * [ ] Error Handling.
+
 
 
 ## Additional
