@@ -482,10 +482,10 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 			{ if (s[string_index] == '.'&&nextisdigit==false)stack_index++;
 					operations[stack_index].insert(operations[stack_index].end(), s[string_index]);
 			}
-			if(s[string_index-1]== '.' && operator_exist == true ) stack_index++;
-			if (s[string_index] != '.' &&
+			if(s[string_index-1]== '.' /*&& operator_exist == true */) stack_index++;
+			else if (s[string_index] != '.' &&
 				(( s[string_index] == '!' || s[string_index] == ';'|| s[string_index] == '\'')||
-				(s[string_index]!='-'&&(prevoperator_exist==false||s[string_index-1]=='='||s[string_index-1]==')')&&s[string_index-1] != '.')||
+				(s[string_index]!='-'&&(prevoperator_exist==false||s[string_index-1]=='='||s[string_index-1]==')')&&s[string_index+1] != '.')||
 				(s[string_index]=='-'&&(prevoperator_exist==false||s[string_index-1]=='='||s[string_index-1]==')'))||
 				(s[string_index]=='(')
 				)) stack_index++;
@@ -498,7 +498,6 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 
 	}
-
 
 	//solve factorial or transpose operations
 	for (int index = 0; index<stack_index; index++)
@@ -521,7 +520,10 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	//slove arguments
 
 	//solve arguments "(" do some operations")"
-
+	bool simpletrignometricfn_exist=false;
+	bool more_arguments = false;
+	do
+	{
 	for (int index = stack_index-1; index>0; index--) //index is the index of opening arguments
 	{
 		if (operations[index] == "("/*&&(operations[index]=="*"||operations[index]=="/")*/)
@@ -536,7 +538,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 					//do power operation
 					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
 					{
-						if (operations[solveArgumentindex] == "^")
+						if (operations[solveArgumentindex] == "^"||operations[solveArgumentindex] == ".^")
 						{
 							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
 							parameters[solveArgumentindex - 1] = tempstr;
@@ -554,7 +556,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 						}
 					}
 						// if we find "(" @ index and index+2=")" then it might be sins ,cos ,.. etc 
-					bool simpletrignometricfn_exist = false;
+					 simpletrignometricfn_exist = false;
 					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
 					{
 						if (operations[solveArgumentindex] == "(" && operations[solveArgumentindex + 2] == ")")
@@ -571,14 +573,16 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 								parameters[WBindex] = parameters[WBindex + 3];
 							}
 							stack_index -= 3;
-							if(solveArgumentindex==index&&closingArgumentIndex==index+2) {simpletrignometricfn_exist=true; break;}
 							index -= 4;
+							if(solveArgumentindex==index&&closingArgumentIndex==index+2) {simpletrignometricfn_exist=true; break;}
+							
 						}
 					}	
 					if(simpletrignometricfn_exist) break;
 					//do mul and div operation
 					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
 					{
+						
 						if (operations[solveArgumentindex] == "*" || operations[solveArgumentindex] == "/" || operations[solveArgumentindex] == ".*" || operations[solveArgumentindex] == "./"||operations[index] == "\\"||operations[index] == ".\\")
 						{
 							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
@@ -594,14 +598,17 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 							stack_index -= 2;
 							closingArgumentIndex -= 2;
 							solveArgumentindex -= 3;
+
+
+
 						}
 					}
+
 					//do add and sub operations
 					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
 					{
 						if (operations[solveArgumentindex] == "+" || operations[solveArgumentindex] == "-" || operations[solveArgumentindex] == ".+" || operations[solveArgumentindex] == ".-")
 						{
-							
 							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
 							parameters[solveArgumentindex - 1] = tempstr;
 							operations[solveArgumentindex] = "";
@@ -693,11 +700,20 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 
 						break;
 					}
+					if(simpletrignometricfn_exist) break;
 				}
 			}
 		}
+		
 	}
-					
+
+	for(int argumentindex=0; argumentindex<stack_index; argumentindex++) 
+		{
+						if (operations[argumentindex] != ""&&operations[argumentindex]!="("&&operations[argumentindex]!=")")  more_arguments=true;
+						else more_arguments=false;
+		}
+	}
+	while(more_arguments);
 				
 
 
@@ -727,7 +743,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	//slove simple opeartions like * , / , ... etc
 	for (int index = 0; index<stack_index; index++)
 	{
-		if (operations[index] == "^")
+		if (operations[index] == "^"||operations[index] == ".^")
 		{
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
 			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
@@ -805,6 +821,13 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 	}
 
+		////////////////////
+	for ( int i=0 ; i<stack_index ; i++)
+	{
+		cout<<parameters[i]<<">>"<<operations[i]<<endl;
+
+	}
+	///////////////////
 
 	if (stack_index == 4 && operations[1] == "="&&parameters[0] == "temp" && parameters[3]==";")
 	{
