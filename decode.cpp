@@ -61,7 +61,7 @@ void print(string s, string varNames[100], string varContent[100], int& variable
 }
 void decode(string info, string varNames[100], string varContent[100], int& variableNo) {
 	
-	errors_handler(info);
+	//errors_handler(info);
 	if (info.find("rand") != string::npos || info.find("eye") != string::npos || info.find("ones") != string::npos || info.find("zeros") != string::npos) {
 		//cout << "send: " << info << "to defSpecialMat" << endl;
 		defSpecialMat(info, varNames, varContent, variableNo);
@@ -181,270 +181,215 @@ bool isComplex(string mystring)
 }
 
 
-void defMat(string s, string varNames[100], string varContent[100], int& variablesNo)
-{
+//#include <algorithm>
+int countInString(const string& s, const string& something, const int& firstPos, int lastPos) {
+	if ((firstPos > lastPos && lastPos >= 0) || firstPos < 0) return 0;
 
-	string array[100], text, token, replace, value;
-	size_t Equal_pos, found_var, found_par1, diff, found_par2, semi_colon, semi_colon_2, semi_colon_no, colon, token2_pos, final_semi_colon;
-	int flag = 0, c = 0, replaced_pos, Equal_no;
-	string name;
+	int sLength = s.length(), count = 0, lastFountPos = firstPos - 1;
+	if (lastPos < 0) lastPos = sLength;
+	const int npos = -1;
 
-	//sort(varNames, varNames + variablesNo - 1);
-	Equal_no = count(s.begin(), s.end(), '=');
+	while (true) {
+		lastFountPos = s.find(something, lastFountPos + 1);
+		if (lastFountPos != npos) count++;
+		else if (lastFountPos == npos || lastFountPos >= sLength) break;
+	}
 
+	return count;
+}
 
-	//cout << "variablesNo :" << variablesNo << endl;
-	final_semi_colon = s.find_first_of(";", s.find_last_of("]"));
-	if (final_semi_colon != string::npos)s.erase(final_semi_colon, 1);
-	//cout << s << endl;
+void defMat(string s, string varNames[100], string varContent[100], int& variablesNo) {
 
-	// Replace The Variable in all matrix By it's Value
+	string sTemp[100][100];
+	int writtenColumns[100]; // Indicates how many columns have been written per each row
+	bool writable[100][100]; // Boolen matrix indicating writeable elements in the matrix
+	for (int i = 0; i < 100; i++) writtenColumns[i] = 0;
 
-	for (int i = variablesNo; i >= 0; i--)
-	{
-		for (int count = variablesNo; count >= 0; count--)
-		{
-			found_var = varContent[i].find(varNames[count]);
-			//cout << found_var << endl;
-			while (found_var != string::npos)
-			{
-				//cout << "first 'var' found at: " << found_var << '\n';
-				varContent[i].replace(found_var, varNames[count].length(), varContent[count]);
-				//cout << varContent[i] << endl;
-				found_var = varContent[i].find(varNames[i], found_var + 1);
+	bool printMat = true;
+	bool saveMat = false;
+	int savePos = variablesNo;
+	{ // Preparing the string for processing and cutting the name of the matrix
+		string s2 = s;
+		int pos1 = s.find_first_of('[');
+		int pos2 = s.find_last_of(']');
+		s = s.substr(pos1, pos2 - pos1 + 1);
+		for (int i = s2.length() - 1; i >= 0; i--) if (s2[i] == ';') { printMat = false; break; }
+		else if (s2[i] == ']') break;
+		s2 = s2.replace(pos1, s.length() - pos1, "");
+		pos1 = 0;
+		pos2 = s2.find('=');
+		if (pos2 != string::npos) s2 = s2.substr(pos1, pos2 - pos1);
+		if (s2.length() >= 1 && pos2 != string::npos) {
+			while (s2.length() != 0)
+				if (s2[s2.length() - 1] == ' ') s2.replace(s2.length() - 1, 1, "");
+				else break;
+				while (s2.length() != 0)
+					if (s2[0] == ' ') s2.replace(0, 1, "");
+					else break;
+					if (s2.length() > 0) saveMat = true;
+					for (int i = 0; i < variablesNo; i++)
+						if (varNames[i] == s2) {
+							savePos = i; break;
+						}
+		}
+		if (saveMat) varNames[savePos] = s2;
+		// cout << s2 << " - " << s << endl;
+	}
+
+	{ // Replacing all instances of variable names in the input with their respective values
+	  // cout << s << endl;
+		for (int i = 0, x = -1; i < variablesNo; i++) {
+			x = countInString(s, varNames[i]);
+			while (0 < x--) s.replace(s.find_first_of(varNames[i]), varNames[i].length(), varContent[i]);
+		}
+		// cout << s << endl;
+	}
+
+	// Checking the input for possible errors
+	int matricesToConcatinate = countInString(s, "[");
+	if (matricesToConcatinate != countInString(s, "]")) throw("Invalid matrix string");
+
+	// Counting the matrices needed to be concatinated and initializing all variables needed
+	int sLength = s.length(), npos = -1, *iR, *iC, *nR, *nC, *baseR, *baseC, workingOnMatrix = npos, workedMatrices = npos, *parentMatrix;
+	bool *weCanChangeRow, *weCanChangeColumn;
+	iR = new int[matricesToConcatinate];
+	nR = new int[matricesToConcatinate];
+	baseR = new int[matricesToConcatinate];
+	weCanChangeRow = new bool[matricesToConcatinate];
+	iC = new int[matricesToConcatinate];
+	nC = new int[matricesToConcatinate];
+	baseC = new int[matricesToConcatinate];
+	weCanChangeColumn = new bool[matricesToConcatinate];
+	parentMatrix = new int[matricesToConcatinate];
+	for (int i = 0; i < matricesToConcatinate; i++) iR[i] = 0, iC[i] = 0, nR[i] = 0, nC[i] = 0, weCanChangeRow[i] = false, weCanChangeColumn[i] = false;
+	// Building the string array
+	for (int i = 0; i < sLength; i++) {
+		// cout << nR[0] << " " << nR[1] << " " << nR[2] << " " << nR[3] << " " << nR[4] << endl;
+		if (s[i] == '[') {
+			// if (workingOnMatrix != npos && iC[workingOnMatrix] != npos) cout << "Row " << iR[workingOnMatrix] << " Column " << iC[workingOnMatrix] << " = " << sTemp[iR[workingOnMatrix]][iC[workingOnMatrix]] << endl;
+			int tempWorkingOnMatrix = workingOnMatrix;
+			workedMatrices++; workingOnMatrix = workedMatrices;
+			parentMatrix[workingOnMatrix] = tempWorkingOnMatrix;
+			// cout << "Fount [ and changing workingOnMatrix to " << workingOnMatrix << endl;
+			if (workingOnMatrix != 0) {
+				baseR[workingOnMatrix] = iR[parentMatrix[workingOnMatrix]];
+				if (iC[parentMatrix[workingOnMatrix]] == npos) iC[parentMatrix[workingOnMatrix]] = baseC[parentMatrix[workingOnMatrix]];
+				baseC[workingOnMatrix] = iC[parentMatrix[workingOnMatrix]];
+				iR[workingOnMatrix] = baseR[workingOnMatrix];
+				iC[workingOnMatrix] = npos;
 			}
+			else baseR[workingOnMatrix] = 0, baseC[workingOnMatrix] = 0, iR[workingOnMatrix] = 0, iC[workingOnMatrix] = npos;
+			// cout << "Base R = " << baseR[workingOnMatrix] << " base C = " << baseC[workingOnMatrix] << endl;
 		}
-	}
-	/*
-	for (int i = 0; i < variablesNo; i++)
-	{
-	istringstream iss4(varContent[i]);
-	cout << "start" << endl;
-	while (getline(iss4, token, ' '))
-	{
-	cout << token << endl;
-	if (!isFloat(token))
-	{
-	token2_pos = varContent[i].find(token);
-	for (int i = variablesNo; i >= 0; i--)
-	{
-	if (token.compare(varnames[i]) != 0)
-	{
-	value = varContent[i];
-	cout << value << endl;
-	}
-	}
-	varContent[i].replace(token2_pos, token.length(), value);
-	}
-	}
-	cout << "end" << endl;
-
-	}*/
-	Equal_pos = s.find_first_of('=');
-	// Replace The Variable in s By it's Value
-	for (int i = variablesNo; i >= 0; i--)
-	{
-		found_var = s.find(varNames[i], Equal_pos);
-		while (found_var != string::npos)
-		{
-			//cout << "first 'var' found at: " << found_var << '\n';
-			s.replace(found_var, varNames[i].length(), varContent[i]);
-			found_var = s.find(varNames[i], found_var + 1);
-		}
-	}
-	//	cout << "first: " << s << endl;
-	//more than one variable have the same content a=b=...
-	for (int b = 0; b < Equal_no; b++)
-	{
-		Equal_pos = s.find_first_of('=');
-		varNames[variablesNo] = s.substr(0, Equal_pos);
-		//remove_if(varNames[variablesNo].begin(), varNames[variablesNo].end(), isspace);
-		varNames[variablesNo].erase(remove_if(varNames[variablesNo].begin(), varNames[variablesNo].end(), isspace), varNames[variablesNo].end());
-		name = varNames[variablesNo];
-
-		s.erase(0, Equal_pos + 1);
-		variablesNo++;
-		//string::iterator end_pos = remove(varNames[variablesNo].begin(), varNames[variablesNo].end(), ' ');
-		//varNames[variablesNo].erase(end_pos, varNames[variablesNo].end());
-		//cout <<varNames[variablesNo];
-	}
-	//cout << "variablesNo :" << variablesNo << endl;
-	//cout << s << endl;
-
-	// parsing '[' to ']'
-	if (s.find_first_of("[") != string::npos&&s.find_last_of("]") != string::npos)
-	{
-		s.erase(s.find_first_of("["), 1);
-		s.erase(s.find_last_of("]"), 1);
-		//cout << "erase :" << s << endl;
-		/*istringstream iss3(s);
-		//cout << "start" << endl;
-		while (getline(iss3, token, ' '))
-		{
-		cout << token << endl;
-		if (!isFloat(token))
-		{
-		token2_pos = s.find(token);
-		for (int i = variablesNo; i >= 0; i--)
-		{
-		if (token.compare(varnames[i]) != 0)
-		{
-		value = varContent[i];
-		cout << value << endl;
-		}
-		}
-		s.replace(token2_pos, token.length(), value);
-		}
-		}
-		cout << "end" << endl;*/
-		//cout << s << endl;
-
-
-		found_par1 = s.find_first_of("[");
-		found_par2 = s.find_first_of("]");
-
-		//cout << s << endl;
-		while (found_par1 != string::npos&& found_par2 != string::npos)
-		{
-
-			//cout<<found_par1<<" "<<found_par2<<endl;
-
-			semi_colon = s.find(";", found_par1);
-			colon = s.find_first_of(",", found_par1);
-			//cout<<semi_colon<<endl;
-			//if there is semi-colon between the two braces []
-			if (found_par1 < semi_colon&&semi_colon < found_par2)
-			{
-				//	cout<<count_1<<endl;
-				//	if(count_1==0)
-				if (flag == 0) {
-					replaced_pos = found_par1; flag = 1;
-				}
-				text = s.substr(found_par1 + 1, found_par2 - found_par1 - 1);
-				istringstream iss(text);
-				//cout<<text<<endl;
-				semi_colon_no = count(s.begin() + found_par1, s.begin() + found_par2, ';');
-				//	cout<<semi_colon_no<<endl;
-				//save value inside [] in an array
-				for (size_t i = 0; i <= semi_colon_no; i++)
-				{
-					getline(iss, token, ';');
-					array[c] += " " + token;
-					c++;
-
-				}
-
-				//cout<<array[0]<<";"<<array[1]<<endl;
-
-
-				colon = s.find_first_of(",", found_par2, 2);
-				semi_colon_2 = s.find_first_of(";", found_par2);
-				//	cout << "semi_colon_2 : " << semi_colon_2 << endl;
-				diff = colon - found_par2;
-				//	cout << "found_par2 : " << found_par2 << endl;
-				//	diff2 = semi_colon_2 - found_par2;
-				//	cout << "diff2 : " << diff2<< endl;
-
-				//	cout<<diff<<endl;
-				//if  (diff>4 || diff<0) 
-				if (semi_colon_2 > 100)
-				{
-					for (int i = 0; i < c; i++)
-					{
-						if (i != c - 1)
-							replace += array[i] + ";";
-						else
-							replace += array[i];
-					}
-					//cout<<"replace : "<<replace<<endl;
-					s.replace(replaced_pos, found_par2 - replaced_pos + 1, replace);//replace array
-																					//cout<<s<<endl;
-					replace.clear();
-					flag = 0;
-					//cout<<replaced_pos<<endl;
-					for (int i = 0; i < c; i++)
-						array[i].clear();
-					//cout<<array[0]<<endl;
-					//empty arrray & replace	
-				}
-				c = 0;
+		else if (s[i] == ']') {
+			// cout << "Row " << iR[workingOnMatrix] << " Column " << iC[workingOnMatrix] << " = " << sTemp[iR[workingOnMatrix]][iC[workingOnMatrix]] << endl;
+			if (iC[workingOnMatrix] == npos && nR[workingOnMatrix] != 0) {
+				nR[workingOnMatrix]--;
+				// cout << "Changing nR of " << workingOnMatrix << " to " << nR[workingOnMatrix] << endl;
 			}
-			else if (found_par1 < colon&&colon < found_par2)
-				s.erase(colon, 1);
-			else
-			{
-				//s.erase(found_par1, 1);
-				//s.erase(found_par2 - 1, 1);
-				s.erase(remove(s.begin(), s.end(), '['), s.end());
-				s.erase(remove(s.begin(), s.end(), ']'), s.end());
-				//	cout << "Second erase :" << s<<endl;
+			if (!weCanChangeColumn[workingOnMatrix] && weCanChangeRow[workingOnMatrix]) {
+				iC[workingOnMatrix]--;
+				// cout << "Changing iC of " << workingOnMatrix << " to " << iC[workingOnMatrix] << endl;
+			}
+			if (nC[workingOnMatrix] < (iC[workingOnMatrix] - baseC[workingOnMatrix])) {
+				nC[workingOnMatrix] = iC[workingOnMatrix] - baseC[workingOnMatrix];
+				// cout << "Changing nC of " << workingOnMatrix << " to " << nC[workingOnMatrix] << " due to bigger iC" << endl;
 			}
 
-			found_par1 = s.find_first_of("[", found_par1 + 1);
-			found_par2 = s.find_first_of("]", found_par2 + 1);
-
-		}
-
-		istringstream iss(s);
-		while (getline(iss, token, ';'))
-		{
-			istringstream iss2(token);
-			while (getline(iss2, token, ' '))
-			{
-				//cout << token << endl;
-				if ((!isFloat(token) && token.find_first_not_of(' ') != string::npos) && (!isComplex(token)))
-				{
-					//cout << token << endl;
-					token2_pos = s.find(token);
-					//					doOperation(token, varNames, varContent, variablesNo);
-					//s.replace(token2_pos, token.length(),token);
-					s.replace(token2_pos, token.length(), "temp");
-				}
+			if (parentMatrix[workingOnMatrix] != npos) {
+				if (iC[parentMatrix[workingOnMatrix]] == npos) iC[parentMatrix[workingOnMatrix]] = baseC[parentMatrix[workingOnMatrix]];
+				iC[parentMatrix[workingOnMatrix]] += nC[workingOnMatrix] + 1;
+				// cout << "Changing iC of " << parentMatrix[workingOnMatrix] << " to " << iC[parentMatrix[workingOnMatrix]] << endl;
 			}
-		}
-		//cout << s << endl;
-		//	s.erase(remove(s.begin(), s.end(), '['), s.end());
-		//	s.erase(remove(s.begin(), s.end(), ']'), s.end());
-		s = "[" + s + "]";
-	}
-	//else
-	//{
-	//s = "[" + s + "]";
-	//}
+			else break;
 
-
-
-	//int real = variablesNo - Equal_no;
-	for (int b = 1; b <= Equal_no; b++)
-	{
-		varContent[variablesNo - b] = s;
-		//cout<<varContent[variablesNo]<<variablesNo<<endl;
-	}
-
-
-	//find similar variables
-
-	for (int i = 0; i<variablesNo; i++)
-	{
-		for (int j = i + 1; j<variablesNo; j++)
-		{
-			if (varNames[i] == varNames[j])
-			{
-
-				varContent[i] = varContent[j];
-				for (int x = j; x <= variablesNo; x++)
-				{
-					varContent[x] = varContent[x + 1];
-					varNames[x] = varNames[x + 1];
-				}
-				variablesNo--;
+			if (iR[parentMatrix[workingOnMatrix]] < nR[workingOnMatrix] + baseR[workingOnMatrix]) {
+				nR[parentMatrix[workingOnMatrix]] = nR[workingOnMatrix] + baseR[workingOnMatrix] - baseR[parentMatrix[workingOnMatrix]];
+				// cout << "Changing nR of " << parentMatrix[workingOnMatrix] << " to " << nR[parentMatrix[workingOnMatrix]] << endl;
 			}
+
+			workingOnMatrix = parentMatrix[workingOnMatrix];
+			// cout << "Fount ] and changing workingOnMatrix to " << workingOnMatrix << endl;
+			if (nC[workingOnMatrix] < (iC[workingOnMatrix] - baseC[workingOnMatrix] - 1)) {
+				nC[workingOnMatrix] = iC[workingOnMatrix] - baseC[workingOnMatrix] - 1;
+				// cout << "Changing nC of " << workingOnMatrix << " to " << nC[workingOnMatrix] << " due to bigger iC" << endl;
+			}
+
+			if (nC[workingOnMatrix] == (iC[workingOnMatrix] - baseC[workingOnMatrix] - 1)) weCanChangeRow[workingOnMatrix] = true;
+		}
+		// might be error when [1 2 3; [1 2];[1,2],[1; 2]]
+		else if (s[i] == ';' && weCanChangeRow[workingOnMatrix]) {
+			// cout << "Row " << iR[workingOnMatrix] << " Column " << iC[workingOnMatrix] << " = " << sTemp[iR[workingOnMatrix]][iC[workingOnMatrix]] << endl;
+			if (iC[workingOnMatrix] == npos) {
+				nC[workingOnMatrix]--;
+				// cout << "Fount ; and changing nC of " << workingOnMatrix << " to " << nC[workingOnMatrix] << endl;
+			}
+			weCanChangeColumn[workingOnMatrix] = false;
+			weCanChangeRow[workingOnMatrix] = false;
+			iC[workingOnMatrix] = npos;
+			nR[workingOnMatrix]++;
+			iR[workingOnMatrix] = baseR[workingOnMatrix] + nR[workingOnMatrix];
+			// cout << "Fount ; and changing iR and nR of " << workingOnMatrix << " to " << iR[workingOnMatrix] << " and " << nR[workingOnMatrix] << endl;
+		}
+		else if ((s[i] == ' ' || s[i] == ',') && weCanChangeColumn[workingOnMatrix]) {
+			// cout << "Row " << iR[workingOnMatrix] << " Column " << iC[workingOnMatrix] << " = " << sTemp[iR[workingOnMatrix]][iC[workingOnMatrix]] << endl;
+			weCanChangeColumn[workingOnMatrix] = false;
+			iC[workingOnMatrix]++;
+			if (nC[workingOnMatrix] < iC[workingOnMatrix] - baseC[workingOnMatrix] - 1) {
+				nC[workingOnMatrix] = iC[workingOnMatrix] - baseC[workingOnMatrix] - 1;
+				// cout << "Changing nC of " << workingOnMatrix << " to " << nC[workingOnMatrix] << " due to bigger iC" << endl;
+			}
+			// cout << "Fount " << s[i] << " and changing iC of " << workingOnMatrix << " to " << iC[workingOnMatrix] << endl;
+		}
+		else if (s[i] == ' ' || s[i] == ',' || s[i] == ';');
+		else {
+			weCanChangeColumn[workingOnMatrix] = true;
+			if (iC[parentMatrix[workingOnMatrix]] == npos) iC[parentMatrix[workingOnMatrix]] = baseC[parentMatrix[workingOnMatrix]];
+			if (iC[workingOnMatrix] == npos) iC[workingOnMatrix] = baseC[workingOnMatrix];
+			if (nC[workingOnMatrix] == iC[workingOnMatrix] - baseC[workingOnMatrix]) weCanChangeRow[workingOnMatrix] = true;
+			sTemp[iR[workingOnMatrix]][iC[workingOnMatrix]] += s[i];
+			if (writable[iR[workingOnMatrix]][iC[workingOnMatrix]]) writtenColumns[iR[workingOnMatrix]]++;
+			writable[iR[workingOnMatrix]][iC[workingOnMatrix]] = false;
 		}
 	}
-	if (final_semi_colon == string::npos) {
-		//cout << "//" << name << "//";
-		print(name, varNames, varContent, variablesNo);
+
+	int NR = nR[0] + 1;
+	int NC = nC[0] + 1;
+
+	// Printing all data about matrices
+	/*for (int i = 0; i < matricesToConcatinate; i++)
+	cout << i << "\t" << iR[i] << "\t" << nR[i] << "\t" << baseR[i] << "\t" << iC[i] << "\t" << nC[i] << "\t" << baseC[i] << endl;*/
+
+	// Printing the string matrix before doOperation
+	/*for (int ir = 0; ir < NR; ir++, cout << endl)
+	for (int ic = 0; ic < NC; ic++)
+	cout << "(" << ir << "," << ic << ") " << sTemp[ir][ic] << "\t";*/
+
+	// Calculating elements of the string matrix
+	CMatrix tempMat(NR, NC); string temp;
+	for (int ir = 0; ir < NR; ir++)
+		for (int ic = 0; ic < NC; ic++) {
+			temp = sTemp[ir][ic] + ";";
+			doOperation(temp, varNames, varContent, variablesNo);
+			tempMat.values[ir][ic] = atof(temp.c_str());
+		}
+
+	if (saveMat) {
+		varContent[savePos] = tempMat.getOriginalString();
+		if (savePos == variablesNo) variablesNo++;
 	}
+	if (printMat) cout << (saveMat ? varNames[savePos] : "ans") << " = " << tempMat.getString();
+
+	// Printing the string matrix after doOperation
+	/*for (int ir = 0; ir < NR; ir++, cout << endl)
+	for (int ic = 0; ic < NC; ic++)
+	cout << "(" << ir << "," << ic << ") " << sTemp[ir][ic] << "\t";*/
+
+	//cout << sTemp[ir][ic] << "\t";//cout << ir << "," << ic << " " << sTemp[ir][ic] << " ";
+
+
+	delete[] iR, iC, nR, nC, weCanChangeColumn, weCanChangeRow, parentMatrix;
+	return;
 }
 void doOperation(string& s, string varNames[100], string varContent[100], int& variablesNo)
 {
@@ -472,33 +417,40 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		{
 			if (s[string_index] == operators[checking_index]) operator_exist = true;
 			if (s[string_index + 1] == operators[checking_index]) nextoperator_exist = true;
-			if(string_index!=0){if (s[string_index - 1] == operators[checking_index]) prevoperator_exist = true;}
+			if (string_index != 0) { if (s[string_index - 1] == operators[checking_index]) prevoperator_exist = true; }
 		}
 
 		if (operator_exist == true)
 		{
-			if ((s[string_index] == '.'&&nextisdigit==true) ||(s[string_index] == '-'&& s[string_index-1]!='.' &&(prevoperator_exist==true&&s[string_index-1]!='='&&s[string_index-1]!=')')) ) parameters[stack_index].insert(parameters[stack_index].end(), s[string_index]);
-			else 
-			{ if (s[string_index] == '.'&&nextisdigit==false)stack_index++;
-					operations[stack_index].insert(operations[stack_index].end(), s[string_index]);
+			if ((s[string_index] == '.'&&nextisdigit == true) || (s[string_index] == '-'&& s[string_index - 1] != '.' && (prevoperator_exist == true &&/* s[string_index - 1] == '='&&*/s[string_index - 1] != ')'))) parameters[stack_index].insert(parameters[stack_index].end(), s[string_index]);
+			else
+			{
+				if (s[string_index] == '.'&&nextisdigit == false)stack_index++;
+				operations[stack_index].insert(operations[stack_index].end(), s[string_index]);
 			}
-			if(s[string_index-1]== '.' /*&& operator_exist == true */) stack_index++;
+			if (s[string_index - 1] == '.' /*&& operator_exist == true */) stack_index++;
 			else if (s[string_index] != '.' &&
-				(( s[string_index] == '!' || s[string_index] == ';'|| s[string_index] == '\'')||
-				(s[string_index]!='-'&&(prevoperator_exist==false||s[string_index-1]=='='||s[string_index-1]==')')&&s[string_index+1] != '.')||
-				(s[string_index]=='-'&&(prevoperator_exist==false||s[string_index-1]=='='||s[string_index-1]==')'))||
-				(s[string_index]=='(')
-				)) stack_index++;
+				((s[string_index] == '!' || s[string_index] == ';' || s[string_index] == '\'') ||
+				(s[string_index] != '-' && (prevoperator_exist == false || s[string_index - 1] == '=' || s[string_index - 1] == ')') && s[string_index + 1] != '.') ||
+					(s[string_index] == '-' &&s[string_index - 1] != '='&& (prevoperator_exist == false /*|| s[string_index - 1] == '=' */|| s[string_index - 1] == ')')) ||
+					(s[string_index] == '(')
+					)) stack_index++;
 		}
 		else
 		{
 			parameters[stack_index].insert(parameters[stack_index].end(), s[string_index]);
 			if (nextoperator_exist == true && nextisdigit == false && s[string_index] != '.'&& s[string_index + 1] != '.') stack_index++;
-			if (string_index==s.length()-1) stack_index++;
+			if (string_index == s.length() - 1) stack_index++;
 		}
 
 	}
-
+							///////////////////
+						cout<<stack_index<<endl;
+						for(int i=0 ; i < stack_index ; i++)
+						{
+						cout << parameters[i] << "----->" << operations[i]<<endl;
+						}
+						///////////////////
 
 	//solve factorial or transpose operations
 	for (int index = 0; index<stack_index; index++)
@@ -521,201 +473,192 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	//slove arguments
 
 	//solve arguments "(" do some operations")"
-	
+
 	bool more_arguments = false;
 	do
 	{
-	for (int index = stack_index-1; index>0; index--) //index is the index of opening arguments
-	{
-		bool simpletrignometricfn_exist=false;
-		if (operations[index] == "("/*&&(operations[index]=="*"||operations[index]=="/")*/)
+		for (int index = stack_index - 1; index>0; index--) //index is the index of opening arguments
 		{
-			for (int closingArgumentIndex = index; closingArgumentIndex<stack_index; closingArgumentIndex++)
+			bool simpletrignometricfn_exist = false;
+			if (operations[index] == "("/*&&(operations[index]=="*"||operations[index]=="/")*/)
 			{
-				if (operations[closingArgumentIndex] == ")")
+				for (int closingArgumentIndex = index; closingArgumentIndex<stack_index; closingArgumentIndex++)
 				{
-					bool argument_exist=false;
-					do
+					if (operations[closingArgumentIndex] == ")")
 					{
-					//do power operation
-					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
-					{
-						if (operations[solveArgumentindex] == "^"||operations[solveArgumentindex] == ".^")
+						bool argument_exist = false;
+						do
 						{
-							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
-							parameters[solveArgumentindex - 1] = tempstr;
-							operations[solveArgumentindex] = "";
-							parameters[solveArgumentindex + 1] = "";
-							//remove the empty elements in the stack
-							for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+							//do power operation
+							for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
 							{
-								operations[WBindex] = operations[WBindex + 2];
-								parameters[WBindex] = parameters[WBindex + 2];
+								if (operations[solveArgumentindex] == "^" || operations[solveArgumentindex] == ".^")
+								{
+									tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
+									parameters[solveArgumentindex - 1] = tempstr;
+									operations[solveArgumentindex] = "";
+									parameters[solveArgumentindex + 1] = "";
+									//remove the empty elements in the stack
+									for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+									{
+										operations[WBindex] = operations[WBindex + 2];
+										parameters[WBindex] = parameters[WBindex + 2];
+									}
+									stack_index -= 2;
+									closingArgumentIndex -= 2;
+									solveArgumentindex -= 3;
+								}
 							}
+							// if we find "(" @ index and index+2=")" then it might be sins ,cos ,.. etc 
+							simpletrignometricfn_exist = false;
+							for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
+							{
+								if (operations[solveArgumentindex] == "(" && operations[solveArgumentindex + 2] == ")")
+								{
+									tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1] + operations[solveArgumentindex + 2], varNames, varContent, variablesNo);
+									parameters[solveArgumentindex - 1] = tempstr;
+									operations[solveArgumentindex] = "";
+									parameters[solveArgumentindex + 1] = "";
+									operations[solveArgumentindex + 2] = "";
+									//remove the empty elements in the stack
+									for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+									{
+										operations[WBindex] = operations[WBindex + 3];
+										parameters[WBindex] = parameters[WBindex + 3];
+									}
+									stack_index -= 3;
+
+									if (solveArgumentindex == index&&closingArgumentIndex == index + 2) { simpletrignometricfn_exist = true; break; }
+									index -= 3;
+								}
+							}
+							if (simpletrignometricfn_exist) break;
+							//do mul and div operation
+							for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
+							{
+
+								if (operations[solveArgumentindex] == "*" || operations[solveArgumentindex] == "/" || operations[solveArgumentindex] == ".*" || operations[solveArgumentindex] == "./" || operations[index] == "\\" || operations[index] == ".\\")
+								{
+									tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
+									parameters[solveArgumentindex - 1] = tempstr;
+									operations[solveArgumentindex] = "";
+									parameters[solveArgumentindex + 1] = "";
+									//remove the empty elements in the stack
+									for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+									{
+										operations[WBindex] = operations[WBindex + 2];
+										parameters[WBindex] = parameters[WBindex + 2];
+									}
+									stack_index -= 2;
+									closingArgumentIndex -= 2;
+									solveArgumentindex -= 3;
+
+
+
+								}
+							}
+
+							//do add and sub operations
+							for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
+							{
+								if (operations[solveArgumentindex] == "+" || operations[solveArgumentindex] == "-" || operations[solveArgumentindex] == ".+" || operations[solveArgumentindex] == ".-")
+								{
+									tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
+									parameters[solveArgumentindex - 1] = tempstr;
+									operations[solveArgumentindex] = "";
+									parameters[solveArgumentindex + 1] = "";
+									//remove the empty elements in the stack
+									for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+									{
+										operations[WBindex] = operations[WBindex + 2];
+										parameters[WBindex] = parameters[WBindex + 2];
+									}
+									stack_index -= 2;
+									closingArgumentIndex -= 2;
+									solveArgumentindex -= 3;
+								}
+							}
+
+							//do bitwise and , or operations
+							for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
+							{
+								if (operations[solveArgumentindex] == "&" || operations[solveArgumentindex] == "|")
+								{
+
+									tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
+									parameters[solveArgumentindex - 1] = tempstr;
+									operations[solveArgumentindex] = "";
+									parameters[solveArgumentindex + 1] = "";
+									//remove the empty elements in the stack
+									for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
+									{
+										operations[WBindex] = operations[WBindex + 2];
+										parameters[WBindex] = parameters[WBindex + 2];
+									}
+									stack_index -= 2;
+									closingArgumentIndex -= 2;
+									solveArgumentindex -= 3;
+								}
+							}
+							for (int argumentindex = index; argumentindex<closingArgumentIndex; argumentindex++)
+							{
+								if (operations[argumentindex] != ""&&operations[argumentindex] != "("&&operations[argumentindex] != ")")  argument_exist = true;
+								else argument_exist = false;
+							}
+						} while (argument_exist);
+
+
+						// testing for loop
+						/*tempstr="";
+						for (int testindex=1 ; testindex < closingArgumentIndex-index ; testindex++)
+						{
+						if(testindex%2==0) tempstr.insert(tempstr.length() , operations[index+testindex]);//BracesDoOpearation[0].insert(BracesDoOpearation[0].end() , parameters[index+testindex]);
+						else tempstr.insert(tempstr.length() , parameters[index+testindex]);
+						}
+						cout<<"parsing is"<<tempstr<<endl;*/
+
+
+						if (parameters[index - 1] == "") //if not sin or cos remove arguments "(   )"
+						{
+							//replacing old by new data and remove unused elements from stack
+							parameters[index] = parameters[index + 1];
+							for (int removeindex = 0; removeindex < closingArgumentIndex - index; removeindex++)
+							{
+								if (removeindex % 2 == 0) operations[index + removeindex] = "";
+								else parameters[index + removeindex] = "";
+							}
+
+
+
+
+							//remove the empty elements in the stack
+
+
+							for (int WBindex = index + 1; WBindex<stack_index; WBindex++)
+							{
+								operations[WBindex] = operations[WBindex + (closingArgumentIndex - index)];
+								parameters[WBindex] = parameters[WBindex + (closingArgumentIndex - index)];
+							}
+							//stack_index -= (closingArgumentIndex - index);
 							stack_index -= 2;
-							closingArgumentIndex -= 2;
-							solveArgumentindex -= 3;
+							index -= closingArgumentIndex - index;
+
+							break;
 						}
+						if (simpletrignometricfn_exist) break;
 					}
-						// if we find "(" @ index and index+2=")" then it might be sins ,cos ,.. etc 
-					 simpletrignometricfn_exist = false;
-					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
-					{
-						if (operations[solveArgumentindex] == "(" && operations[solveArgumentindex + 2] == ")")
-						{
-							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1] + operations[solveArgumentindex + 2], varNames, varContent, variablesNo);
-							parameters[solveArgumentindex - 1] = tempstr;
-							operations[solveArgumentindex] = "";
-							parameters[solveArgumentindex + 1] = "";
-							operations[solveArgumentindex + 2] = "";
-							//remove the empty elements in the stack
-							for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
-							{
-								operations[WBindex] = operations[WBindex + 3];
-								parameters[WBindex] = parameters[WBindex + 3];
-							}
-							stack_index -= 3;
-							
-							if(solveArgumentindex==index&&closingArgumentIndex==index+2) {simpletrignometricfn_exist=true; break;}
-							index -= 4;
-						}
-					}	
-					if(simpletrignometricfn_exist) break;
-					//do mul and div operation
-					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
-					{
-						
-						if (operations[solveArgumentindex] == "*" || operations[solveArgumentindex] == "/" || operations[solveArgumentindex] == ".*" || operations[solveArgumentindex] == "./"||operations[index] == "\\"||operations[index] == ".\\")
-						{
-							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
-							parameters[solveArgumentindex - 1] = tempstr;
-							operations[solveArgumentindex] = "";
-							parameters[solveArgumentindex + 1] = "";
-							//remove the empty elements in the stack
-							for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
-							{
-								operations[WBindex] = operations[WBindex + 2];
-								parameters[WBindex] = parameters[WBindex + 2];
-							}
-							stack_index -= 2;
-							closingArgumentIndex -= 2;
-							solveArgumentindex -= 3;
-
-
-
-						}
-					}
-
-					//do add and sub operations
-					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
-					{
-						if (operations[solveArgumentindex] == "+" || operations[solveArgumentindex] == "-" || operations[solveArgumentindex] == ".+" || operations[solveArgumentindex] == ".-")
-						{
-							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
-							parameters[solveArgumentindex - 1] = tempstr;
-							operations[solveArgumentindex] = "";
-							parameters[solveArgumentindex + 1] = "";
-							//remove the empty elements in the stack
-							for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
-							{
-								operations[WBindex] = operations[WBindex + 2];
-								parameters[WBindex] = parameters[WBindex + 2];
-							}
-							stack_index -= 2;
-							closingArgumentIndex -= 2;
-							solveArgumentindex -= 3;
-						}
-					}
-
-					//do bitwise and , or operations
-					for (int solveArgumentindex = index; solveArgumentindex<closingArgumentIndex; solveArgumentindex++)
-					{
-						if (operations[solveArgumentindex] == "&" || operations[solveArgumentindex] == "|")
-						{
-							
-							tempstr = solve(parameters[solveArgumentindex - 1] + operations[solveArgumentindex] + parameters[solveArgumentindex + 1], varNames, varContent, variablesNo);
-							parameters[solveArgumentindex - 1] = tempstr;
-							operations[solveArgumentindex] = "";
-							parameters[solveArgumentindex + 1] = "";
-							//remove the empty elements in the stack
-							for (int WBindex = solveArgumentindex; WBindex<stack_index; WBindex++)
-							{
-								operations[WBindex] = operations[WBindex + 2];
-								parameters[WBindex] = parameters[WBindex + 2];
-							}
-							stack_index -= 2;
-							closingArgumentIndex -= 2;
-							solveArgumentindex -= 3;
-						}
-					}
-					for(int argumentindex=index; argumentindex<closingArgumentIndex; argumentindex++) 
-					{
-						if (operations[argumentindex] != ""&&operations[argumentindex]!="("&&operations[argumentindex]!=")")  argument_exist=true;
-						else argument_exist=false;
-					}
-					}
-					while(argument_exist);
-
-	/*///////////////////
-	cout<<stack_index<<endl;
-	for(int i=0 ; i < stack_index ; i++)
-	{
-		cout << parameters[i] << "----->" << operations[i]<<endl;
-	}
-
-	///////////////////*/
-					// testing for loop
-					/*tempstr="";
-					for (int testindex=1 ; testindex < closingArgumentIndex-index ; testindex++)
-					{
-					if(testindex%2==0) tempstr.insert(tempstr.length() , operations[index+testindex]);//BracesDoOpearation[0].insert(BracesDoOpearation[0].end() , parameters[index+testindex]);
-					else tempstr.insert(tempstr.length() , parameters[index+testindex]);
-					}
-					cout<<"parsing is"<<tempstr<<endl;*/
-
-					
-					if(parameters[index-1]=="") //if not sin or cos remove arguments "(   )"
-					{
-						//replacing old by new data and remove unused elements from stack
-						parameters[index] = parameters[index + 1];
-						for (int removeindex = 0; removeindex < closingArgumentIndex - index; removeindex++)
-						{
-							if (removeindex % 2 == 0) operations[index + removeindex] = "";
-							else parameters[index + removeindex] = "";
-						}
-
-			
-
-			
-						//remove the empty elements in the stack
-
-
-						for (int WBindex = index+1 ; WBindex<stack_index; WBindex++)
-						{
-							operations[WBindex] = operations[WBindex + (closingArgumentIndex - index)];
-							parameters[WBindex] = parameters[WBindex + (closingArgumentIndex - index)];
-						}
-						//stack_index -= (closingArgumentIndex - index);
-						stack_index -= 2;
-						index -= closingArgumentIndex - index;
-
-						break;
-					}
-					if(simpletrignometricfn_exist) break;
 				}
 			}
+			if (simpletrignometricfn_exist) break;
 		}
-		if(simpletrignometricfn_exist) break;
-	}
 
-	for(int argumentindex=0; argumentindex<stack_index; argumentindex++) 
+		for (int argumentindex = 0; argumentindex<stack_index; argumentindex++)
 		{
-			if (/*operations[argumentindex] != ""&&*/operations[argumentindex]=="("||operations[argumentindex]==")") { more_arguments=true; break;}
-						else more_arguments=false;
+			if (/*operations[argumentindex] != ""&&*/operations[argumentindex] == "(" || operations[argumentindex] == ")") { more_arguments = true; break; }
+			else more_arguments = false;
 		}
-	}
-	while(more_arguments);
-				
+	} while (more_arguments);
+
 
 
 	// if we find "(" @ index and index+2=")" then it might be sins ,cos ,.. etc 
@@ -735,16 +678,16 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 				parameters[WBindex] = parameters[WBindex + 3];
 			}
 			stack_index -= 3;
-			index -= 4;
+			index -= 3;
 		}
-	}	
+	}
 
 
 
 	//slove simple opeartions like * , / , ... etc
 	for (int index = 0; index<stack_index; index++)
 	{
-		if (operations[index] == "^"||operations[index] == ".^")
+		if (operations[index] == "^" || operations[index] == ".^")
 		{
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
 			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
@@ -758,12 +701,12 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 				parameters[WBindex] = parameters[WBindex + 2];
 			}
 			stack_index -= 2;
-			index -= 3;
+			index -= 2;
 		}
 	}
 	for (int index = 0; index<stack_index; index++)
 	{
-		if (operations[index] == "*" || operations[index] == "/" || operations[index] == ".*" || operations[index] == "./"||operations[index] == "\\"||operations[index] == ".\\")
+		if (operations[index] == "*" || operations[index] == "/" || operations[index] == ".*" || operations[index] == "./" || operations[index] == "\\" || operations[index] == ".\\")
 		{
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
 			//tempstr = parameters[index-1]+operations[index]+parameters[index+1];
@@ -777,7 +720,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 				parameters[WBindex] = parameters[WBindex + 2];
 			}
 			stack_index -= 2;
-			index -= 3;
+			index -= 2;
 		}
 	}
 	for (int index = 0; index<stack_index; index++)
@@ -797,13 +740,13 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 				parameters[WBindex] = parameters[WBindex + 2];
 			}
 			stack_index -= 2;
-			index -= 3;
+			index -= 2;
 		}
 	}
 
 	for (int index = 0; index<stack_index; index++)
 	{
-		if (operations[index] == "&" || operations[index] == "|" )
+		if (operations[index] == "&" || operations[index] == "|")
 		{
 			//cout<<parameters[index - 1] + operations[index] + parameters[index + 1]<<endl;
 			tempstr = solve(parameters[index - 1] + operations[index] + parameters[index + 1], varNames, varContent, variablesNo);
@@ -818,62 +761,63 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 				parameters[WBindex] = parameters[WBindex + 2];
 			}
 			stack_index -= 2;
-			index -= 3;
+			index -= 2;
 		}
 	}
 
 	/*if (stack_index == 4 && operations[1] == "="&&parameters[0] == "temp" && parameters[3]==";")
 	{
-		s = parameters[0] + operations[1] + parameters[2];
+	s = parameters[0] + operations[1] + parameters[2];
 	}*/
-	if (stack_index == 4 && operations[1] == "="&&parameters[0] != "temp"&& operations[3]==";")
+	if (stack_index == 4 && operations[1] == "="&&parameters[0] != "temp"&& operations[3] == ";")
 	{
-		bool variablexsist=false;
-		for(int checkingindex=0 ; checkingindex<variablesNo;checkingindex++)
+		bool variablexsist = false;
+		for (int checkingindex = 0; checkingindex<variablesNo; checkingindex++)
 		{
-			if(varNames[checkingindex]==parameters[0])
+			if (varNames[checkingindex] == parameters[0])
 			{
-				variablexsist=true;
+				variablexsist = true;
 				varNames[checkingindex] = parameters[0];
 				varContent[checkingindex] = parameters[2];
 				break;
 			}
 		}
-		if(variablexsist==false)
+		if (variablexsist == false)
 		{
-		varNames[variablesNo] = parameters[0];
-		varContent[variablesNo] = parameters[2];
-		variablesNo++;
+			varNames[variablesNo] = parameters[0];
+			varContent[variablesNo] = parameters[2];
+			variablesNo++;
 		}
 	}
 	/*else if (stack_index == 3 && operations[1] == "="&&parameters[0] == "temp")
 	{
-		s = parameters[0] + operations[1] + parameters[2];
+	s = parameters[0] + operations[1] + parameters[2];
 	}*/
-	else if (stack_index == 3  && operations[1] == "=" &&parameters[0] != "temp" )
+	else if (stack_index == 3 && operations[1] == "=" &&parameters[0] != "temp")
 	{
-		bool variablexsist=false;
-		for(int checkingindex=0 ; checkingindex<variablesNo;checkingindex++)
+		cout<<"done";
+		bool variablexsist = false;
+		for (int checkingindex = 0; checkingindex<variablesNo; checkingindex++)
 		{
-			if(varNames[checkingindex]==parameters[0])
+			if (varNames[checkingindex] == parameters[0])
 			{
-				variablexsist=true;
+				variablexsist = true;
 				varNames[checkingindex] = parameters[0];
 				varContent[checkingindex] = parameters[2];
 				break;
 			}
 		}
-		if(variablexsist==false)
+		if (variablexsist == false)
 		{
-		varNames[variablesNo] = parameters[0];
-		varContent[variablesNo] = parameters[2];
-		variablesNo++;
+			varNames[variablesNo] = parameters[0];
+			varContent[variablesNo] = parameters[2];
+			variablesNo++;
 		}
-		print(parameters[0], varNames, varContent,variablesNo);
+		print(parameters[0], varNames, varContent, variablesNo);
 	}
-	else if (stack_index == 2  && operations[1] == ";")
+	else if (stack_index == 2 && operations[1] == ";")
 	{
-		s=parameters[0];
+		s = parameters[0];
 	}
-	else  { s = parameters[0]; cout<<parameters[0];}
+	else { s = parameters[0]; cout << parameters[0]; }
 }
