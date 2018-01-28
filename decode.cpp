@@ -444,13 +444,13 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 
 	}
-							///////////////////
+					/*		///////////////////
 						cout<<stack_index<<endl;
 						for(int i=0 ; i < stack_index ; i++)
 						{
 						cout << parameters[i] << "----->" << operations[i]<<endl;
 						}
-						///////////////////
+						///////////////////*/
 
 	//solve factorial or transpose operations
 	for (int index = 0; index<stack_index; index++)
@@ -795,7 +795,6 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	}*/
 	else if (stack_index == 3 && operations[1] == "=" &&parameters[0] != "temp")
 	{
-		cout<<"done";
 		bool variablexsist = false;
 		for (int checkingindex = 0; checkingindex<variablesNo; checkingindex++)
 		{
