@@ -29,17 +29,17 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 
 		if (operator_exist == true)
 		{
-			if ((s[string_index] == '.'&&nextisdigit == true)||(s[string_index]=='-'&&string_index==0) || (s[string_index] == '-'&& s[string_index - 1] != '.' && (prevoperator_exist == true &&/* s[string_index - 1] == '='&&*/s[string_index - 1] != ')'))) parameters[stack_index].insert(parameters[stack_index].end(), s[string_index]);
+			if ((s[string_index] == '.'&&nextisdigit == true) || (s[string_index] == '-'&& s[string_index - 1] != '.' && (prevoperator_exist == true &&/* s[string_index - 1] == '='&&*/s[string_index - 1] != ')'))) parameters[stack_index].insert(parameters[stack_index].end(), s[string_index]);
 			else
 			{
 				if (s[string_index] == '.'&&nextisdigit == false)stack_index++;
 				operations[stack_index].insert(operations[stack_index].end(), s[string_index]);
 			}
-			if(string_index!=0){if (s[string_index - 1] == '.' /*&& operator_exist == true */) stack_index++;}
+			if (s[string_index - 1] == '.' /*&& operator_exist == true */) stack_index++;
 			else if (s[string_index] != '.' &&
 				((s[string_index] == '!' || s[string_index] == ';' || s[string_index] == '\'') ||
 				(s[string_index] != '-' && (prevoperator_exist == false || s[string_index - 1] == '=' || s[string_index - 1] == ')') && s[string_index + 1] != '.') ||
-					(s[string_index] == '-' && string_index!=0 &&s[string_index - 1] != '='&& (prevoperator_exist == false /*|| s[string_index - 1] == '=' */|| s[string_index - 1] == ')')) ||
+					(s[string_index] == '-' &&s[string_index - 1] != '=' && (prevoperator_exist == false /*|| s[string_index - 1] == '=' */ || s[string_index - 1] == ')')) ||
 					(s[string_index] == '(')
 					)) stack_index++;
 		}
@@ -51,13 +51,14 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 
 	}
-						/*	///////////////////
-						cout<<stack_index<<endl;
-						for(int i=0 ; i < stack_index ; i++)
-						{
-						cout << parameters[i] << "----->" << operations[i]<<endl;
-						}
-						///////////////////*/
+	///////////////////
+	//cout << stack_index << endl;
+
+	/*for (int i = 0; i < stack_index; i++)
+	{
+		cout << parameters[i] << "----->" << operations[i] << endl;
+	}*/
+	///////////////////
 
 	//solve factorial or transpose operations
 	for (int index = 0; index<stack_index; index++)
@@ -372,10 +373,10 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 		}
 	}
 
-	/*if (stack_index == 4 && operations[1] == "="&&parameters[0] == "temp" && parameters[3]==";")
+	if (stack_index == 4 && operations[1] == "="&&parameters[0] == "temp" && parameters[3]==";")
 	{
-	s = parameters[0] + operations[1] + parameters[2];
-	}*/
+	s = parameters[2];
+	}
 	if (stack_index == 4 && operations[1] == "="&&parameters[0] != "temp"&& operations[3] == ";")
 	{
 		bool variablexsist = false;
@@ -402,6 +403,7 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	}*/
 	else if (stack_index == 3 && operations[1] == "=" &&parameters[0] != "temp")
 	{
+		//cout << "done";
 		bool variablexsist = false;
 		for (int checkingindex = 0; checkingindex<variablesNo; checkingindex++)
 		{
@@ -425,5 +427,5 @@ void doOperation(string& s, string varNames[100], string varContent[100], int& v
 	{
 		s = parameters[0];
 	}
-	else { s = parameters[0]; cout << parameters[0]; }
+	else { s = parameters[0]; cout << parameters[0] << endl; }
 }
