@@ -6,7 +6,7 @@
 using namespace std;
 
 class CMatrix {
-public:
+private:
 	int nR, nC;    // Row & column Number
 	double** values;  // pointer to pointer values (Matrix r*c)
 
@@ -17,7 +17,7 @@ public:
 	CMatrix(); // default Constructor 
 	~CMatrix(); // Destructor
 	enum MI { MI_ZEROS, MI_ONES, MI_EYE, MI_RAND, MI_VALUE }; // Constants
-
+	
 															  // Copy functions and all its dependencies - Boula
 															  // ===
 	void reset(); // makes the current matrix 0*0
@@ -25,41 +25,28 @@ public:
 	void copy(double d); // copies the 1*1 matrix [d] into current matrix 
 	void copy(string s); // copies the string matrix into current matrix
 	string getOriginalString();
-	string getString(const int columnsToPrintEachTime = 0); // generates current matrix's string
+	string getString(const int columnsToPrintEachTime = 7); // generates current matrix's string
 	CMatrix denominatorOfDiv(float f);
-
+	
 
 	CMatrix(int nR, int nC, int initialization = MI_ZEROS, double initializationValue = 0.0);
 	CMatrix(int nR, int nC, double first, ...);
-	CMatrix(const CMatrix& m);
+	CMatrix(CMatrix& m);
 	CMatrix(double d);
 	CMatrix(string s);
 
-
+	
 	CMatrix operator=(const CMatrix& m);
 	void operator+=(CMatrix& m);
 	CMatrix operator+(CMatrix& m);
 	void operator-=(CMatrix& m);
 	CMatrix operator-(CMatrix& m);
-	CMatrix operator - ();
 	void operator*=(CMatrix& m);
 	CMatrix operator*(CMatrix& m);
 	void operator/=(CMatrix& m);
 	CMatrix operator/(CMatrix& m);
-	double& CMatrix::operator()(int iR, int iC);
-	CMatrix CMatrix::operator& (CMatrix&m);
-	CMatrix CMatrix::operator| (CMatrix&m);
-	
-	friend istream& operator >> (istream &is, CMatrix& C);
-	friend ostream& operator << (ostream &os, CMatrix& C);
-	
-	CMatrix CMatrix::operator++(); //Pre Increment
-	CMatrix CMatrix::operator++(int); //Post Increment
-	CMatrix CMatrix::operator--(); //Pre Decrement
-	CMatrix CMatrix::operator--(int); //Post Decrement
-	
 
-
+	
 	void add(CMatrix& m);
 	void sub(CMatrix& m);
 	void mul(CMatrix& m);
@@ -78,8 +65,8 @@ public:
 	CMatrix getTranspose();
 	CMatrix getInverse();
 
-	friend CMatrix sin(const CMatrix& m);
-	friend CMatrix cos(const CMatrix& m);
+	friend CMatrix sin(const CMatrix& m); 
+	friend CMatrix cos(const CMatrix& m); 
 	friend CMatrix tan(const CMatrix& m);
 	friend CMatrix csc(const CMatrix& m);
 	friend CMatrix sec(const CMatrix& m);
@@ -106,11 +93,9 @@ public:
 	friend CMatrix asech(const CMatrix& m);
 	friend CMatrix acoth(const CMatrix& m);
 
-	friend CMatrix exp(const CMatrix& m);
-	friend CMatrix log(const CMatrix& m);
+	friend CMatrix exp(const CMatrix& m); 
+	friend CMatrix log(const CMatrix& m); 
 	friend CMatrix log10(const CMatrix& m);
-
-	friend CMatrix pow(const CMatrix& m, const double& pow);
 
 };
 #endif

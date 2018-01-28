@@ -1,25 +1,8 @@
-#include "stdafx.h"
-#include "cmatrix.h"
 #include "cmatrix.h"
 #include <math.h>
 #include <stdarg.h>
 #include <cstdlib>
-using namespace std;
-// Addition for linux
-#include <sstream>
-template <typename T> string to_string(const T& t) {
-	ostringstream os;
-	os << t;
-	return os.str();
-}
-// <<
 
-int CMatrix::getnR() {
-	return nR;
-}
-int CMatrix::getnC() {
-	return nC;
-}
 CMatrix::CMatrix()
 {
 	nR = nC = 0; values = NULL;
@@ -50,7 +33,7 @@ CMatrix::CMatrix(int nR, int nC, int initialization, double initializationValue)
 				break;
 			case MI_EYE: values[iR][iC] = (iR == iC) ? 1 : 0;
 				break;
-			case MI_RAND: values[iR][iC] = (rand() % 1000000) / 1000000.0;
+			case MI_RAND: values[iR][iC] = (rand() % 100);// / 100.0;
 				break;
 			case MI_VALUE: values[iR][iC] = initializationValue;
 				break;
@@ -68,7 +51,7 @@ CMatrix::CMatrix(int nR, int nC, double first, ...) // Beshoy
 	}
 	values = new double*[nR];
 	va_list va;
-	va_start(va,first);
+	va_start(va, first);
 	for (int iR = 0; iR < nR; iR++)
 	{
 		values[iR] = new double[nC];
@@ -79,7 +62,7 @@ CMatrix::CMatrix(int nR, int nC, double first, ...) // Beshoy
 	}
 	va_end(va);
 }
-CMatrix::CMatrix(const CMatrix& m) // Beshoy
+CMatrix::CMatrix(CMatrix& m) // Beshoy
 {
 	nR = nC = 0;
 	values = NULL;
@@ -164,16 +147,22 @@ void CMatrix::copy(string s) { // Boula
 		}
 	}
 }
+#include <sstream>
+/*template <typename T> string to_string(const T& t) {
+ostringstream os;
+os << t;
+return os.str();
+}*/
 /*
 string to_string(const int& t) {
-ostringstream os;
-os << t;
-return os.str();
+	ostringstream os;
+	os << t;
+	return os.str();
 }
 string to_string(const double& t) {
-ostringstream os;
-os << t;
-return os.str();
+	ostringstream os;
+	os << t;
+	return os.str();
 }*/
 /*string to_string_with_precision(double value, int n = 6)
 {
@@ -208,9 +197,7 @@ string CMatrix::getOriginalString() { // Boula
 	s = "[" + s.substr(2, s.length() - 3) + "]";
 	return s;
 }
-#include <windows.h>
-#include <stdio.h>
-/*string CMatrix::getString(const int columnsToPrintEachTime) { // Boula
+string CMatrix::getString(const int columnsToPrintEachTime) { // Boula
 															  // support up to 99*99 matrix
 	if (nR == 0 || nC == 0) return "\n\t[empty]\n";
 
@@ -236,75 +223,6 @@ string CMatrix::getOriginalString() { // Boula
 				/*char buffer[70];
 				snprintf(buffer, 70, "%g\t", values[iR][printedColumns + iC]);
 				s += buffer;*/
-/*	string k;
-				if (values[iR][printedColumns + iC] >= 0.00) k = " ";
-				k += to_string(values[iR][printedColumns + iC]);
-				int sLength = k.length();
-				s += k;
-				for (int i = sLength; i < columnSize && iC != columnsToPrint - 1; i++) s += " ";
-			}
-			s += "\n";
-		}
-		printedColumns += columnsToPrintEachTime; s += "\n";
-	}
-	return s;
-}*/
-
-string CMatrix::getString(const int columnsToPrintEachTimeIn) { // Boula
-																// support up to 99*99 matrix
-	
-	if (nR == 0 || nC == 0) return "\n        [empty]\n";
-
-	int columnsToPrintEachTime = columnsToPrintEachTimeIn;
-	int columnSize = 20 - 2 * columnsToPrintEachTime;
-
-	if (columnsToPrintEachTimeIn < 1) {
-		int maxElementWidth = to_string(values[0][0]).length();
-		for (int iR = 0; iR < nR; iR++)
-			for (int iC = 0; iC < nC; iC++)
-				if (to_string(values[iR][iC]).length() > maxElementWidth) maxElementWidth = to_string(values[iR][iC]).length();
-
-		int terminalColumns;
-		//This is here to give you an error!
-			// Uncomment the code required per your operating system only!
-
-			// If windows
-			
-			CONSOLE_SCREEN_BUFFER_INFO csbi;
-			GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-			terminalColumns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-
-			// If linux
-			/*#include <sys/ioctl.h>
-			struct winsize size;
-			ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-			terminalColumns = size.ws_col;*/
-
-			columnSize = maxElementWidth + 1;
-		int rowReservedSpace = 8 + 9 + 8;
-		columnsToPrintEachTime = ((terminalColumns - rowReservedSpace) / columnSize);
-		if (columnsToPrintEachTime < 1) columnsToPrintEachTime = 1;
-	}
-
-	int printedColumns = 0;
-	string s = "\n";
-	
-	bool biggerThanSix = nC > columnsToPrintEachTime;
-	while (printedColumns < nC) {
-		if (biggerThanSix && ((nC - printedColumns) >= columnsToPrintEachTime)) s += "        Columns " + to_string(printedColumns + 1) + " through " + to_string(printedColumns + columnsToPrintEachTime) + ":\n";
-		else
-		{
-			if (printedColumns + 1 != nC) s += "        Columns " + to_string(printedColumns + 1) + " through " + to_string(nC) + ":\n";
-			else s += "        Column " + to_string(printedColumns + 1) + ":\n";
-		}
-		int columnsToPrint = ((nC - printedColumns) >= columnsToPrintEachTime) ? columnsToPrintEachTime : nC - printedColumns;
-		for (int iR = 0; iR < nR; iR++)
-		{
-			if (biggerThanSix) s += "        Row " + to_string(iR + 1) + ": "; else s += "        Row " + to_string(iR + 1) + ": ";
-			if (iR < 9 && nR >= 9) s += " "; // 9 is row number 10
-			s += "        ";
-			for (int iC = 0; iC < columnsToPrint; iC++)
-			{
 				string k;
 				if (values[iR][printedColumns + iC] >= 0.00) k = " ";
 				k += to_string(values[iR][printedColumns + iC]);
@@ -346,6 +264,7 @@ void CMatrix::sub(CMatrix& m) //peter
 }
 void CMatrix::mul(CMatrix& m) //peter
 {
+	//cout << nR << "*" << nC << " " << m.nR << "*" << m.nC << endl;
 	if (nC != m.nR)
 		throw("Invalid matrix dimension");
 	CMatrix r(nR, m.nC);
@@ -353,7 +272,7 @@ void CMatrix::mul(CMatrix& m) //peter
 		for (int iC = 0; iC < r.nC; iC++)
 		{
 			r.values[iR][iC] = 0;
-			for (int k = 0; k < nC; k++)
+			for (int k = 0; k < m.nC; k++)
 				r.values[iR][iC] += values[iR][k] * m.values[k][iC];
 		}
 	copy(r);
@@ -388,7 +307,7 @@ CMatrix CMatrix::dotDiv(CMatrix& m) {
 	CMatrix M(nR, nC);
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
-			M.values[iR][iC] = (this->values[iR][iC]) / (m.values[iR][iC]);
+			M.values[iR][iC] = (this->values[iR][iC])/(m.values[iR][iC]);
 	return M;
 }
 CMatrix CMatrix::dotPow(double d) {
@@ -404,7 +323,7 @@ CMatrix CMatrix::dotLDiv(CMatrix& m) {
 	CMatrix M(nR, nC);
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
-			M.values[iR][iC] = (m.values[iR][iC]) / (this->values[iR][iC]);
+			M.values[iR][iC] = (m.values[iR][iC])/(this->values[iR][iC]);
 	return M;
 }
 CMatrix CMatrix::getCofactor(int r, int c) //peter
@@ -643,7 +562,7 @@ CMatrix CMatrix::getTranspose() //Mina Magdy
 	return M;
 }
 
-///////operators//////
+///////operators//////Hanaa
 CMatrix CMatrix::operator=(const CMatrix& m)
 {
 	copy(m);
@@ -669,14 +588,6 @@ CMatrix CMatrix::operator-(CMatrix& m)
 	r -= m;
 	return r;
 }
-CMatrix CMatrix::operator-()
-{
-	CMatrix r(nR, nC);
-	for (int iR = 0; iR < nR; iR++)
-		for (int iC = 0; iC < nC; iC++)
-			r.values[iR][iC] = -values[iR][iC];
-	return r;
-}
 void CMatrix::operator*=(CMatrix& m)
 {
 	mul(m);
@@ -697,77 +608,164 @@ CMatrix CMatrix::operator/(CMatrix& m)
 	r /= m;
 	return r;
 }
-double& CMatrix::operator()(int iR,int iC)
+
+//Geo
+
+CMatrix CMatrix::operator==(CMatrix&m)
 {
-	
-	return values[iR][iC];
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]== m.values[iR][iC])? 1:0;
+	return A;
 }
+CMatrix CMatrix::operator!=(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]== m.values[iR][iC])? 0:1;
+	return A;
+}
+
+CMatrix CMatrix::operator> (CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]> m.values[iR][iC])? 1:0;
+	return A;
+}
+CMatrix CMatrix::operator< (CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]< m.values[iR][iC])? 1:0;
+	return A;
+}
+CMatrix CMatrix::operator>=(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]>= m.values[iR][iC])? 1:0;
+	return A;
+}
+CMatrix CMatrix::operator<=(CMatrix&m)
+{
+	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
+	for (int iR = 0; iR<nR; iR++)
+		for (int iC = 0; iC<nC; iC++)
+			A.values[iR][iC] =(values[iR][iC]<= m.values[iR][iC])? 1:0;
+	return A;
+}
+
 CMatrix CMatrix::operator& (CMatrix&m)
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
-	CMatrix A(nR,nC);
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
-			A.values[iR][iC] = int(values[iR][iC]) & int(m.values[iR][iC]);
+			A.values[iR][iC] = values[iR][iC] & m.values[iR][iC];
 	return A;
 }
 CMatrix CMatrix::operator| (CMatrix&m)
 {
 	if (nR != m.nR || nC != m.nC)throw("Invalid matrix dimension");
-	CMatrix A(nR, nC);
+	CMatrix A;
+	A.nR=m.nR , A.nC=m.nC ;
 	for (int iR = 0; iR<nR; iR++)
 		for (int iC = 0; iC<nC; iC++)
-			A.values[iR][iC] = int(values[iR][iC]) & int(m.values[iR][iC]);
+			A.values[iR][iC] = values[iR][iC] | m.values[iR][iC];
 	return A;
+}
+
+CMatrix CMatrix::operator-()
+{
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] = -values[iR][iC];
+return *this;
 }
 
 istream& operator >> (istream &is, CMatrix& m)
 {
-	string s;
-	getline(is, s, ']');
-	s += "]";
-	m = CMatrix(s);
-	return is;
+string s;
+getline(is, s, ']');
+s+="]";
+m = CMatrix(s);
+return is;
 }
+
 ostream& operator << (ostream &os, CMatrix& m)
 {
-	os << m.getString();
-	return os;
+os<<m.getString();
+return os;
 }
+
+
+
+CMatrix::operator const string()
+{
+return getOriginalString();
+}
+
+//pre post increment and decrement
 
 CMatrix CMatrix::operator++()
 {
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
-			values[iR][iC] ++;
-	return *this;
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] ++;
+return *this;
 }
+
 CMatrix CMatrix::operator++(int)
 {
-	CMatrix c = *this;
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
-			values[iR][iC] ++;
-	return c;
+CMatrix c =*this ;
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] ++;
+return c ;
 }
+
 CMatrix CMatrix::operator--()
 {
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
-			values[iR][iC] --;
-	return *this;
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] --;
+return *this;
 }
+
 CMatrix CMatrix::operator--(int)
 {
-	CMatrix c = *this;
-	for (int iR = 0; iR<nR; iR++)
-		for (int iC = 0; iC<nC; iC++)
-			values[iR][iC] --;
-	return c;
+CMatrix c = *this ;
+for(int iR=0;iR<nR;iR++)
+	for(int iC=0;iC<nC;iC++)
+		values[iR][iC] --;
+return c ;
 }
 
 
-CMatrix sin(const CMatrix& m)
+//Hanaa
+
+
+
+CMatrix sin(const CMatrix& m) 
 {
 
 	CMatrix M(m.nR, m.nC);
@@ -803,7 +801,7 @@ CMatrix csc(const CMatrix& m)
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
 		for (int iC = 0; iC<m.nC; iC++)
-			M.values[iR][iC] = 1.0 / sin(m.values[iR][iC]);
+			M.values[iR][iC] = 1.0/sin(m.values[iR][iC]);
 	return M;
 
 }
@@ -813,7 +811,7 @@ CMatrix sec(const CMatrix& m)
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
 		for (int iC = 0; iC<m.nC; iC++)
-			M.values[iR][iC] = 1.0 / cos(m.values[iR][iC]);
+			M.values[iR][iC] = 1.0/cos(m.values[iR][iC]);
 	return M;
 
 }
@@ -823,7 +821,7 @@ CMatrix cot(const CMatrix& m)
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
 		for (int iC = 0; iC<m.nC; iC++)
-			M.values[iR][iC] = 1.0 / tan(m.values[iR][iC]);
+			M.values[iR][iC] = 1.0/tan(m.values[iR][iC]);
 	return M;
 
 }
@@ -864,7 +862,7 @@ CMatrix acsc(const CMatrix& m)
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
 		for (int iC = 0; iC<m.nC; iC++)
-			M.values[iR][iC] = asin(1.0 / m.values[iR][iC]);
+			M.values[iR][iC] = asin(1.0/m.values[iR][iC]);
 	return M;
 
 }
@@ -874,7 +872,7 @@ CMatrix asec(const CMatrix& m)
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
 		for (int iC = 0; iC<m.nC; iC++)
-			M.values[iR][iC] = acos(1.0 / m.values[iR][iC]);
+			M.values[iR][iC] = acos(1.0/m.values[iR][iC]);
 	return M;
 
 }
@@ -884,18 +882,18 @@ CMatrix acot(const CMatrix& m)
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
 		for (int iC = 0; iC<m.nC; iC++)
-			M.values[iR][iC] = atan(1.0 / m.values[iR][iC]);
+			M.values[iR][iC] = atan(1.0/m.values[iR][iC]);
 	return M;
 
 }
 
 CMatrix sinh(const CMatrix& m)
 {
+
 	CMatrix M(m.nR, m.nC);
 	for (int iR = 0; iR<m.nR; iR++)
-		for (int iC = 0; iC < m.nC; iC++)
+		for (int iC = 0; iC<m.nC; iC++)
 			M.values[iR][iC] = sinh(m.values[iR][iC]);
-	
 	return M;
 
 }
@@ -1042,61 +1040,3 @@ CMatrix log10(const CMatrix& m)
 
 }
 
-CMatrix pow(const CMatrix& m, const double& pow) {
-	CMatrix input = m;
-	int nR = input.getnR();
-	int nC = input.getnC();
-	if (nR != nC) throw("invalid matrix dimension.");
-	double reminder = pow - int(pow);
-	if (reminder != 0) {//floating pow
-		if(nC!=1&&nR!=1)
-			throw("floating power is applied for 1*1 matrix only");
-		else {
-			CMatrix r(1,1);
-			r(0, 0) = std:: pow(input(0,0), pow);
-			return r;
-		}
-	}
-	int power = pow;
-	if (power == 0) return CMatrix(nR, nC, 2);
-	else if (power == 1) return input;
-	else if (power == -1) return input.getInverse();
-
-	CMatrix toGetPowers = m;
-	if (power < 0) {
-		toGetPowers = toGetPowers.getInverse();
-		power = abs(power);
-	}
-
-	int p = power;
-	int biggestPower = -1;
-
-	for (int i = 20; p > 0; i--)
-		if (p - std::pow(2, i) >= 0) {
-			if (biggestPower == -1) biggestPower = i;
-			break;
-		}
-
-	CMatrix matricesToPowersOfTwos[22];
-	matricesToPowersOfTwos[0] = toGetPowers;
-	int current_toGetPowers_power;
-	// Generating matrices array
-	for (int i = 1; i <= biggestPower; i++) {
-		toGetPowers = toGetPowers * toGetPowers;
-		matricesToPowersOfTwos[i] = toGetPowers;
-	}
-	current_toGetPowers_power = std::pow(2, biggestPower);
-
-	for (int i = biggestPower - 1; i >= 0 && p != current_toGetPowers_power; i--) {
-		while (true) {
-			// Calculating the power
-			if (p != current_toGetPowers_power && current_toGetPowers_power + std::pow(2, i) <= p) {
-				current_toGetPowers_power += std::pow(2, i);
-				toGetPowers = toGetPowers * matricesToPowersOfTwos[i];
-			}
-			else break;
-		}
-	}
-
-	return toGetPowers;
-}

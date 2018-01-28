@@ -67,16 +67,16 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 	matrixes_num = m;
 	int matrixNo = 0;
 	//remove spaces from matrix names
-	for (int v = 0; v<m; v++) {
+	for (int v = 0; v < m; v++) {
 		matrix_names[v].erase(std::remove(matrix_names[v].begin(), matrix_names[v].end(), ' '), matrix_names[v].end());
 	}
 	for (int a = 0; a < matrixes_num; a++)
 	{
 		Equal_no = count(matrix_names[a].begin(), matrix_names[a].end(), '=');
 		Equal_pos = matrix_names[a].find_first_of('=');
-		if (Equal_no>1)
+		if (Equal_no > 1)
 		{
-			for (int b = 0; b<Equal_no; b++)
+			for (int b = 0; b < Equal_no; b++)
 			{
 				Equal_pos2 = matrix_names[a].find_first_of('=');
 				matrix_names[m] = matrix_names[a].substr(0, Equal_pos2);
@@ -95,7 +95,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 
 
 	//cout << matrixNo << endl;
-	for (int x = 0; x<o; x++)
+	for (int x = 0; x < o; x++)
 	{
 		if (!operation[x].empty())
 		{
@@ -112,7 +112,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 	//edit as we need the counter c as no of operations
 	int operationNo = c;
 	c = 0;
-	for (int x = 0; x<m; x++)
+	for (int x = 0; x < m; x++)
 	{
 		if (!matrix_names[x].empty())
 		{
@@ -121,7 +121,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 		}
 	}
 	c = 0;
-	for (int x = 0; x<m; x++)
+	for (int x = 0; x < m; x++)
 	{
 		if (!matrix[x].empty())
 		{
@@ -139,10 +139,10 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 
 
 	int result_pos, equal_pos, first_parameter_pos, operation_pos, second_parameter_pos;
-	for (int z = 0; z< operationNo; z++)
+	for (int z = 0; z < operationNo; z++)
 	{
 		//cout<<operation2[0]<<endl;
-		for (int i = 0; i<operation2[z].length(); i++)
+		for (int i = 0; i < operation2[z].length(); i++)
 		{
 			if (operation2[z][i] != ' ')
 			{
@@ -154,7 +154,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 		}
 		//cout<<result[0]<<endl;
 
-		for (int i = 0; i<operation2[z].length(); i++)
+		for (int i = 0; i < operation2[z].length(); i++)
 		{
 			if (operation2[z][i] == '=')
 			{
@@ -164,7 +164,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 		//cout<<"equal_pos = "<<equal_pos<<endl;
 		operation2[z].erase(0, equal_pos + 1);
 		//cout<<operation2[0]<<endl;
-		for (int i = 0; i<operation2[z].length(); i++)
+		for (int i = 0; i < operation2[z].length(); i++)
 		{
 			if (operation2[z][i] != ' ')
 			{
@@ -176,7 +176,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 		operation2[z].erase(0, first_parameter_pos + 1);
 		///cout<<first_parameter[0]<<endl<<operation2[0]<<endl;
 
-		for (int i = 0; i<operation2[z].length(); i++)
+		for (int i = 0; i < operation2[z].length(); i++)
 		{
 			if (operation2[z][i] != ' ')
 			{
@@ -194,7 +194,7 @@ int getDataFromFile(string file, string  matrix_names2[100], string matrix2[100]
 		operation2[z].erase(0, operation_pos + 1);
 		//cout<<m_operation[0]<<endl<<operation2[0]<<endl;
 
-		for (int i = 0; i<operation2[z].length(); i++)
+		for (int i = 0; i < operation2[z].length(); i++)
 		{
 			if (operation2[z][i] != ' ')
 			{
@@ -303,7 +303,7 @@ void PrintToFile(string file, int NoOfMatrices, string  matrix_names[100], strin
 		for (int MatrixIndex = 0; MatrixIndex < NoOfMatrices; MatrixIndex++) {
 			if (result[Index] == matrix_names[MatrixIndex]) {
 				CMatrix temp(matrix[MatrixIndex]);
-				cout << matrix_names[MatrixIndex] << " = " << temp.getString(5) << endl;
+				cout << matrix_names[MatrixIndex] << " = " << temp.getString(4) << endl;
 			}
 
 		}
@@ -338,7 +338,7 @@ int processInput(string input, string matrices_names[100], CMatrix matrices[100]
 		}
 		CMatrix tempMat(input.substr(input.find("["), input.find("]") - (input.find("[") - 1)));
 		string tempS = "";
-		for (int i = 0; i<input.length(); i++) {
+		for (int i = 0; i < input.length(); i++) {
 			if (input[i] != ' ') tempS += input[i];
 		}
 		do {
@@ -363,7 +363,7 @@ int processInput(string input, string matrices_names[100], CMatrix matrices[100]
 		else { return matricesNo; };
 
 		string tempS = "";
-		for (int i = 0; i<input.length(); i++) if (input[i] != ' ') tempS += input[i];
+		for (int i = 0; i < input.length(); i++) if (input[i] != ' ') tempS += input[i];
 		string parameter0 = tempS.substr(0, tempS.find("="));
 		string parameter1 = tempS.substr(tempS.find("=") + 1, tempS.find(operation) - (tempS.find("=") + 1));
 		string parameter2;
@@ -371,7 +371,7 @@ int processInput(string input, string matrices_names[100], CMatrix matrices[100]
 		else if (operation == "./") parameter2 = tempS.substr(tempS.find(operation) + 2, tempS.length() - (tempS.find(operation) + 2));
 		else if (operation == "'");
 		int parameter0id = -1, parameter1id = -1, parameter2id = -1;
-		for (int i = 0; i<matricesNo; i++) {
+		for (int i = 0; i < matricesNo; i++) {
 			if (parameter0 == matrices_names[i]) parameter0id = i;
 			else if (parameter1 == matrices_names[i]) parameter1id = i;
 			else if (parameter2 == matrices_names[i] && operation != "'") parameter2id = i;
