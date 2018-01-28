@@ -70,6 +70,21 @@ Run ./matrix command to run the library in your terminal:
 * [x] Matrix multiplication and division.
 * [x] Matrix transpose.
 
+
+## Phase 2 Description
+
+- Support mathematical functions. 
+    * Trigonometric, Logarithmic, Roots, Power
+- Support mathematical expressions.
+    * Either with (dot) or not.
+- Support flexible matrix parser.
+    * Accept matrix in matrix, expressions and variables 
+- Support error handling.
+    * Do not crash for invalid input.
+
+
+
+
 ## Phase 2 Description
 
 - Support mathematical functions. 
@@ -92,6 +107,7 @@ Run ./matrix command to run the library in your terminal:
 * [x] Matrix logarithmic and exponential functions.
 * [X] Matrix roots and power functions.
 * [X] Error Handling.
+
 
 
 
