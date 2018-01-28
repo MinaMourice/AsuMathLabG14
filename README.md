@@ -92,6 +92,7 @@ Run ./matrix command to run the library in your terminal:
 * [X] Matrix roots and power functions.
 * [ ] Error Handling.
 
+
 ## Additional
 You can always check [the doctor's project charter](https://docs.google.com/presentation/d/1UIO4qOuu7vfbQWdxS-UbUa06dTc-YmUGgjZ1Gn9T0Bo/), [our google drive spreadsheet](
 https://docs.google.com/spreadsheets/d/1DseCvOymkYyLX0A7mNgsOQ_dZ9WUEAJQ0_6GCJYxdfg/) , or [our ZenHub Issues Management Board](https://app.zenhub.com/workspace/o/minamourice/asumathlabg14/boards).
