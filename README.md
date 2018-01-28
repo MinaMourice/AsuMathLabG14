@@ -91,7 +91,7 @@ Run ./matrix command to run the library in your terminal:
 * [x] Matrix bitWise functions.
 * [x] Matrix logarithmic and exponential functions.
 * [X] Matrix roots and power functions.
-* [ ] Error Handling.
+* [X] Error Handling.
 
 
 
