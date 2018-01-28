@@ -1,3 +1,755 @@
+
+
+
+#include <math.h>
+#include "cmatrix.h"
+#include "solve.h"
+#include <sstream>
+using namespace std;
+
+// Addition for linux
+/*#include <sstream>
+template <typename T> string to_string(const T& t) {
+	ostringstream os;
+	os << t;
+	return os.str();
+}
+double stod(const string& s) {
+	stringstream ss;
+	ss << s;
+	double x;
+	ss >> x;
+	return x;
+}
+template<class InputIterator, class T>
+InputIterator find(InputIterator first, InputIterator last, const T& val) {
+	while (first != last) {
+		if (*first == val) return first;
+		++first;
+	}
+	return last;
+}*/
+// <<
+bool isDouble(string myString)
+{
+	istringstream iss(myString);
+	double f;
+	iss >> noskipws >> f; // noskipws considers leading whitespace invalid
+						  // Check the entire string was consumed and if either failbit or badbit is set
+	return iss.eof() && !iss.fail();
+}
+// Hanaa 
+/* Takes a string as input and returns a string output, Input may contain previous predefined variables and/or normal numbers */
+string solve(string s, string varNames[100], string varContent[100], int& variablesNo) {
+	int  matFlag = 0; bool validOperand1 = 0, validOperand2 = 0; 
+	string operation[14] = {".^",".+",".-",".*","./",".\\","^","*","/","\\","&","|","+","-" };
+	int opIndex;
+	string operand; string operand2;
+	int found1 = s.find('(');
+	if (found1 != std::string::npos)
+	{
+		operand = s.substr(s.find('(') + 1, s.find(')') - s.find('(') - 1);
+		validOperand2 = 1;//as no having operand2 here
+	}
+	else if ((found1 = s.find('\'')) != std::string::npos)
+	{
+		operand = s.substr(0, found1);
+		validOperand2 = 1;//as no having operand2 here
+	}
+	else
+	{
+		int indexbracket1 = s.find('[');
+		int indexbracket2 = s.find(']');
+		//cout << indexbracket2;
+		
+		for (int j = 0; j<14; j++)
+		{
+			if(indexbracket2 != std::string::npos&&indexbracket2!=s.length()-1)
+				found1 = s.find(operation[j], indexbracket2+1);
+			else if(indexbracket2 != std::string::npos&&indexbracket2 == s.length() - 1)
+				found1 = s.rfind(operation[j], indexbracket1 );
+			else
+				found1 = s.find(operation[j],1);//to avoid first negative that may be available
+			
+			if (found1 != std::string::npos)
+			{
+				opIndex = j;
+				break;
+			}
+		}
+		if (found1 == 0) {
+			operand = s.substr(1, s.length());
+			validOperand2 = 1;//as no having operand2 here
+		}
+		else if (found1 != std::string::npos) {
+			//cout << found1;
+			//cout << operation[j] << endl;
+			operand = s.substr(0, found1);
+			operand2 = s.substr(found1 + operation[opIndex].length(), s.length());
+			int r = operation[opIndex].length();
+			// cout<<operand2<<"\n"<<r<<"\n";
+
+		}
+		else if (found1 == std::string::npos&&s[0] == '-') {
+			found1 = 0;
+			operand = s.substr(1, s.length());
+			validOperand2 = 1;//as no having operand2 here
+		}
+	}
+	
+	 
+	
+	//cout << "s="<<s<< endl<<operand << endl << operand2 << endl;
+	matFlag = 0; 
+		if (operand[0] == '[') { 
+			matFlag = 1; 
+			validOperand1 = 1;
+		}
+		if (operand2[0] == '[') {
+			matFlag = 1;
+			validOperand2 = 1;
+		}
+			for (int k = 0; k < variablesNo; k++)
+			{
+				//cout << varNames[k]<<endl;
+				if (operand == varNames[k])
+				{
+					validOperand1 = 1;
+					string op = varContent[k];
+					if (op[0] == ('['))
+					{
+						matFlag = 1;
+					}
+				}
+				if (operand2 == varNames[k])
+				{
+					validOperand2 = 1;
+					string op1 = varContent[k];
+					if (op1[0] == ('['))
+					{
+						matFlag = 1;
+					}
+				}
+			}
+		if (!validOperand1)validOperand1 = isDouble(operand);
+		if(!validOperand2)validOperand2 = isDouble(operand2);
+		//cout << validOperand1 << "   " << validOperand2 << endl;
+		/*if (!validOperand1 || !validOperand2)
+			throw "unvalid operand";*/
+	//cout << s<<endl;
+	if (matFlag == 1)
+	{
+		//cout << "pass " << s << "to solve cmatrix" << "\n";
+		CMatrix x = solveCMatrix(s, found1, varNames, varContent, variablesNo);
+		//cout <<s<< "result from solveCMatrix" << x.getString() << endl;
+		return x.getOriginalString();
+		//goto solveCMatrix();
+		
+
+	}
+	else if (matFlag == 0) {
+		//cout << "pass" << s << "to solve double" << "\n";
+		double y = solveDouble(s, varNames, varContent, variablesNo);
+		//cout  << "result from solveDouble" << y << endl;
+		return to_string(y);
+		//	goto solveDouble();
+		
+	}
+
+
+
+
+
+}
+//  Marina
+/* Takes a string as input and returns a double output, Input may contain previous predefined variables and/or normal numbers */
+double solveDouble(string s, string varNames[100], string varContent[100], int& variablesNo)
+{
+	//cout << s;
+	int placeofspecial = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_.");
+
+	if (s.at(placeofspecial) == '(')
+	{
+
+		//sin
+		string only1operandfromvarnames = s.substr(placeofspecial + 1, s.find(')') - placeofspecial - 1);
+
+		int only1operandindex = -1;
+		for (int i = 0; i<variablesNo; i++)
+		{
+			if (only1operandfromvarnames == varNames[i])
+			{
+				only1operandindex = i;
+			}
+		}
+		string TRIG = s.substr(0, placeofspecial);
+		if (only1operandindex != -1)
+		{
+			string only1operandcontent = varContent[only1operandindex];
+			double only1operandtodouble = atof(only1operandcontent.c_str());
+
+
+			//only one operand
+
+			if (TRIG == "sin")
+			{
+				return sin(only1operandtodouble);
+			}
+			else if (TRIG == "cos")
+			{
+				return cos(only1operandtodouble);
+			}
+			else  if (TRIG == "tan")
+			{
+				return tan(only1operandtodouble);
+			}
+			else if (TRIG == "sec")
+			{
+				return 1 / cos(only1operandtodouble);
+			}
+			else if (TRIG == "csc")
+			{
+				return 1 / sin(only1operandtodouble);
+			}
+			else if (TRIG == "cot")
+			{
+				return 1 / tan(only1operandtodouble);
+			}
+			else if (TRIG == "asin")
+			{
+				return asin(only1operandtodouble);
+			}
+			else if (TRIG == "acos")
+			{
+				return acos(only1operandtodouble);
+			}
+			else if (TRIG == "atan")
+			{
+				return atan(only1operandtodouble);
+			}
+			else if (TRIG == "acsc")
+			{
+				return asin(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "asec")
+			{
+				return acos(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "acot")
+			{
+				return atan(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "sinh")
+			{
+				return sinh(only1operandtodouble);
+			}
+			else if (TRIG == "cosh")
+			{
+				return cosh(only1operandtodouble);
+			}
+			else if (TRIG == "tanh")
+			{
+				return tanh(only1operandtodouble);
+			}
+			else if (TRIG == "sech")
+			{
+				return 2 / (exp(only1operandtodouble) + exp(-only1operandtodouble));
+			}
+			else if (TRIG == "csch")
+			{
+				return 2 / (exp(only1operandtodouble) - exp(-only1operandtodouble));
+			}
+			else if (TRIG == "coth")
+			{
+				return (exp(2 * only1operandtodouble) + 1) / (exp(2 * only1operandtodouble) - 1);
+			}
+			else if (TRIG == "asinh")
+			{
+				return asinh(only1operandtodouble);
+			}
+			else if (TRIG == "acosh")
+			{
+				return acosh(only1operandtodouble);
+			}
+			else if (TRIG == "atanh")
+			{
+				return atanh(only1operandtodouble);
+			}
+			else if (TRIG == "acsch")
+			{
+				return asinh(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "asech")
+			{
+				return acosh(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "acoth")
+			{
+				return atanh(1.0 / only1operandtodouble);
+			}
+			else if (TRIG == "exp")
+			{
+				return exp(only1operandtodouble);
+			}
+			else if (TRIG == "log")
+			{
+				return log(only1operandtodouble);
+			}
+			else if (TRIG == "log10")
+			{
+				return log10(only1operandtodouble);
+			}
+			else if (TRIG == "sqrt")
+			{
+				return sqrt(only1operandtodouble);
+			}
+			else if (TRIG == "abs")
+			{
+				return abs(only1operandtodouble);
+			}
+		}
+
+		else
+
+		{
+			//only one as number 
+
+			double  only1operandasnumbertodouble = atof(only1operandfromvarnames.c_str());
+
+
+			if (TRIG == "sin")
+			{
+				return sin(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "cos")
+			{
+				return cos(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "tan")
+			{
+				return tan(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "sec")
+			{
+				return 1 / cos(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "csc")
+			{
+				return 1 / sin(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "cot")
+			{
+				return 1 / tan(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "asin")
+			{
+				return asin(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acos")
+			{
+				return acos(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "atan")
+			{
+				return atan(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acsc")
+			{
+				return asin(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "asec")
+			{
+				return acos(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acot")
+			{
+				return atan(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "sinh")
+			{
+				return sinh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "cosh")
+			{
+				return cosh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "tanh")
+			{
+				return tanh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "sech")
+			{
+				return 2 / (exp(only1operandasnumbertodouble) + exp(-only1operandasnumbertodouble));
+			}
+			else if (TRIG == "csch")
+			{
+				return 2 / (exp(only1operandasnumbertodouble) - exp(-only1operandasnumbertodouble));
+			}
+			else if (TRIG == "coth")
+			{
+				return (exp(2 * only1operandasnumbertodouble) + 1) / (exp(2 * only1operandasnumbertodouble) - 1);
+			}
+			else if (TRIG == "asinh")
+			{
+				return asinh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acosh")
+			{
+				return acosh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "atanh")
+			{
+				return atanh(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acsch")
+			{
+				return asinh(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "asech")
+			{
+				return acosh(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "acoth")
+			{
+				return atanh(1.0 / only1operandasnumbertodouble);
+			}
+			else if (TRIG == "exp")
+			{
+				return exp(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "log")
+			{
+				return log(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "log10")
+			{
+				return log10(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "sqrt")
+			{
+				return sqrt(only1operandasnumbertodouble);
+			}
+			else if (TRIG == "abs")
+			{
+				return abs(only1operandasnumbertodouble);
+			}
+		}
+	}
+	else
+	{
+		//plus
+		if (placeofspecial == 0)
+		{
+			//-2+3
+			int placeofspecial2 = s.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_.", 1);
+			if (placeofspecial2 == string::npos){ //case -2 or -a
+				string operand = s.substr(placeofspecial+1,s.length());
+				int operandindex = -1;
+				for (int i = 0; i<variablesNo; i++)
+				{
+					if (operand == varNames[i])
+					{
+						operandindex = i; break;
+					}
+				}
+				if (operandindex == -1) { //-2
+					return -atof(operand.c_str());
+				}
+				else if (operandindex != -1) { //-a
+					return -atof(varContent[operandindex].c_str());
+				}
+			}
+			string operand1asnumber1 = s.substr(0, placeofspecial2);
+			string operand2asnumber2 = s.substr(placeofspecial2 + 1, s.length());
+			if (s[placeofspecial2 - 1] == '.') {
+				operand1asnumber1 = s.substr(0, placeofspecial2-1);
+				operand2asnumber2 = s.substr(placeofspecial2 + 1, s.length());
+			}
+			double operand1asnumbertodouble1 = atof(operand1asnumber1.c_str());
+			double operand2asnumbertodouble2 = atof(operand2asnumber2.c_str());
+			string checkvariable2invariablenames = operand2asnumber2;
+
+			int operand2index = -1;
+			for (int i = 0; i<variablesNo; i++)
+			{
+				if (checkvariable2invariablenames == varNames[i])
+				{
+					operand2index = i;
+				}
+			}
+
+			if (operand2index == -1)
+				
+				//-2+3
+			{
+				//cout << operand2asnumbertodouble2 << endl << operand1asnumbertodouble1 << endl;
+				if (s.at(placeofspecial2) == '+')
+				{
+					return operand1asnumbertodouble1 + operand2asnumbertodouble2;
+				}
+				if (s.at(placeofspecial2) == '-')
+				{
+					return operand1asnumbertodouble1 - operand2asnumbertodouble2;
+				}
+				if (s.at(placeofspecial2) == '*')
+				{
+					return operand1asnumbertodouble1 * operand2asnumbertodouble2;
+				}
+				if (s.at(placeofspecial2) == '/')
+				{
+					return operand1asnumbertodouble1 / operand2asnumbertodouble2;
+				}
+				if (s.at(placeofspecial2) == '\\')
+				{
+					return  operand2asnumbertodouble2 / operand1asnumbertodouble1;
+				}
+				if (s.at(placeofspecial2) == '^')
+				{
+					return pow(operand1asnumbertodouble1, operand2asnumbertodouble2);
+				}
+				if (s.at(placeofspecial2) == '&')
+				{
+					return int(operand1asnumbertodouble1)&int(operand2asnumbertodouble2);
+				}
+				if (s.at(placeofspecial2) == '|')
+				{
+					return int(operand1asnumbertodouble1)|int(operand2asnumbertodouble2);
+				}
+			}
+			else if (operand2index != -1)
+			{
+				//-2+B
+				string operand2content = varContent[operand2index];
+				double contentofoperand2inDouble = atof(operand2content.c_str());
+
+				if (s.at(placeofspecial2) == '+')
+				{
+					return operand1asnumbertodouble1 + contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial2) == '-')
+				{
+					return operand1asnumbertodouble1 - contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial2) == '*')
+				{
+					return operand1asnumbertodouble1 * contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial2) == '/')
+				{
+					return operand1asnumbertodouble1 / contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial2) == '\\')
+				{
+					return contentofoperand2inDouble / operand1asnumbertodouble1;
+				}
+				if (s.at(placeofspecial2) == '^')
+				{
+					return pow(operand1asnumbertodouble1, contentofoperand2inDouble);
+				}
+				if (s.at(placeofspecial2) == '&')
+				{
+					return int(operand1asnumbertodouble1)&int(contentofoperand2inDouble);
+				}
+				if (s.at(placeofspecial2) == '|')
+				{
+					return int(operand1asnumbertodouble1)|int(contentofoperand2inDouble);
+				}
+			}
+		}
+		else
+		{
+			string checkvariable1invariablenames = s.substr(0, placeofspecial);
+			string checkvariable2invariablenames = s.substr(placeofspecial + 1, s.length());
+			if (s[placeofspecial - 1] == '.') {
+				checkvariable1invariablenames = s.substr(0, placeofspecial - 1);
+				checkvariable2invariablenames = s.substr(placeofspecial + 1, s.length());
+			}
+			int operand1index = -1;
+			int operand2index = -1;
+			for (int i = 0; i<variablesNo; i++)
+			{
+				if (checkvariable1invariablenames == varNames[i])
+				{
+					operand1index = i;
+				}
+				if (checkvariable2invariablenames == varNames[i])
+				{
+					operand2index = i;
+				}
+			}
+			//if the operation between two variables 
+			if (operand1index != -1 && operand2index != -1)
+			{
+				string operand1content = varContent[operand1index];
+				double contentofoperand1inDouble = atof(operand1content.c_str());
+				string operand2content = varContent[operand2index];
+				double contentofoperand2inDouble = atof(operand2content.c_str());
+				if (s.at(placeofspecial) == '+')
+				{
+					return contentofoperand1inDouble + contentofoperand2inDouble;
+				}
+				else if (s.at(placeofspecial) == '-')
+				{
+					return contentofoperand1inDouble - contentofoperand2inDouble;
+				}
+				else if (s.at(placeofspecial) == '*')
+				{
+					return contentofoperand1inDouble * contentofoperand2inDouble;
+				}
+				else if (s.at(placeofspecial) == '/')
+				{
+					return contentofoperand1inDouble / contentofoperand2inDouble;
+				}
+				else if (s.at(placeofspecial) == '\\')
+				{
+					return contentofoperand2inDouble / contentofoperand1inDouble;
+				}
+				else if (s.at(placeofspecial) == '^')
+				{
+					return pow(contentofoperand1inDouble, contentofoperand2inDouble);
+				}
+				if (s.at(placeofspecial) == '&')
+				{
+					return int(contentofoperand1inDouble)&int(contentofoperand2inDouble);
+				}
+				if (s.at(placeofspecial) == '|')
+				{
+					return int(contentofoperand1inDouble)|int(contentofoperand2inDouble);
+				}
+			}
+			//B+2
+			else if (operand1index != -1 && operand2index == -1)
+			{
+				string operand1content = varContent[operand1index];
+				double contentofoperand1inDouble = atof(operand1content.c_str());
+				string operand2asnumber = s.substr(placeofspecial + 1, s.length());
+				double operand2asnumbertodouble = atof(operand2asnumber.c_str());
+
+				if (s.at(placeofspecial) == '+')
+				{
+					return contentofoperand1inDouble + operand2asnumbertodouble;
+				}
+				if (s.at(placeofspecial) == '-')
+				{
+					return contentofoperand1inDouble - operand2asnumbertodouble;
+				}
+				if (s.at(placeofspecial) == '*')
+				{
+					return contentofoperand1inDouble * operand2asnumbertodouble;
+				}
+				if (s.at(placeofspecial) == '/')
+				{
+					return contentofoperand1inDouble / operand2asnumbertodouble;
+				}
+				if (s.at(placeofspecial) == '\\')
+				{
+					return operand2asnumbertodouble / contentofoperand1inDouble;
+				}
+				if (s.at(placeofspecial) == '^')
+				{
+					return pow(contentofoperand1inDouble, operand2asnumbertodouble);
+				}
+				if (s.at(placeofspecial) == '&')
+				{
+					return int(contentofoperand1inDouble)&int(operand2asnumbertodouble);
+				}
+				if (s.at(placeofspecial) == '|')
+				{
+					return int(contentofoperand1inDouble) | int(operand2asnumbertodouble);
+				}
+			}
+
+			else if (operand1index == -1 && operand2index == -1)
+			{
+				//if the two inputs are numbers
+				string operand1asnumber = s.substr(0, placeofspecial);
+				string operand2asnumber = s.substr(placeofspecial + 1, s.length());
+				if (s[placeofspecial - 1] == '.') {
+					operand1asnumber = s.substr(0, placeofspecial - 1);
+					operand2asnumber = s.substr(placeofspecial + 1, s.length());
+				}
+				double operand1asnumbertodouble = atof(operand1asnumber.c_str());
+				double operand2asnumbertodouble = atof(operand2asnumber.c_str());
+				if (s.at(placeofspecial) == '+')
+				{
+					return operand1asnumbertodouble + operand2asnumbertodouble;
+				}
+				else if (s.at(placeofspecial) == '-')
+				{
+					return operand1asnumbertodouble - operand2asnumbertodouble;
+				}
+				else if (s.at(placeofspecial) == '*')
+				{
+					return operand1asnumbertodouble * operand2asnumbertodouble;
+				}
+				else if (s.at(placeofspecial) == '/')
+				{
+					return operand1asnumbertodouble / operand2asnumbertodouble;
+				}
+				else if (s.at(placeofspecial) == '\\')
+				{
+					return operand2asnumbertodouble / operand1asnumbertodouble;
+				}
+				else if (s.at(placeofspecial) == '^')
+				{
+					return pow(operand1asnumbertodouble, operand2asnumbertodouble);
+				}
+				if (s.at(placeofspecial) == '&')
+				{
+					return int(operand1asnumbertodouble)&int(operand2asnumbertodouble);
+				}
+				if (s.at(placeofspecial) == '|')
+				{
+					return int(operand1asnumbertodouble) | int(operand2asnumbertodouble);
+				}
+			}
+			//2+B
+			else if (operand1index == -1 && operand2index != -1)
+			{
+				string operand1asnumber = s.substr(0, placeofspecial);
+				if (s[placeofspecial - 1] == '.') {
+					operand1asnumber = s.substr(0, placeofspecial - 1);
+				}
+				double operand1asnumbertodouble = atof(operand1asnumber.c_str());
+				string operand2content = varContent[operand2index];
+				double contentofoperand2inDouble = atof(operand2content.c_str());
+				if (s.at(placeofspecial) == '+')
+				{
+					return operand1asnumbertodouble + contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial) == '-')
+				{
+					return operand1asnumbertodouble - contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial) == '*')
+				{
+					return operand1asnumbertodouble * contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial) == '/')
+				{
+					return operand1asnumbertodouble / contentofoperand2inDouble;
+				}
+				if (s.at(placeofspecial) == '//')
+				{
+					return contentofoperand2inDouble / operand1asnumbertodouble;
+				}
+				if (s.at(placeofspecial) == '^')
+				{
+					return pow(operand1asnumbertodouble, contentofoperand2inDouble);
+				}
+				if (s.at(placeofspecial) == '&')
+				{
+					return int(operand1asnumbertodouble)&int(contentofoperand2inDouble);
+				}
+				if (s.at(placeofspecial) == '|')
+				{
+					return int(operand1asnumbertodouble) | int(contentofoperand2inDouble);
+				}
+			}
+		}
+	}
+
+}
 CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , int& variablesNo, int& outFileSize)  // Verina /* Takes a string as input and returns a matrix output, Input may contain previous predefined variables and/or normal numbers */
 {
 	string operand1 , operand2 ;  CMatrix valueOfOperand1 , valueOfOperand2 ;  string numberString ; int operand1index , operand2index;
@@ -183,3 +935,17 @@ CMatrix solveCMatrix(string s, string varNames[100], string varContent[100] , in
   }
 }
 				
+
+
+
+
+
+
+
+
+
+
+
+
+
+

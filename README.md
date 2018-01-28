@@ -70,6 +70,7 @@ Run ./matrix command to run the library in your terminal:
 * [x] Matrix multiplication and division.
 * [x] Matrix transpose.
 
+
 ## Phase 2 Description
 
 - Support mathematical functions. 
@@ -83,12 +84,32 @@ Run ./matrix command to run the library in your terminal:
 
 
 
+
+## Phase 2 Description
+
+- Support mathematical functions. 
+    * Trigonometric, Logarithmic, Roots, Power
+- Support mathematical expressions.
+    * Either with (dot) or not.
+- Support flexible matrix parser.
+    * Accept matrix in matrix, expressions and variables 
+- Support error handling.
+    * Do not crash for invalid input.
+
+
 ## ToDo
 
-* [ ] Matrix trigonometric functions.
-* [ ] Matrix logarithmic and exponential functions.
-* [ ] Matrix roots and power functions.
-* [ ] Error Handling.
+* [x] Matrix trigonometric functions.
+* [x] Matrix inverse trigonometric functions.
+* [x] Matrix hyperbolic functions.
+* [x] Matrix inverse hyperbolic functions.
+* [x] Matrix bitWise functions.
+* [x] Matrix logarithmic and exponential functions.
+* [X] Matrix roots and power functions.
+* [X] Error Handling.
+
+
+
 
 ## Additional
 You can always check [the doctor's project charter](https://docs.google.com/presentation/d/1UIO4qOuu7vfbQWdxS-UbUa06dTc-YmUGgjZ1Gn9T0Bo/), [our google drive spreadsheet](
