@@ -37,6 +37,7 @@ int main(int argc,char* argv[])
 				}
 			}
 			info += line;
+			
 			if (bracketCounter == 0 && info!="") {
 				try {
 
@@ -49,6 +50,9 @@ int main(int argc,char* argv[])
 					info = "";
 				}
 				
+			}
+			else if (bracketCounter != 0 && info != "") {
+				info += ";";
 			}
 		}
 	}
@@ -68,6 +72,7 @@ int main(int argc,char* argv[])
 				}
 			}
 			info += line;
+		
 			if (bracketCounter == 0 && info != "") {
 				try {
 					
@@ -79,6 +84,9 @@ int main(int argc,char* argv[])
 					cout << message << endl;
 					info = "";
 				}
+			}
+			else if (bracketCounter != 0 && info != "") {
+				info += ";";
 			}
 			cout << ">>";
 		}

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <math.h>
 #include "cmatrix.h"
 #include "solve.h"
@@ -1148,11 +1147,6 @@ CMatrix solveCMatrix(string s,int placeOfOPerator, string varNames[100], string 
 	}
 
 }
-
-
-
-
-
 
 
 
